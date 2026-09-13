@@ -36,8 +36,17 @@ export async function composeSheet(layers: DrawLayer[], animation: string): Prom
   return { set, canvas, missing };
 }
 
-/** Renders a single frame (row, column) of an animation into a fresh canvas. */
-export async function composeFrame(layers: DrawLayer[], animation: string, row: number, column: number): Promise<OffscreenCanvas | null> {
+export interface ComposedFrame {
+  canvas: OffscreenCanvas;
+  set: FrameSet;
+}
+
+/**
+ * Renders a single frame (row, column) of an animation. The frame set comes
+ * back with it because the caller needs the cell size: an oversize layout
+ * hands back a 128 or 192 px cell, not a 64 px one.
+ */
+export async function composeFrame(layers: DrawLayer[], animation: string, row: number, column: number): Promise<ComposedFrame | null> {
   const set = buildFrameSet(layers, animation);
   if (!set) return null;
   const ops = set.frames[Math.min(row, set.rows - 1)]?.[Math.min(column, set.columns - 1)] ?? [];
@@ -46,7 +55,7 @@ export async function composeFrame(layers: DrawLayer[], animation: string, row: 
   const ctx = canvas.getContext("2d")!;
   ctx.imageSmoothingEnabled = false;
   drawOps(ctx, ops, images, 0, 0);
-  return canvas;
+  return { canvas, set };
 }
 
 /** Cache of composed sheets keyed by a layer signature and animation. */

@@ -1,5 +1,19 @@
 import { useEffect, useRef } from "preact/hooks";
-import { bestLicense, LICENSES, resolveItem, sortLayers, toDrawLayers, type CatalogItem, type DrawLayer } from "@pixygoat/core";
+import {
+  ANIMATIONS,
+  bestLicense,
+  buildFrameSet,
+  coveredAnimations,
+  customLayoutFor,
+  LICENSES,
+  resolveItem,
+  sortLayers,
+  toDrawLayers,
+  type CatalogItem,
+  type DrawLayer,
+  type FrameSet,
+  type PreviewHint,
+} from "@pixygoat/core";
 import { catalog, doc, drawLayers, effectiveVariant, resolveContext, slotStates } from "../state/store.ts";
 import { composeFrame } from "../render/renderer.ts";
 import { variantColor } from "../render/colors.ts";
@@ -30,6 +44,70 @@ function cropY(type: string): number {
  * option is: green nothing to do, grey credit the authors, amber share-alike,
  * red the item leaves no choice but GPL.
  */
+/**
+ * Square region of a rendered cell that actually holds pixels, with a little
+ * air around it. Oversize cells are mostly empty - a 192 px slash cell holds a
+ * 64 px character and the arc of the swing - so framing them on their content
+ * is what makes the thumbnail readable.
+ */
+function contentBox(canvas: OffscreenCanvas): { x: number; y: number; size: number } | null {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3]! <= 8) continue;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+  if (maxX < 0) return null;
+  const size = Math.max(maxX - minX + 1, maxY - minY + 1) + 4;
+  return {
+    x: Math.round(minX + (maxX - minX + 1) / 2 - size / 2),
+    y: Math.round(minY + (maxY - minY + 1) / 2 - size / 2),
+    size,
+  };
+}
+
+/** Animations that show a part best, in order; the rest follow in sheet order. */
+const PREFERRED_ANIMATIONS = ["walk", "idle", "combat_idle", "run", "thrust", "slash", "shoot"];
+
+/**
+ * Animation to preview a part in. Prefers one that keeps the standard 64 px
+ * grid, so a spear in the character's hand does not drag every thumbnail into
+ * an oversize layout. Parts that exist only as an oversize attack - spears,
+ * bows, whips - fall back to their own first animation.
+ */
+function previewAnimation(layers: DrawLayer[], covered: Set<string>): string {
+  const available = ANIMATIONS.map((a) => a.id).filter((a) => covered.has(a));
+  const ordered = [
+    ...PREFERRED_ANIMATIONS.filter((a) => available.includes(a)),
+    ...available.filter((a) => !PREFERRED_ANIMATIONS.includes(a)),
+  ];
+  return ordered.find((a) => !customLayoutFor(layers, a)) ?? ordered[0] ?? "walk";
+}
+
+/**
+ * Cell of the sheet to show. The definitions carry the generator's preview
+ * hint as sheet pixels - column and row in 64 px units plus a pixel nudge -
+ * so dividing by the real cell size maps it onto whatever grid the animation
+ * uses, 64, 128 or 192 px.
+ */
+function previewCell(hint: PreviewHint, set: FrameSet): { row: number; column: number } {
+  const clamp = (v: number, max: number) => Math.max(0, Math.min(max, v));
+  return {
+    column: clamp(Math.floor((hint.column * 64 + hint.xOffset) / set.cellSize), set.columns - 1),
+    row: clamp(Math.floor((hint.row * 64 + hint.yOffset) / set.cellSize), set.rows - 1),
+  };
+}
+
 const LICENSE_COLORS = ["var(--ok)", "var(--dim)", "var(--dim)", "var(--warn)", "var(--err)"];
 
 let observer: IntersectionObserver | null = null;
@@ -82,18 +160,24 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
       const resolved = resolveItem(cat, item, bodyType, variant, ctx);
       const mine = toDrawLayers(resolved, item.id);
       const all = sortLayers([...layers, ...mine]);
-      const anim = mine.some((l) => l.sheets.walk) || mine.length === 0 ? "walk" : Object.keys(mine[0]!.sheets)[0] ?? "walk";
-      void composeFrame(all, anim, item.preview.row, item.preview.column).then((frame) => {
+      const anim = previewAnimation(all, coveredAnimations(resolved));
+      const geometry = buildFrameSet(all, anim);
+      if (!geometry) return;
+      const { row, column } = previewCell(item.preview, geometry);
+      void composeFrame(all, anim, row, column).then((frame) => {
         if (cancelled || !frame) return;
         const c = canvas.getContext("2d")!;
         c.imageSmoothingEnabled = false;
         c.clearRect(0, 0, canvas.width, canvas.height);
-        const cell = frame.width;
-        const crop = 48;
-        const scale = cell / 64;
-        const sx = (8 + item.preview.xOffset) * scale + (cell - 64 * scale) / 2;
-        const sy = (cropY(item.typeName) + item.preview.yOffset) * scale + (cell - 64 * scale) / 2;
-        c.drawImage(frame, sx, sy, crop * scale, crop * scale, 0, 0, canvas.width, canvas.height);
+        const cell = frame.set.cellSize;
+        if (cell > 64) {
+          // Oversize cell: frame what is drawn, so a spear or a drawn bow fills
+          // the thumbnail instead of sitting small in a mostly empty cell.
+          const box = contentBox(frame.canvas) ?? { x: 0, y: 0, size: cell };
+          c.drawImage(frame.canvas, box.x, box.y, box.size, box.size, 0, 0, canvas.width, canvas.height);
+        } else {
+          c.drawImage(frame.canvas, 8, cropY(item.typeName), 48, 48, 0, 0, canvas.width, canvas.height);
+        }
       });
     });
     return () => {
