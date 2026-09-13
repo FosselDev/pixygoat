@@ -18,6 +18,9 @@ export interface SlotMapping {
 
 export const SLOT_MAPPING: SlotMapping = slotMappingJson as SlotMapping;
 
+/** Animations that repeat; everything else plays once. */
+export const LOOPING_ANIMATIONS = new Set(["walk", "run", "idle", "combat_idle", "climb"]);
+
 const typeToSlot = new Map<string, string>();
 for (const [slot, types] of Object.entries(SLOT_MAPPING.slots)) for (const t of types) typeToSlot.set(t, slot);
 
@@ -43,6 +46,12 @@ export interface PageSpec {
   cellSize: number;
   columns: number;
   rows: number;
+  /** column indices in play order */
+  cycle: number[];
+  /** milliseconds per played frame */
+  frameMs: number;
+  /** whether the animation is meant to repeat */
+  loop: boolean;
 }
 
 export interface SheetSpec {
@@ -61,7 +70,7 @@ export interface StaticBloomManifest {
   character: string;
   bodyType: string;
   cellSize: number;
-  pages: Record<string, { animation: string; layout: string | null; cellSize: number; columns: number; rows: number; directions: string[] | null }>;
+  pages: Record<string, { animation: string; layout: string | null; cellSize: number; columns: number; rows: number; directions: string[] | null; cycle: number[]; frameMs: number; loop: boolean }>;
   slots: Record<string, { file: string; parts: string[] }[]>;
   /** per slot: draw order for every frame of every page ("*" = all pages) */
   drawOrder: Record<string, Record<string, number | number[]>>;
@@ -134,9 +143,23 @@ export function planStaticBloom(slots: ExportSlotInput[], opts: StaticBloomOptio
     if (!anim) continue;
     const layout = customLayoutFor(allLayers, animId) ?? null;
     const custom = layout ? CUSTOM_ANIMATIONS[layout] : undefined;
-    const page: PageSpec = custom
-      ? { code: pageCodeFor(animId, layout), animation: animId, layout, cellSize: custom.frameSize, columns: custom.frames[0]?.length ?? 0, rows: custom.frames.length }
-      : { code: pageCodeFor(animId, null), animation: animId, layout: null, cellSize: 64, columns: anim.columns, rows: anim.rows };
+    // The cycle and the frame time travel with the page so an importer can
+    // build animation clips without knowing anything about LPC.
+    const columns = custom ? (custom.frames[0]?.length ?? 0) : anim.columns;
+    const cycle = custom
+      ? Array.from({ length: columns }, (_, i) => i).filter((i) => !(custom.skipFirstFrameInPreview && i === 0))
+      : anim.cycle;
+    const page: PageSpec = {
+      code: pageCodeFor(animId, layout),
+      animation: animId,
+      layout,
+      cellSize: custom ? custom.frameSize : 64,
+      columns,
+      rows: custom ? custom.frames.length : anim.rows,
+      cycle,
+      frameMs: anim.frameMs,
+      loop: LOOPING_ANIMATIONS.has(animId),
+    };
     pages.push(page);
 
     for (const slot of slotsUsed) {
@@ -169,7 +192,17 @@ export function planStaticBloom(slots: ExportSlotInput[], opts: StaticBloomOptio
     pages: Object.fromEntries(
       pages.map((p) => [
         p.code,
-        { animation: p.animation, layout: p.layout, cellSize: p.cellSize, columns: p.columns, rows: p.rows, directions: p.rows === 4 ? ["up", "left", "down", "right"] : null },
+        {
+          animation: p.animation,
+          layout: p.layout,
+          cellSize: p.cellSize,
+          columns: p.columns,
+          rows: p.rows,
+          directions: p.rows === 4 ? ["up", "left", "down", "right"] : null,
+          cycle: p.cycle,
+          frameMs: p.frameMs,
+          loop: p.loop,
+        },
       ]),
     ),
     slots: manifestSlots,

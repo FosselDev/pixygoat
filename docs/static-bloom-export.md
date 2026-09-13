@@ -7,14 +7,12 @@ bringt, was dabei entsteht und wie der Import in Unity läuft.
 
 1. In PixyGoat **Exportieren → Static Bloom · Paper-Doll-Parts**, Ordner ist
    standardmäßig `Assets/_Project/Art/Characters/LPC` im Unity-Projekt.
-2. In Unity **Tools → Static Bloom → Characters → Import PixyGoat Manifest…**
-   und die geschriebene `manifest.json` wählen (oder den Ordner im
-   Project-Fenster markieren und **Assets → Static Bloom → Import PixyGoat
-   Manifest**).
-3. Der Importer setzt Import-Einstellungen, slict alle Sheets im Raster ihrer
-   Page, erzeugt Page- und Part-Assets und schreibt die Zeichenreihenfolge.
-   Übrig bleiben die Clips für den Körper (Abschnitt 5 in
-   `paperdoll-usage.md`).
+2. In Unity **Tools → Static Bloom → Characters → Build PixyGoat Character…**
+   und die geschriebene `manifest.json` wählen.
+
+Fertig. Der Befehl legt Seiten, Parts, Clips, Animator Controller und Prefab
+an. Wer nur die Sheets und Parts will, nimmt **Import PixyGoat Manifest…**
+und baut den Rest von Hand (Abschnitt 5 in `paperdoll-usage.md`).
 
 ## Was PixyGoat schreibt
 
@@ -100,6 +98,9 @@ wird dann nicht geschrieben.
   braucht.
 - `missing`: Slots ohne Inhalt in einer Page. Die Zellen bleiben leer, der Rig
   schaltet den Renderer dort ab.
+- `cycle`, `frameMs`, `loop`: welche Spalten in welcher Reihenfolge laufen, wie
+  lange ein Bild steht und ob die Animation sich wiederholt. Damit baut der
+  Unity-Befehl die Clips, ohne etwas über LPC zu wissen.
 
 ## Der Unity-Importer
 
@@ -121,10 +122,22 @@ wird dann nicht geschrieben.
 Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in
 `StaticBloom.Editor.asmdef` (Grid-Slicing über `ISpriteEditorDataProvider`).
 
-**Danach von Hand:** Clips für den Körper anlegen (`0bas`-Sheets, Sample Rate
-200, Abschluss-Key) und die Zustände im Animator Controller. Bei Oversize-Pages
-verweisen die Clips auf die 128-px-Sprites der Page `slash128`; da alle Slots
-dieser Page dasselbe Raster haben, läuft der Rig unverändert.
+**Der Builder erzeugt zusätzlich:**
+
+- **Clips**, einen je Seite und Richtung, auf dem `0bas`-Renderer, mit Sample
+  Rate 200, Abschluss-Key und der Schleifeneinstellung aus `loop`. Bei einer
+  Oversize-Page zeigen sie auf die 128- oder 192-px-Sprites; da alle Slots der
+  Page dasselbe Raster haben, läuft der Rig unverändert.
+- **Animator Controller** auf den Parametern von `PlayerAnimator`: `facingX`,
+  `facingY`, `isMoving`, `weaponDrawn`, `attackActive`. Richtungen laufen als
+  2D-Blend-Tree, weil Sprite-Kurven diskret gewählt und nie interpoliert
+  werden. Ein vorhandener Controller bleibt unangetastet.
+- **Prefab** mit `SortingGroup` auf Sorting Layer Entities, acht Slot-Kindern
+  auf `(0, 0.375, 0)` und einem `PaperDollRig`, dessen Body Slot, Animation
+  Source Part und Default Parts gesetzt sind.
+
+**Danach von Hand:** nur noch die Zustände im Controller ergänzen, wenn das
+Spiel mehr braucht als Stehen, Gehen, Kampfhaltung und Angriff.
 
 **Nicht importierbar:** der Export "jede LPC-Ebene als eigenes Sheet". Er
 erzeugt Slot-Codes, für die der Rig keinen Renderer hat; der Importer meldet
