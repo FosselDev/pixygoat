@@ -68,7 +68,10 @@ oversize layouts, slot grouping and mapping, license texts) and `locales/`.
 
 ## Licenses
 
-PixyGoat itself is MIT licensed (see `LICENSE`). Third-party npm packages are
+PixyGoat itself is under the PolyForm Noncommercial License 1.0.0 (see
+`LICENSE`): free to use, change and pass on for anything noncommercial, and a
+licence from the author for anything else. The sprites you export are not
+affected by it — they carry their own terms. Third-party npm packages are
 listed in `THIRD_PARTY_LICENSES.md`. The sheet definitions under
 `data/definitions/` are data files from the LPC generator repository and
 carry the credits of the artists; the sprites themselves are licensed by their

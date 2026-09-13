@@ -26,7 +26,8 @@ wird er in `docs/` gepflegt und pro Meilenstein abgehakt.
   `spritesheets/` plus `data/definitions/` – der Katalog wird neu gebaut.
 - Lizenz des Generator-Codes: **GPL-3.0**. Es wird **kein Code** übernommen,
   nur die JSON-Daten (Definitionen, Credits, Frame-Layouts als Daten). Sprite
-  Forge selbst wird unter **MIT** veröffentlicht und bleibt damit frei
+  Forge selbst steht unter **PolyForm Noncommercial 1.0.0** (Stand 14.09.2026;
+  bis dahin MIT) und bleibt damit frei
   verteil- und verkaufbar. Die Sprites tragen ihre eigenen Lizenzen (siehe
   Abschnitt 8).
 

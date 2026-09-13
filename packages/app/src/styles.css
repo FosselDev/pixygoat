@@ -310,3 +310,4 @@ kbd { font-family: var(--font-mono); font-size: 10px; padding: 1px 5px; border: 
 .lic-table td.warn { color: var(--warn); white-space: nowrap; }
 .about-body .disclaimer { margin-top: 34px; font-size: 11px; line-height: 1.6; color: var(--faint); }
 .about-body .made { margin-top: 8px; font-size: 11px; color: var(--faint); }
+.about-body .wish { margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--accent-line); font-size: 12px; line-height: 1.6; color: var(--dim); }

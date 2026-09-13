@@ -62,7 +62,8 @@ export function AboutPage() {
 
         <Section title={t("about.tool.title")}>
           <p>{t("about.tool.body")}</p>
-          <pre class="mono license-text">{t("about.mit")}</pre>
+          <pre class="mono license-text">{t("about.licenseText")}</pre>
+          <p class="wish">{t("about.creditsWish")}</p>
         </Section>
 
         <Section title={t("about.art.title")}>

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "PixyGoat - a local, browser-based LPC pixel-art character designer with paper-doll export.",
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "workspaces": [
     "packages/*"
