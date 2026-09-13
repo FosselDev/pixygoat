@@ -9,6 +9,9 @@ bringt, was dabei entsteht und wie der Import in Unity läuft.
    standardmäßig `Assets/_Project/Art/Characters/LPC` im Unity-Projekt.
 2. In Unity **Tools → Static Bloom → Characters → Build PixyGoat Character…**
    und die geschriebene `manifest.json` wählen.
+3. Die Rückfrage beantworten: **Playable character** hängt Rigidbody2D,
+   Kapsel-Collider und die Spieler-Komponenten an, **Graphics only** liefert
+   ein Prefab, das nur zeichnet.
 
 Fertig. Der Befehl legt Seiten, Parts, Clips, Animator Controller und Prefab
 an. Wer nur die Sheets und Parts will, nimmt **Import PixyGoat Manifest…**
@@ -135,12 +138,24 @@ Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in
   Oversize-Page zeigen sie auf die 128- oder 192-px-Sprites; da alle Slots der
   Page dasselbe Raster haben, läuft der Rig unverändert.
 - **Animator Controller** auf den Parametern von `PlayerAnimator`: `facingX`,
-  `facingY`, `isMoving`, `weaponDrawn`, `attackActive`. Richtungen laufen als
-  2D-Blend-Tree, weil Sprite-Kurven diskret gewählt und nie interpoliert
-  werden. Ein vorhandener Controller bleibt unangetastet.
+  `facingY`, `isMoving`, `weaponDrawn`, `attackActive` und der Trigger
+  `isAttack`. Richtungen laufen als 2D-Blend-Tree, weil Sprite-Kurven diskret
+  gewählt und nie interpoliert werden. `facingY` ist auf −1 voreingestellt:
+  der Ursprung ist im Blend-Tree keine Richtung, und eine Figur, für die
+  niemand die Blickrichtung schreibt, zeigt sonst ihren Rücken. Ein
+  vorhandener Controller bleibt unangetastet, fehlende Parameter ergänzt der
+  Befehl trotzdem.
 - **Prefab** mit `SortingGroup` auf Sorting Layer Entities, acht Slot-Kindern
   auf `(0, 0.375, 0)` und einem `PaperDollRig`, dessen Body Slot, Animation
-  Source Part und Default Parts gesetzt sind.
+  Source Part und Default Parts gesetzt sind. Jeder Renderer trägt die
+  Ruhepose fest eingetragen, sonst bleibt der Charakter bis zum ersten
+  Play-Klick unsichtbar: das Rig liest den Frame-Index aus dem Body-Renderer
+  zurück, und ein leerer Renderer löst nichts auf.
+- **Spieler-Komponenten**, auf Wunsch: Rigidbody2D ohne Schwerkraft, ein
+  flacher Kapsel-Collider an den Füßen und die Kette aus `PlayerAim`,
+  `PlayerWeaponState`, `PlayerActionState`, `PlayerMovementDynamic` und
+  `PlayerAnimator`. Ohne sie schreibt niemand die Animator-Parameter, und die
+  Figur bewegt sich, ohne zu laufen.
 
 **Danach von Hand:** nur noch die Zustände im Controller ergänzen, wenn das
 Spiel mehr braucht als Stehen, Gehen, Kampfhaltung und Angriff.
