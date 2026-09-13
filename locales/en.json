@@ -294,5 +294,13 @@
   "stack.warnings.other": "{n} layers are missing in some animations",
   "preview.wrongBody": "{item} was not drawn for {body}, only for {bodies}",
   "preview.wrongBodyHint": "Pick another base above, or a part that was drawn for {body}.",
-  "catalog.direction": "Facing"
+  "catalog.direction": "Facing",
+  "sbslot.0bas": "Body",
+  "sbslot.1out": "Clothing",
+  "sbslot.2clo": "Behind the body",
+  "sbslot.3fac": "Face",
+  "sbslot.4har": "Hair",
+  "sbslot.5hat": "Headwear",
+  "sbslot.6tla": "Weapon",
+  "sbslot.7tlb": "Shield"
 }

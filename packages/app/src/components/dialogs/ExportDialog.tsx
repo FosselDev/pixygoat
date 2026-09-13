@@ -1,11 +1,27 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { ANIMATIONS, sanitizeVariantName } from "@pixygoat/core";
+import { ANIMATIONS, sanitizeVariantName, type StaticBloomPlan } from "@pixygoat/core";
 import { Dialog } from "./Dialog.tsx";
 import { coverage, doc, slotStates, toast, ui, update } from "../../state/store.ts";
 import { downloadDocument } from "../../state/persistence.ts";
 import { currentPlan, runFlatExport, runStaticBloomExport, type Delivery } from "../../export/run-export.ts";
 import { t } from "../../i18n/i18n.ts";
 import { Icon } from "../icons.tsx";
+
+/** "Waffe (6tla)" - the paper doll slot codes mean nothing on their own. */
+function slotName(slot: string): string {
+  const label = t(`sbslot.${slot}`);
+  return label === `sbslot.${slot}` ? slot : `${label} (${slot})`;
+}
+
+/** "Hieb (128 px)" instead of the page code "slash128". */
+function pageName(plan: StaticBloomPlan | null, code: string): string {
+  const page = plan?.manifest.pages[code];
+  if (!page) return code;
+  const label = t(`anim.${page.animation}`);
+  return page.layout ? `${label} (${page.cellSize} px)` : label;
+}
+
+const SB_SLOTS = ["0bas", "1out", "2clo", "3fac", "4har", "5hat", "6tla", "7tlb"];
 
 type Target = "static-bloom" | "flat" | "character";
 type FlatMode = "animations" | "universal" | "frames";
@@ -126,7 +142,7 @@ export function ExportDialog() {
                 <label class="row">
                   <span class={`cb ${!perLayer ? "on" : ""}`} onClick={() => setPerLayer(false)}>{!perLayer && <Icon.Check size={10} />}</span>
                   <span>{t("export.sb.merge")}</span>
-                  <span class="mono dim">0bas 1out 2clo 3fac 4har 5hat 6tla 7tlb</span>
+                  <span class="mono dim" title={SB_SLOTS.map(slotName).join(", ")}>{SB_SLOTS.join(" ")}</span>
                 </label>
                 <label class="row">
                   <span class={`cb ${perLayer ? "on" : ""}`} onClick={() => setPerLayer(true)}>{perLayer && <Icon.Check size={10} />}</span>
@@ -211,7 +227,7 @@ export function ExportDialog() {
                   <Icon.Warn size={16} />
                   <div>
                     {Object.entries(plan.manifest.missing).map(([slot, pages]) => (
-                      <div class="t">{t("export.missing", { slot, pages: pages.join(", ") })}</div>
+                      <div class="t">{t("export.missing", { slot: slotName(slot), pages: pages.map((p) => pageName(plan, p)).join(", ") })}</div>
                     ))}
                     <div class="d">{t("export.missingHint")}</div>
                   </div>

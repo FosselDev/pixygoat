@@ -294,5 +294,13 @@
   "stack.warnings.other": "{n} Ebenen fehlen in manchen Animationen",
   "preview.wrongBody": "{item} ist nicht für {body} gezeichnet, nur für {bodies}",
   "preview.wrongBodyHint": "Wähle oben eine andere Basis, oder ein Teil, das für {body} gezeichnet ist.",
-  "catalog.direction": "Blickrichtung"
+  "catalog.direction": "Blickrichtung",
+  "sbslot.0bas": "Körper",
+  "sbslot.1out": "Kleidung",
+  "sbslot.2clo": "Rück-Ebenen",
+  "sbslot.3fac": "Gesicht",
+  "sbslot.4har": "Haare",
+  "sbslot.5hat": "Kopfbedeckung",
+  "sbslot.6tla": "Waffe",
+  "sbslot.7tlb": "Schild"
 }
