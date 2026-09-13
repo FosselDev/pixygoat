@@ -326,3 +326,23 @@ Stand. Ein Git-Repository wird in Meilenstein 0 angelegt.
 1. App-Name: "Sprite Forge" (Platzhalter) oder ein anderer Name?
 2. Ort der gespeicherten Charaktere: `characters/` im Projekt (Vorschlag) oder frei wählbar?
 3. Standard-Zielordner für den Static-Bloom-Export: `E:\00_dev\static-bloom\staticbloom-poc\Assets\_Project\Art\Characters\LPC\Sheets\` (Vorschlag).
+
+---
+
+## 12. Stand der Umsetzung (13.09.2026)
+
+| # | Meilenstein | Stand |
+|---|---|---|
+| 0 | Gerüst | erledigt (Workspaces, TypeScript, Vitest, `npm start`, Daten aus Commit `e7fa0aee616`) |
+| 1 | Katalog | erledigt (Scan + Definitionen, Cache mit Fingerprint, 659/667 Teile verfügbar, erster Scan ~60 s, aus Cache ~2 s) |
+| 2 | Vorschau | erledigt (alle 15 Animationen, Oversize-Layouts, 4 Richtungen, Zoom, Hintergründe, Raster, Ebenen-Explosion, Filmstreifen) |
+| 3 | Auswahl-UI | erledigt bis auf "Unlisted"-Teile (284 Ordner ohne Definition bleiben in 1.0 unsichtbar) |
+| 4 | Speichern und flacher Export | erledigt (Server-Ablage `characters/`, Datei-Download, Drag-and-drop, Autosave; Export je Animation, Universal-Sheet, Einzelframes, ZIP oder Ordner, Credits) |
+| 5 | Static-Bloom-Export | erledigt (Slot-Sheets, Pages, Oversize, `manifest.json`; Unity-Importer `PixyGoatManifestImporter` erzeugt Pages, Slicing, Parts, Zeichenreihenfolge; Testimport mit 15 Pages und 4 Parts erfolgreich) |
+| 6 | Lizenzen und Sprachen | erledigt (Lizenz-Panel mit wirksamer Lizenz, Pflichten, Je-Teil-Tabelle, Filter; en/de umschaltbar) |
+| 7 | Feinschliff | erledigt: Tastatur, Zufall, Dockerfile + compose, `THIRD_PARTY_LICENSES.md`, README. Offen: Docker-Build noch nicht ausgeführt, kein Playwright-Smoke-Test |
+
+Nicht in 1.0 (bewusst verschoben): Import von Generator-URLs/JSON (Format
+liegt vor, Aliase fehlen im Juli-2025-Stand), "Unlisted"-Teile, Rendering im
+Web Worker (Hauptthread reicht bei den gemessenen Zeiten), `hides` im Manifest
+(LPC liefert keine Information dazu; Feld ist vorhanden und wird importiert).

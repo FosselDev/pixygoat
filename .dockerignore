@@ -1,0 +1,9 @@
+node_modules
+spritesheets
+content_tree.txt
+.cache
+characters
+exports
+packages/app/dist
+.git
+docs

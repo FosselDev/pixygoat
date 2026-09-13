@@ -1,0 +1,14 @@
+services:
+  pixygoat:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "4600:4600"
+    volumes:
+      - ${PIXYGOAT_SPRITES_HOST:-./spritesheets}:/data/spritesheets:ro
+      - ./characters:/data/characters
+      - ./exports:/data/exports
+      - pixygoat-cache:/data/cache
+volumes:
+  pixygoat-cache:
