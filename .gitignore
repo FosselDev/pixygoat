@@ -7,3 +7,5 @@ characters/*
 !characters/.gitkeep
 *.log
 .DS_Store
+*.tsbuildinfo
+.idea/

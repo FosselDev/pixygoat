@@ -138,8 +138,8 @@ export const ui = {
   /** direction every catalog thumbnail is rendered in */
   catalogDirection: signal<Direction>("down"),
   showUnlisted: signal(false),
-  /** start screen or editor */
-  view: signal<"start" | "editor">("start"),
+  /** start screen, the editor, or the page explaining what this is built on */
+  view: signal<"start" | "editor" | "about">("start"),
   dialog: signal<null | "load" | "save" | "export" | "licenses">(null),
   toast: signal<{ text: string; kind: "info" | "warn" | "error" } | null>(null),
   expandedGroups: signal<Record<string, boolean>>({}),
@@ -436,49 +436,63 @@ export function starterCharacter(bodyType: BodyType = "male"): CharacterDocument
 
 /** Random character: random item per primary slot with some probability. */
 export function randomize() {
+  if (!catalog.value) return;
+  update((d) => dressAtRandom(d));
+}
+
+/**
+ * A character that belongs to nobody, dressed on the spot. The crowd walking
+ * behind the start screen is made of these.
+ */
+export function randomCharacter(bodyType?: BodyType): CharacterDocument {
+  const bt = bodyType ?? BODY_TYPES[Math.floor(Math.random() * BODY_TYPES.length)]!;
+  const d = newCharacter("passer_by", bt);
+  if (catalog.value) dressAtRandom(d);
+  return d;
+}
+
+function dressAtRandom(d: CharacterDocument) {
   const cat = catalog.value;
   if (!cat) return;
   const rnd = <T>(arr: T[]): T | undefined => arr[Math.floor(Math.random() * arr.length)];
-  update((d) => {
-    const ctx: ResolveContext = {
-      get selectedNames() {
-        const names: Record<string, string> = {};
-        for (const [type, sel] of Object.entries(d.slots)) {
-          const it = itemsById.value.get(sel.item);
-          if (it) names[type] = replacementKey(it.name);
-        }
-        return names;
-      },
-    };
-    const bodyType = d.bodyType;
-    const chance: Record<string, number> = {
-      body: 1, head: 1, eye_color: 1, hair: 0.9, clothes: 0.95, legs: 0.95, shoes: 0.9,
-      hat: 0.3, beard: bodyType === "male" || bodyType === "muscular" ? 0.35 : 0.05, facial_eyes: 0.15,
-      neck: 0.2, cape: 0.15, backpack: 0.1, weapon: 0.35, shield: 0.15, armour: 0.2, shoulders: 0.1, belt: 0.3, gloves: 0.2,
-    };
-    for (const [type, p] of Object.entries(chance)) {
-      if (Math.random() > p) {
-        if (type !== "body" && type !== "head") delete d.slots[type];
-        continue;
+  const ctx: ResolveContext = {
+    get selectedNames() {
+      const names: Record<string, string> = {};
+      for (const [type, sel] of Object.entries(d.slots)) {
+        const it = itemsById.value.get(sel.item);
+        if (it) names[type] = replacementKey(it.name);
       }
-      const candidates = (itemsByType.value.get(type) ?? []).filter((it) => it.available && availableVariants(cat, it, bodyType, ctx).length > 0);
-      if (type === "head") {
-        const humans = candidates.filter((it) => it.id.startsWith("heads_human"));
-        const item = rnd(Math.random() < 0.8 ? humans : candidates);
-        if (!item) continue;
-        d.slots[type] = { item: item.id, variant: "light", follow: "body" };
-        continue;
-      }
-      const item = rnd(candidates);
-      if (!item) continue;
-      const vs = availableVariants(cat, item, bodyType, ctx);
-      const sel: SlotSelection = { item: item.id, variant: rnd(vs) ?? "" };
-      const follow = defaultFollowFor(type, item);
-      if (follow) sel.follow = follow;
-      d.slots[type] = sel;
+      return names;
+    },
+  };
+  const bodyType = d.bodyType;
+  const chance: Record<string, number> = {
+    body: 1, head: 1, eye_color: 1, hair: 0.9, clothes: 0.95, legs: 0.95, shoes: 0.9,
+    hat: 0.3, beard: bodyType === "male" || bodyType === "muscular" ? 0.35 : 0.05, facial_eyes: 0.15,
+    neck: 0.2, cape: 0.15, backpack: 0.1, weapon: 0.35, shield: 0.15, armour: 0.2, shoulders: 0.1, belt: 0.3, gloves: 0.2,
+  };
+  for (const [type, p] of Object.entries(chance)) {
+    if (Math.random() > p) {
+      if (type !== "body" && type !== "head") delete d.slots[type];
+      continue;
     }
-    if (d.slots.body) d.slots.body.variant = rnd(["light", "amber", "olive", "taupe", "bronze", "brown", "black"]) ?? "light";
-  });
+    const candidates = (itemsByType.value.get(type) ?? []).filter((it) => it.available && availableVariants(cat, it, bodyType, ctx).length > 0);
+    if (type === "head") {
+      const humans = candidates.filter((it) => it.id.startsWith("heads_human"));
+      const item = rnd(Math.random() < 0.8 ? humans : candidates);
+      if (!item) continue;
+      d.slots[type] = { item: item.id, variant: "light", follow: "body" };
+      continue;
+    }
+    const item = rnd(candidates);
+    if (!item) continue;
+    const vs = availableVariants(cat, item, bodyType, ctx);
+    const sel: SlotSelection = { item: item.id, variant: rnd(vs) ?? "" };
+    const follow = defaultFollowFor(type, item);
+    if (follow) sel.follow = follow;
+    d.slots[type] = sel;
+  }
+  if (d.slots.body) d.slots.body.variant = rnd(["light", "amber", "olive", "taupe", "bronze", "brown", "black"]) ?? "light";
 }
 
 export const bodyTypes = BODY_TYPES;

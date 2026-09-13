@@ -41,6 +41,14 @@ body {
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: none; padding: 0; }
 button:disabled { cursor: default; opacity: 0.45; }
+
+/* The cursor is part of the pixel art. Both images are drawn at 2x with an
+   outline, so they stay readable on a dark panel and on a white sprite alike;
+   the keyword after each url is what a browser that refuses the image gets. */
+body, button:disabled { cursor: url(/cursor-arrow.png) 0 0, default; }
+button, a, summary, label.lang, .char-card, [role="button"] { cursor: url(/cursor-hand.png) 6 0, pointer; }
+input[type="text"], input[type="search"], input:not([type]), textarea { cursor: text; }
+input[type="range"] { cursor: url(/cursor-hand.png) 6 0, grab; }
 input, select { background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--radius); height: 32px; padding: 0 10px; outline: none; }
 input:focus, select:focus { border-color: var(--accent); }
 a { color: var(--accent); }
@@ -226,14 +234,35 @@ a { color: var(--accent); }
 .radio.on::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-text); }
 
 /* start screen */
-.start { height: 100vh; display: flex; flex-direction: column; overflow-y: auto; background: radial-gradient(1100px 560px at 50% 18%, #1c1a16 0%, var(--bg) 68%); }
-.start .hero { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 56px 24px 40px; }
+.start { height: 100vh; display: flex; flex-direction: column; overflow-y: auto; scroll-behavior: smooth; background: radial-gradient(1100px 560px at 50% 18%, #1c1a16 0%, var(--bg) 68%); }
+.start .backdrop { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.start .hero { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 56px 24px 40px; }
+
+/* The corner switch: visible when looked for, quiet otherwise. */
+.lang { position: absolute; top: 16px; right: 18px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 6px; border-radius: 6px; color: var(--faint); transition: color 0.15s, background 0.15s; }
+.lang:hover { color: var(--muted); background: var(--panel); }
+.lang select { background: none; border: none; font-size: 11px; color: inherit; padding: 0; outline: none; }
+.lang select option { background: var(--panel-2); color: var(--text); }
+
+.scroll-hint { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); transition: opacity 0.3s, color 0.15s; }
+.scroll-hint svg { animation: nudge 1.9s ease-in-out infinite; }
+.scroll-hint:hover { color: var(--accent-soft); }
+.scroll-hint.gone { opacity: 0; pointer-events: none; }
+@keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 .start .logo { filter: drop-shadow(0 0 30px rgba(232, 163, 60, 0.25)); animation: bob 3.4s ease-in-out infinite; }
 .start h1 { font-family: var(--font-display); font-weight: 700; font-size: 64px; letter-spacing: -0.01em; margin: 10px 0 0; }
 .start .tagline { font-family: var(--font-display); font-weight: 500; font-size: 20px; color: var(--accent-soft); margin: 6px 0 0; }
 .start .pitch { max-width: 640px; font-size: 15px; line-height: 1.6; color: var(--muted); margin: 14px 0 0; text-wrap: pretty; }
 .start .stats { color: var(--dim); margin: 14px 0 0; letter-spacing: 0.04em; }
-.start .recent { border-top: 1px solid var(--line); background: var(--panel); padding: 16px 24px 22px; flex-shrink: 0; }
+.start .recent { position: relative; z-index: 1; border-top: 1px solid var(--line); background: var(--panel); padding: 16px 24px 18px; flex-shrink: 0; opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.start .recent.in { opacity: 1; transform: none; }
+
+/* The line nobody has to read, for the people who go looking for it. */
+.colophon { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; font-size: 11px; color: var(--faint); opacity: 0.55; transition: opacity 0.2s; }
+.colophon:hover { opacity: 1; }
+.colophon .dot { color: var(--line-3); }
+.colophon .linkish { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--line-3); }
+.colophon .linkish:hover { color: var(--accent-soft); }
 .start .recent-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .start .cards { display: flex; align-items: stretch; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
 .start .empty { align-self: center; font-size: 12px; }
@@ -259,3 +288,25 @@ a { color: var(--accent); }
 .loading .msg { font-family: var(--font-mono); font-size: 12px; max-width: 480px; text-align: center; }
 kbd { font-family: var(--font-mono); font-size: 10px; padding: 1px 5px; border: 1px solid var(--line-3); border-radius: 3px; color: var(--muted); }
 .drop-hint { position: fixed; inset: 0; border: 3px dashed var(--accent); background: rgba(232,163,60,0.08); z-index: 70; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--accent-soft); pointer-events: none; }
+
+/* about: what this is built on, and who owns what */
+.about { height: 100vh; overflow-y: auto; background: var(--bg); }
+.about-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.about-body { max-width: 760px; margin: 0 auto; padding: 36px 24px 80px; }
+.about-body h1 { font-family: var(--font-display); font-size: 34px; margin: 0; letter-spacing: -0.01em; }
+.about-body h2 { font-family: var(--font-display); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 44px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
+.about-body .lead { font-size: 15px; line-height: 1.65; color: var(--muted); margin: 12px 0 0; text-wrap: pretty; }
+.about-section { margin-top: 22px; }
+.about-section h3 { font-size: 14px; margin: 0 0 6px; color: var(--text); }
+.about-section p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--muted); text-wrap: pretty; }
+.about-body ol.who { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+.about-body ol.who strong { color: var(--text); font-weight: 600; }
+.about-body ul.links { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.license-text { margin: 12px 0 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--dim); font-size: 10px; line-height: 1.6; white-space: pre-wrap; max-height: 190px; overflow-y: auto; }
+.lic-table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 12px; }
+.lic-table th { text-align: left; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line-2); padding: 6px 8px; white-space: nowrap; }
+.lic-table td { border-bottom: 1px solid var(--line); padding: 7px 8px; color: var(--muted); vertical-align: top; }
+.lic-table td.ok { color: var(--ok); white-space: nowrap; }
+.lic-table td.warn { color: var(--warn); white-space: nowrap; }
+.about-body .disclaimer { margin-top: 34px; font-size: 11px; line-height: 1.6; color: var(--faint); }
+.about-body .made { margin-top: 8px; font-size: 11px; color: var(--faint); }

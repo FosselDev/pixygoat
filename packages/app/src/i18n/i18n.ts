@@ -11,6 +11,12 @@ export const LANGUAGES = [
   { id: "de", label: "Deutsch" },
 ];
 
+/**
+ * English until someone says otherwise, and then remembered. The browser's
+ * own language is deliberately not consulted: the interface, the docs and the
+ * sprite metadata are written in English, so that is the one everybody can
+ * read, and a single click changes it for good.
+ */
 function initialLanguage(): string {
   try {
     const stored = localStorage.getItem("pixygoat.lang");
@@ -18,8 +24,7 @@ function initialLanguage(): string {
   } catch {
     /* ignore */
   }
-  const nav = navigator.language.slice(0, 2);
-  return dictionaries[nav] ? nav : "en";
+  return "en";
 }
 
 export const language = signal(initialLanguage());

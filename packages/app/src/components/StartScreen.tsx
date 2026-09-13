@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { ANIMATIONS, BODY_TYPES, parseCharacter, type CharacterDocument } from "@pixygoat/core";
-import { catalog, draft, layersForDocument, openInEditor, starterCharacter, toast } from "../state/store.ts";
+import { catalog, draft, layersForDocument, openInEditor, starterCharacter, toast, ui } from "../state/store.ts";
 import { readDroppedFile } from "../state/persistence.ts";
 import { composeFrame } from "../render/renderer.ts";
-import { t } from "../i18n/i18n.ts";
+import { LANGUAGES, language, setLanguage, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
+import { StartBackdrop } from "./StartBackdrop.tsx";
 
 interface Entry {
   file: string;
@@ -40,9 +41,28 @@ function CharacterPreview({ document, size = 112 }: { document: CharacterDocumen
   return <canvas ref={ref} width={size} height={size} class="px" style={`width:${size}px;height:${size}px`} />;
 }
 
+/** The unobtrusive corner switch. Remembers the choice; English until told. */
+function LanguagePicker() {
+  return (
+    <label class="lang" title={t("start.language")}>
+      <Icon.Globe size={13} />
+      <select
+        value={language.value}
+        onChange={(e) => setLanguage((e.target as HTMLSelectElement).value)}
+      >
+        {LANGUAGES.map((l) => (
+          <option value={l.id} key={l.id}>{l.label}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function StartScreen() {
   const cat = catalog.value;
   const [list, setList] = useState<Entry[] | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     void fetch("/api/characters")
@@ -50,6 +70,17 @@ export function StartScreen() {
       .then((b) => setList(b.characters.slice(0, 12)))
       .catch(() => setList([]));
   }, []);
+
+  // The crowd in the background is built once the saved characters are known,
+  // and not again: rebuilding it would make everyone jump back to the kerb.
+  const cast = useMemo(() => {
+    const docs: CharacterDocument[] = [];
+    for (const e of list ?? []) {
+      const parsed = parseCharacter(e.document);
+      if (parsed.ok) docs.push(parsed.doc);
+    }
+    return docs;
+  }, [list]);
 
   const openSaved = (e: Entry) => {
     const parsed = parseCharacter(e.document);
@@ -79,20 +110,37 @@ export function StartScreen() {
     input.click();
   };
 
+  const scrollDown = () => {
+    scroller.current?.scrollTo({ top: scroller.current.clientHeight, behavior: "smooth" });
+  };
+
   const items = cat?.items.filter((i) => i.available).length ?? 0;
   const d = draft.value;
+  const saved = list?.length ?? 0;
 
   return (
-    <div class="start">
+    <div
+      class="start"
+      ref={scroller}
+      onScroll={(e) => setScrolled((e.currentTarget as HTMLDivElement).scrollTop > 24)}
+    >
+      {list !== null && <StartBackdrop documents={cast} />}
+
       <div class="hero">
+        <LanguagePicker />
         <div class="logo"><Icon.Goat size={128} /></div>
         <h1>{t("app.name")}</h1>
         <p class="tagline">{t("start.tagline")}</p>
         <p class="pitch">{t("start.pitch", { n: items })}</p>
         <p class="stats mono">{t("start.stats", { items, bodies: BODY_TYPES.length, anims: ANIMATIONS.length })}</p>
+
+        <button class={`scroll-hint ${scrolled ? "gone" : ""}`} onClick={scrollDown}>
+          <span>{saved > 0 || d ? t("start.scrollRecent") : t("start.scrollStart")}</span>
+          <Icon.ChevronDown size={16} />
+        </button>
       </div>
 
-      <div class="recent">
+      <div class={`recent ${scrolled ? "in" : ""}`}>
         <div class="recent-head">
           <span class="heading">{t("start.recent")}</span>
           <button class="btn sm" onClick={pickFile}><Icon.Load size={13} />{t("load.fromFile")}</button>
@@ -132,6 +180,16 @@ export function StartScreen() {
 
           {list !== null && list.length === 0 && !d && <span class="empty dim">{t("start.empty")}</span>}
         </div>
+
+        <footer class="colophon">
+          <span>{t("footer.by")}</span>
+          <span class="dot">·</span>
+          <span>{t("footer.wibecoded")}</span>
+          <span class="dot">·</span>
+          <span>{t("footer.license")}</span>
+          <span class="dot">·</span>
+          <button class="linkish" onClick={() => (ui.view.value = "about")}>{t("footer.about")}</button>
+        </footer>
       </div>
     </div>
   );

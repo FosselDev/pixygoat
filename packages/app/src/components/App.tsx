@@ -3,6 +3,7 @@ import { catalog, catalogStatus, ui, undo, redo } from "../state/store.ts";
 import { readDroppedFile } from "../state/persistence.ts";
 import { t } from "../i18n/i18n.ts";
 import { StartScreen } from "./StartScreen.tsx";
+import { AboutPage } from "./AboutPage.tsx";
 import { TopBar } from "./TopBar.tsx";
 import { SlotStack } from "./SlotStack.tsx";
 import { CatalogPanel } from "./CatalogPanel.tsx";
@@ -113,6 +114,8 @@ export function App() {
   }
 
   const toast = ui.toast.value;
+  if (ui.view.value === "about") return <AboutPage />;
+
   if (ui.view.value === "start") {
     return (
       <>

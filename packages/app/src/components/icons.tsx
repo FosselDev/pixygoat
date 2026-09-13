@@ -161,6 +161,18 @@ export const Icon = {
       <path d="M5 3l5 5-5 5" />
     </Svg>
   ),
+  ChevronDown: (p: P) => (
+    <Svg {...p}>
+      <path d="M3 6l5 5 5-5" />
+    </Svg>
+  ),
+  Globe: (p: P) => (
+    <Svg {...p}>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M2.2 6.5h11.6M2.2 9.5h11.6" />
+      <path d="M8 2a9 9 0 0 0 0 12 9 9 0 0 0 0-12z" />
+    </Svg>
+  ),
   Trash: (p: P) => (
     <Svg {...p}>
       <path d="M3 4h10M6 4V2.5h4V4M4.5 4l.7 9h5.6l.7-9" />
