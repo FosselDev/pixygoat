@@ -174,6 +174,12 @@ Editor-asmdef, die ihn enthält (Grid-Slicing über
 **Danach von Hand:** nur noch die Zustände im Controller ergänzen, wenn das
 Spiel mehr braucht als Stehen, Gehen, Kampfhaltung und Angriff.
 
+**Unbeaufsichtigt aufrufen:** `Build` nimmt `replaceExisting` und
+`replaceDrawOrder`. Ohne Wert fragt der Befehl per Dialog nach — was aus einem
+Skript heraus heißt, dass der Lauf hinter einem Fenster wartet, das niemand
+sieht. Wer aus Code oder über eine Werkzeugbrücke baut, beantwortet beide
+vorher.
+
 **Nicht importierbar:** der Export "jede LPC-Ebene als eigenes Sheet". Er
 erzeugt Slot-Codes, für die der Rig keinen Renderer hat; der Importer meldet
 sie und überspringt die Sheets.
