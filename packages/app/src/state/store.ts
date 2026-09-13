@@ -133,7 +133,8 @@ export const ui = {
   search: signal(""),
   searchAllSlots: signal(false),
   onlyMatching: signal(true),
-  subcategory: signal<string>(""),
+  /** catalog sub-category filter, kept per slot so it never leaks into another */
+  subcategory: signal<Record<string, string>>({}),
   showUnlisted: signal(false),
   dialog: signal<null | "load" | "save" | "export" | "licenses">(null),
   toast: signal<{ text: string; kind: "info" | "warn" | "error" } | null>(null),
@@ -161,6 +162,11 @@ export function setAllowedLicenses(set: Set<string>) {
   }
 }
 export const licenseFilterActive = computed(() => allowedLicenses.value.size < LICENSE_KEYS.length);
+
+/** Sets the catalog sub-category filter of one slot ("" = all). */
+export function setSubcategory(slot: string, sub: string) {
+  ui.subcategory.value = { ...ui.subcategory.value, [slot]: sub };
+}
 
 let toastTimer: number | undefined;
 export function toast(text: string, kind: "info" | "warn" | "error" = "info", ms = 4000) {

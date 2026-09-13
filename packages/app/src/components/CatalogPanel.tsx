@@ -1,6 +1,6 @@
 import { useMemo } from "preact/hooks";
 import { availableVariants, coveredAnimations, itemAllowed, resolveItem, ANIMATIONS, type CatalogItem } from "@pixygoat/core";
-import { allowedLicenses, catalog, doc, itemsByType, licenseFilterActive, resolveContext, selectItem, subcategoryOf, ui } from "../state/store.ts";
+import { allowedLicenses, catalog, doc, itemsByType, licenseFilterActive, resolveContext, selectItem, setSubcategory, subcategoryOf, ui } from "../state/store.ts";
 import { slotLabel, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 import { ItemTile } from "./ItemTile.tsx";
@@ -15,7 +15,7 @@ export function CatalogPanel() {
   const search = ui.search.value.trim().toLowerCase();
   const allSlots = ui.searchAllSlots.value && search.length > 0;
   const onlyMatching = ui.onlyMatching.value;
-  const sub = ui.subcategory.value;
+  const subWanted = ui.subcategory.value[slot] ?? "";
   const ctx = resolveContext.value;
   const subOf = subcategoryOf.value;
   const bodyType = d.bodyType;
@@ -32,6 +32,11 @@ export function CatalogPanel() {
     }
     return [...set].sort();
   }, [baseItems, subOf, allSlots]);
+
+  // A chip that this slot does not offer must never hide everything: a filter
+  // the body type removed, or one left over from a slot without chips, falls
+  // back to "all" instead of leaving an invisible empty result.
+  const sub = subcats.includes(subWanted) ? subWanted : "";
 
   const info = useMemo(() => {
     const m = new Map<string, { matching: boolean; covered: number; variants: string[] }>();
@@ -114,9 +119,9 @@ export function CatalogPanel() {
 
       {subcats.length > 0 && (
         <div class="cat-chips">
-          <button class={`chip ${sub === "" ? "on" : ""}`} onClick={() => (ui.subcategory.value = "")}>{t("catalog.allSub")} · {baseItems.length}</button>
+          <button class={`chip ${sub === "" ? "on" : ""}`} onClick={() => setSubcategory(slot, "")}>{t("catalog.allSub")} · {baseItems.length}</button>
           {subcats.map((s) => (
-            <button class={`chip ${sub === s ? "on" : ""}`} onClick={() => (ui.subcategory.value = sub === s ? "" : s)}>{s.replace(/_/g, " ")}</button>
+            <button class={`chip ${sub === s ? "on" : ""}`} onClick={() => setSubcategory(slot, sub === s ? "" : s)}>{s.replace(/_/g, " ")}</button>
           ))}
           <div style="flex-grow:1" />
           <span class="dim" style="font-size:11px">{t("catalog.onCharacter")}</span>
