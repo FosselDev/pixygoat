@@ -82,8 +82,10 @@ wird dann nicht geschrieben.
 {
   "format": "pixygoat.static-bloom",
   "variant": "josua",
-  "pages": { "walk": { "columns": 9, "rows": 4, "cellSize": 64, "directions": ["up","left","down","right"] },
-             "slash128": { "columns": 6, "rows": 4, "cellSize": 128, "layout": "slash_128" } },
+  "pages": { "walk": { "columns": 9, "rows": 4, "cellSize": 64, "directions": ["up","left","down","right"],
+                       "cycle": [1,2,3,4,5,6,7,8], "frameMs": 100, "loop": true },
+             "slash128": { "columns": 6, "rows": 4, "cellSize": 128, "layout": "slash_128",
+                           "cycle": [0,1,2,3,4,5], "frameMs": 90, "loop": false } },
   "slots": { "0bas": [ { "file": "Sheets/char_a_walk_0bas_josua_v01.png", "parts": ["body:body:light", "head:heads_human_male:light"] } ] },
   "drawOrder": { "2clo": { "*": -1 } },
   "hides": {},
@@ -102,10 +104,14 @@ wird dann nicht geschrieben.
   lange ein Bild steht und ob die Animation sich wiederholt. Damit baut der
   Unity-Befehl die Clips, ohne etwas über LPC zu wissen.
 
-## Der Unity-Importer
+## Die Unity-Seite
 
-`Assets/_Project/Editor/Characters/PixyGoatManifestImporter.cs`, Menü
-**Tools → Static Bloom → Characters → Import PixyGoat Manifest…**
+Zwei Dateien in `Assets/_Project/Editor/Characters/`:
+`PixyGoatManifestImporter.cs` für Sheets, Seiten und Parts und
+`PixyGoatCharacterBuilder.cs` für Clips, Controller und Prefab. Der Builder
+ruft den Importer auf, **Build PixyGoat Character…** ist also der ganze Weg.
+
+Der Importer:
 
 1. Legt für jede Page in `manifest.json` ein Page-Asset an (oder findet es
    über den Page-Code) und setzt `Columns`/`Rows`.
