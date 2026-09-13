@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { catalog, catalogStatus, ui, undo, redo } from "../state/store.ts";
 import { readDroppedFile } from "../state/persistence.ts";
 import { t } from "../i18n/i18n.ts";
+import { StartScreen } from "./StartScreen.tsx";
 import { TopBar } from "./TopBar.tsx";
 import { SlotStack } from "./SlotStack.tsx";
 import { CatalogPanel } from "./CatalogPanel.tsx";
@@ -17,6 +18,7 @@ export function App() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (ui.view.value !== "editor") return;
       const target = e.target as HTMLElement | null;
       const typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT");
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
@@ -100,8 +102,8 @@ export function App() {
     const st = catalogStatus.value;
     return (
       <div class="loading">
-        <div class="goat"><Icon.Goat size={64} /></div>
-        <div class="heading">{t("app.name")}</div>
+        <div class="goat"><Icon.Goat size={112} /></div>
+        <h1>{t("app.name")}</h1>
         <div class="msg">
           {st.state === "error" ? t("app.error") : st.state === "building" ? t("app.building") : t("app.loading")}
           {st.message ? <div class="dim" style="margin-top:6px">{st.message}</div> : null}
@@ -110,8 +112,18 @@ export function App() {
     );
   }
 
-  const dialog = ui.dialog.value;
   const toast = ui.toast.value;
+  if (ui.view.value === "start") {
+    return (
+      <>
+        <StartScreen />
+        {toast && <div class={`toast ${toast.kind}`}>{toast.text}</div>}
+        {dragging && <div class="drop-hint">{t("load.drop")}</div>}
+      </>
+    );
+  }
+
+  const dialog = ui.dialog.value;
   return (
     <div class="app">
       <TopBar />

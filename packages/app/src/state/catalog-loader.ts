@@ -1,5 +1,5 @@
 import type { Catalog } from "@pixygoat/core";
-import { catalog, catalogStatus, replaceDocument, starterCharacter, doc } from "./store.ts";
+import { catalog, catalogStatus, draft } from "./store.ts";
 import { loadAutosave } from "./persistence.ts";
 
 /** Fetches the catalog, polling while the server is still building it. */
@@ -17,9 +17,9 @@ export async function loadCatalog(): Promise<void> {
       const cat = (await res.json()) as Catalog;
       catalog.value = cat;
       catalogStatus.value = { state: "ready" };
+      // Not opened, only offered: the start screen decides what to work on.
       const saved = loadAutosave();
-      if (saved) replaceDocument(saved, true);
-      else if (Object.keys(doc.value.slots).length === 0) replaceDocument(starterCharacter());
+      draft.value = saved && Object.keys(saved.slots).length > 0 ? saved : null;
       return;
     } catch (err) {
       catalogStatus.value = { state: "error", message: (err as Error).message };

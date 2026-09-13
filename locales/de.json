@@ -302,5 +302,17 @@
   "sbslot.4har": "Haare",
   "sbslot.5hat": "Kopfbedeckung",
   "sbslot.6tla": "Waffe",
-  "sbslot.7tlb": "Schild"
+  "sbslot.7tlb": "Schild",
+  "start.tagline": "Pixelfiguren bauen, prüfen, ausliefern.",
+  "start.pitch": "Stapel einen Charakter aus {n} handgezeichneten LPC-Teilen, sieh alle fünfzehn Animationen beim Bauen zu und exportier fertige Spritesheets oder Paper-Doll-Teile, die deine Engine zur Laufzeit tauscht.",
+  "start.stats": "{items} Teile · {bodies} Körpertypen · {anims} Animationen",
+  "start.recent": "Zuletzt bearbeitet",
+  "start.new": "Neuer Charakter",
+  "start.newHint": "Mit einem nackten Körper beginnen",
+  "start.draft": "Weitermachen",
+  "start.draftHint": "Ungespeichert",
+  "start.empty": "Noch nichts gespeichert. Fang mit einem neuen Charakter an.",
+  "start.back": "Zurück zum Startbildschirm",
+  "start.open": "Öffnen",
+  "start.modified": "{date}"
 }

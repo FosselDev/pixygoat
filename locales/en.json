@@ -302,5 +302,17 @@
   "sbslot.4har": "Hair",
   "sbslot.5hat": "Headwear",
   "sbslot.6tla": "Weapon",
-  "sbslot.7tlb": "Shield"
+  "sbslot.7tlb": "Shield",
+  "start.tagline": "Build pixel characters, check them, ship them.",
+  "start.pitch": "Stack a character from {n} hand-drawn LPC parts, watch all fifteen animations while you work, and export finished spritesheets or paper-doll parts your engine can swap at runtime.",
+  "start.stats": "{items} parts · {bodies} body types · {anims} animations",
+  "start.recent": "Recently edited",
+  "start.new": "New character",
+  "start.newHint": "Start from a plain body",
+  "start.draft": "Continue",
+  "start.draftHint": "Unsaved",
+  "start.empty": "Nothing saved yet. Start with a new character.",
+  "start.back": "Back to the start screen",
+  "start.open": "Open",
+  "start.modified": "{date}"
 }

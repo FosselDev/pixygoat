@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import { analyzeCharacter, type BodyType } from "@pixygoat/core";
-import { bodyTypes, canRedo, canUndo, dirty, doc, randomize, redo, replaceDocument, setBodyType, setName, slotStates, starterCharacter, toast, ui, undo } from "../state/store.ts";
+import { bodyTypes, canRedo, canUndo, dirty, doc, goToStart, randomize, redo, replaceDocument, setBodyType, setName, slotStates, starterCharacter, toast, ui, undo } from "../state/store.ts";
 import { LANGUAGES, language, setLanguage, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 
@@ -27,10 +27,10 @@ export function TopBar() {
 
   return (
     <div class="topbar">
-      <div class="brand">
+      <button class="brand" onClick={goToStart} title={t("start.back")}>
         <Icon.Goat />
         <span>{t("app.name")}</span>
-      </div>
+      </button>
       <div class="sep" />
       <div class="field">
         <label>{t("top.character")}</label>

@@ -72,6 +72,11 @@ export const Icon = {
       <path d="M8 7v5M5.5 9.5h5" />
     </Svg>
   ),
+  Plus: (p: P) => (
+    <Svg {...p}>
+      <path d="M8 3v10M3 8h10" />
+    </Svg>
+  ),
   Search: (p: P) => (
     <Svg {...p}>
       <circle cx="7" cy="7" r="4.5" />

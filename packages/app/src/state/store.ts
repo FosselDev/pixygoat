@@ -138,6 +138,8 @@ export const ui = {
   /** direction every catalog thumbnail is rendered in */
   catalogDirection: signal<Direction>("down"),
   showUnlisted: signal(false),
+  /** start screen or editor */
+  view: signal<"start" | "editor">("start"),
   dialog: signal<null | "load" | "save" | "export" | "licenses">(null),
   toast: signal<{ text: string; kind: "info" | "warn" | "error" } | null>(null),
   expandedGroups: signal<Record<string, boolean>>({}),
@@ -275,6 +277,45 @@ export function otherBodyTypes(item: CatalogItem): BodyType[] {
   if (!cat) return [];
   const ctx = resolveContext.value;
   return BODY_TYPES.filter((b) => b !== doc.value.bodyType && availableVariants(cat, item, b, ctx).length > 0);
+}
+
+/** Unsaved work from the last session, offered on the start screen. */
+export const draft = signal<CharacterDocument | null>(null);
+
+/**
+ * Draw layers of any document, not just the one being edited. The start
+ * screen previews every saved character with it.
+ */
+export function layersForDocument(d: CharacterDocument): DrawLayer[] {
+  const cat = catalog.value;
+  if (!cat) return [];
+  const items = itemsById.value;
+  const names: Record<string, string> = {};
+  for (const [type, sel] of Object.entries(d.slots)) {
+    const it = items.get(sel.item);
+    if (it) names[type] = replacementKey(it.name);
+  }
+  const ctx: ResolveContext = { selectedNames: names };
+  const out: DrawLayer[] = [];
+  for (const [type, sel] of Object.entries(d.slots)) {
+    if (sel.visible === false) continue;
+    const item = items.get(sel.item);
+    if (!item) continue;
+    out.push(...toDrawLayers(resolveItem(cat, item, d.bodyType, effectiveVariant(type, sel, d), ctx), item.id));
+  }
+  return sortLayers(out);
+}
+
+/** Leaves the start screen with a document to work on. */
+export function openInEditor(d: CharacterDocument, markDirty = false) {
+  replaceDocument(d, markDirty);
+  ui.view.value = "editor";
+}
+
+/** Back to the start screen, with what is open offered as the draft. */
+export function goToStart() {
+  if (Object.keys(doc.value.slots).length > 0) draft.value = doc.value;
+  ui.view.value = "start";
 }
 
 // ---------------------------------------------------------------------------

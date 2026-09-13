@@ -25,14 +25,18 @@ export async function registerCharacterRoutes(app: FastifyInstance, cfg: ServerC
         const s = await stat(join(cfg.charactersDir, f));
         let bodyType: string | undefined;
         let name = f.replace(/\.character\.json$/, "");
+        // The whole document rides along: the start screen renders a preview
+        // of every character, and one request beats one per card.
+        let document: unknown;
         try {
           const doc = JSON.parse(await readFile(join(cfg.charactersDir, f), "utf8"));
           bodyType = doc.bodyType;
           name = doc.name ?? name;
+          document = doc;
         } catch {
           /* ignore broken file in listing */
         }
-        return { file: f.replace(/\.character\.json$/, ""), name, bodyType, modifiedAt: s.mtime.toISOString(), size: s.size };
+        return { file: f.replace(/\.character\.json$/, ""), name, bodyType, modifiedAt: s.mtime.toISOString(), size: s.size, document };
       }),
     );
     list.sort((a, b) => b.modifiedAt.localeCompare(a.modifiedAt));

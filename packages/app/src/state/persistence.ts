@@ -1,6 +1,6 @@
 import { effect } from "@preact/signals";
 import { parseCharacter, type CharacterDocument } from "@pixygoat/core";
-import { doc, dirty, itemsById, replaceDocument, toast } from "./store.ts";
+import { doc, dirty, itemsById, replaceDocument, toast, ui } from "./store.ts";
 import { t } from "../i18n/i18n.ts";
 
 const AUTOSAVE_KEY = "pixygoat.autosave";
@@ -20,6 +20,9 @@ export function loadAutosave(): CharacterDocument | null {
 export function startAutosave() {
   effect(() => {
     const d = doc.value;
+    // The start screen offers the draft; writing there would overwrite it
+    // with whatever empty document the editor happens to hold.
+    if (ui.view.value !== "editor") return;
     try {
       localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(d));
     } catch {
