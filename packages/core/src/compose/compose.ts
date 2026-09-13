@@ -89,10 +89,12 @@ function directionIndex(d: Direction): number {
  * front. Layers without a sheet for the animation are skipped, which is how
  * missing coverage shows up (the part simply is not drawn).
  */
-export function buildFrameSet(layers: DrawLayer[], animation: string, cellSize = CELL_SIZE): FrameSet | undefined {
+export function buildFrameSet(layers: DrawLayer[], animation: string, cellSize = CELL_SIZE, layout?: string | null): FrameSet | undefined {
   const anim = getAnimation(animation);
   if (!anim) return undefined;
-  const customId = customLayoutFor(layers, animation);
+  // `layout` forces a custom layout (or, when null, the standard one) so that
+  // every slot sheet of an export page shares the same grid.
+  const customId = layout === undefined ? customLayoutFor(layers, animation) : layout ?? undefined;
   const custom = customId ? CUSTOM_ANIMATIONS[customId] : undefined;
 
   if (!custom) {

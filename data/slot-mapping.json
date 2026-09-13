@@ -1,0 +1,16 @@
+{
+  "$comment": "How LPC slots (type_name) are merged into the eight Static-Bloom / Mana-Seed paper-doll slots. Every layer drawn behind the body (zPos below the body layer) goes to `back` regardless of its type and is exported with draw order -1. Types not listed fall back to `default`.",
+  "back": "2clo",
+  "default": "1out",
+  "bodyZPos": 10,
+  "slots": {
+    "0bas": ["body", "head", "eyes", "eye_color", "eyebrows", "expression", "expression_crying", "nose", "ears", "ears_inner", "furry_ears", "furry_ears_skin", "horns", "wrinkes", "tail", "wings", "wings_dots", "wings_edge", "fins", "shadow", "wound_arm", "wound_brain", "wound_eye_left", "wound_eye_right", "wound_mouth", "wound_ribs", "prosthesis_hand", "prosthesis_leg", "wheelchair"],
+    "1out": ["clothes", "jacket", "jacket_collar", "jacket_pockets", "jacket_trim", "vest", "dress", "dress_sleeves", "dress_sleeves_trim", "dress_trim", "sleeves", "apron", "overalls", "legs", "socks", "shoes", "shoes_toe", "sash", "sash_obi", "sash_tie", "belt", "buckles", "cargo", "wrists", "gloves", "arms", "armour", "chainmail", "shoulders", "bracers", "bauldron", "neck", "necklace", "charm", "accessory", "backpack", "backpack_straps", "cape", "cape_trim", "quiver", "ammo", "ring", "bandages"],
+    "3fac": ["facial_eyes", "facial_left", "facial_left_trim", "facial_right", "facial_right_trim", "facial_mask", "earrings", "earring_left", "earring_right", "visor", "beard", "mustache"],
+    "4har": ["hair", "hairextl", "hairextr", "ponytail", "updo", "hairtie", "hairtie_rune"],
+    "5hat": ["hat", "hat_accessory", "hat_buckle", "hat_overlay", "hat_trim", "headcover", "headcover_rune", "bandana", "bandana_overlay"],
+    "6tla": ["weapon", "weapon_magic_crystal"],
+    "7tlb": ["shield", "shield_paint", "shield_pattern", "shield_trim"]
+  },
+  "slotOrder": ["0bas", "1out", "2clo", "3fac", "4har", "5hat", "6tla", "7tlb"]
+}

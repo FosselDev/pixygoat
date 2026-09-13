@@ -16,6 +16,16 @@ export interface ServerConfig {
   appDist: string;
   dev: boolean;
   forceRebuild: boolean;
+  exportDefaults: { staticBloomDir: string; flatDir: string };
+}
+
+/** Default Static-Bloom target: the Unity project next to this repo when present. */
+function defaultStaticBloomDir(): string {
+  const env = process.env.PIXYGOAT_UNITY_DIR;
+  if (env) return resolve(env);
+  const candidate = resolve(REPO_ROOT, "..", "..", "static-bloom", "staticbloom-poc", "Assets", "_Project", "Art", "Characters", "LPC");
+  if (existsSync(resolve(candidate, "..", ".."))) return candidate;
+  return resolve(REPO_ROOT, "exports", "static-bloom");
 }
 
 function arg(name: string): string | undefined {
@@ -38,5 +48,9 @@ export function loadConfig(): ServerConfig {
     appDist: resolve(REPO_ROOT, "packages", "app", "dist"),
     dev: process.argv.includes("--dev"),
     forceRebuild: process.argv.includes("--rebuild"),
+    exportDefaults: {
+      staticBloomDir: defaultStaticBloomDir(),
+      flatDir: resolve(process.env.PIXYGOAT_EXPORT_DIR ?? resolve(REPO_ROOT, "exports", "flat")),
+    },
   };
 }

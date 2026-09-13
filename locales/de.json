@@ -3,7 +3,6 @@
   "app.loading": "Katalog wird geladen…",
   "app.building": "Der Katalog wird aus dem Spritesheet-Ordner aufgebaut. Das passiert einmal und dauert etwa eine Minute.",
   "app.error": "Der Server ist nicht erreichbar. Starte ihn mit npm start.",
-
   "top.character": "Charakter",
   "top.base": "Basis",
   "top.undo": "Rückgängig",
@@ -15,14 +14,12 @@
   "top.export": "Exportieren",
   "top.language": "Sprache",
   "top.licenses": "Lizenzen",
-
   "body.male": "Männlich",
   "body.female": "Weiblich",
   "body.teen": "Jugendlich",
   "body.child": "Kind",
   "body.muscular": "Muskulös",
   "body.pregnant": "Schwanger",
-
   "stack.title": "Ebenen",
   "stack.used": "{n} belegt",
   "stack.empty": "leer",
@@ -35,7 +32,6 @@
   "stack.remove": "Entfernen",
   "stack.warnings": "{n} Ebenen fehlen in manchen Animationen",
   "stack.noWarnings": "Alle Ebenen decken alle Animationen ab",
-
   "group.body": "Körper",
   "group.hair": "Haare",
   "group.face": "Gesicht",
@@ -44,7 +40,6 @@
   "group.accessories": "Accessoires",
   "group.weapons": "Waffen",
   "group.other": "Sonstiges",
-
   "catalog.search": "Suchen (Name, Tag, Farbe)",
   "catalog.matching": "Passend",
   "catalog.all": "Alle",
@@ -58,13 +53,11 @@
   "catalog.unlisted": "Unbeschrieben",
   "catalog.everySlot": "alle Slots",
   "catalog.selectSlot": "Wähle links eine Ebene, um ihre Teile zu sehen.",
-
   "variant.title": "Farbe · {item}",
   "variant.followBody": "Körperfarbe folgen",
   "variant.followHair": "Haarfarbe folgen",
   "variant.following": "Folgt {slot}",
   "variant.single": "Eine Variante",
-
   "preview.title": "Vorschau",
   "preview.bgChecker": "Schachbrett",
   "preview.bgGreen": "Grün",
@@ -81,12 +74,10 @@
   "preview.missingIn": "{item} hat keine Sheets für {anims}",
   "preview.missingHint": "In diesen Animationen wird die Ebene nicht gezeichnet.",
   "preview.oversize": "Oversize-Layout {size} px",
-
   "dir.up": "Oben",
   "dir.left": "Links",
   "dir.down": "Unten",
   "dir.right": "Rechts",
-
   "anim.spellcast": "Zaubern",
   "anim.thrust": "Stoß",
   "anim.walk": "Gehen",
@@ -102,11 +93,9 @@
   "anim.combat_idle": "Kampfhaltung",
   "anim.backslash": "Rückhand",
   "anim.halfslash": "Halbhieb",
-
   "dialog.close": "Schließen",
   "dialog.cancel": "Abbrechen",
   "dialog.ok": "OK",
-
   "load.title": "Charakter laden",
   "load.fromServer": "Gespeichert in {dir}",
   "load.fromFile": "Eine .character.json-Datei öffnen",
@@ -117,20 +106,16 @@
   "load.error": "Datei konnte nicht gelesen werden: {error}",
   "load.dropped": "Einige Teile konnten nicht wiederhergestellt werden: {items}",
   "load.modified": "geändert {date}",
-
   "save.title": "Charakter speichern",
   "save.name": "Name",
   "save.toServer": "Speichern in {dir}",
   "save.download": "Datei herunterladen",
   "save.done": "Gespeichert als {file}",
   "save.overwrite": "Ein Charakter mit diesem Namen existiert. Überschreiben?",
-
   "new.confirm": "Aktuellen Charakter verwerfen und neu beginnen?",
   "body.changeDropped": "Entfernt, weil keine Sheets für {body} vorliegen: {items}",
-
   "toast.unsaved": "Ungespeicherte Änderungen",
   "toast.saved": "Gespeichert",
-
   "slot.body": "Körper",
   "slot.head": "Kopf",
   "slot.eyes": "Augen",
@@ -236,5 +221,36 @@
   "slot.shield": "Schild",
   "slot.shield_paint": "Schildfarbe",
   "slot.shield_pattern": "Schildmuster",
-  "slot.shield_trim": "Schildrand"
+  "slot.shield_trim": "Schildrand",
+  "export.target": "Ziel",
+  "export.result": "Ergebnis",
+  "export.layers": "Ebenen",
+  "export.animations": "Animationen",
+  "export.all": "alle",
+  "export.none": "keine",
+  "export.fileCount": "{n} Dateien",
+  "export.running": "Exportiere…",
+  "export.delivery": "Ablage",
+  "export.toFolder": "In Ordner schreiben",
+  "export.zip": "ZIP herunterladen",
+  "export.folder": "Ordner",
+  "export.default": "Standard",
+  "export.sb.title": "Static Bloom · Paper-Doll-Parts",
+  "export.sb.desc": "Ein PNG je Slot und Animation. LPC-Ebenen werden zu den acht Mana-Seed-Slots zusammengefasst; Ebenen hinter dem Körper landen in 2clo mit Zeichenreihenfolge -1. manifest.json trägt Raster und Zeichenreihenfolge für den Unity-Importer.",
+  "export.sb.merge": "Ebenen zu 8 Slots zusammenfassen",
+  "export.sb.perLayer": "Jede LPC-Ebene als eigenes Sheet (kein Zusammenfassen)",
+  "export.sb.variant": "Variantenname",
+  "export.flat.title": "Fertiger Charakter · flache Spritesheets",
+  "export.flat.desc": "Alle Ebenen zusammengesetzt. LPC-Standard-Sheets je Animation, ein Universal-Sheet oder Einzelframes. Für Prototypen, Tiled, Godot oder Engines ohne Paper Doll.",
+  "export.flat.animations": "Ein Sheet je Animation",
+  "export.flat.universal": "Ein Universal-Sheet (832 px breit)",
+  "export.flat.frames": "Einzelframes (PNG je Frame)",
+  "export.char.title": "Charakter-Datei",
+  "export.char.desc": "Nur die Auswahl, keine Pixel: {file}. Zum Laden, Teilen und Versionieren.",
+  "export.char.hint": "Dieselbe Datei, die der Speichern-Dialog schreibt, als Download im Browser.",
+  "export.missing": "{slot} hat keinen Inhalt in {pages}",
+  "export.missingHint": "Diese Zellen bleiben leer; der Rig blendet den Slot dort aus.",
+  "export.doneFolder": "{n} Dateien geschrieben nach {dir}",
+  "export.doneZip": "{n} Dateien gepackt, Download gestartet",
+  "export.failed": "Export fehlgeschlagen: {error}"
 }

@@ -3,7 +3,6 @@
   "app.loading": "Loading catalog…",
   "app.building": "Building the catalog from the spritesheet folder. This happens once and takes about a minute.",
   "app.error": "The server is not reachable. Start it with npm start.",
-
   "top.character": "Character",
   "top.base": "Base",
   "top.undo": "Undo",
@@ -15,14 +14,12 @@
   "top.export": "Export",
   "top.language": "Language",
   "top.licenses": "Licenses",
-
   "body.male": "Male",
   "body.female": "Female",
   "body.teen": "Teen",
   "body.child": "Child",
   "body.muscular": "Muscular",
   "body.pregnant": "Pregnant",
-
   "stack.title": "Layers",
   "stack.used": "{n} in use",
   "stack.empty": "empty",
@@ -35,7 +32,6 @@
   "stack.remove": "Remove",
   "stack.warnings": "{n} layers are missing in some animations",
   "stack.noWarnings": "All layers cover every animation",
-
   "group.body": "Body",
   "group.hair": "Hair",
   "group.face": "Face",
@@ -44,7 +40,6 @@
   "group.accessories": "Accessories",
   "group.weapons": "Weapons",
   "group.other": "Other",
-
   "catalog.search": "Search (name, tag, colour)",
   "catalog.matching": "Matching",
   "catalog.all": "All",
@@ -58,13 +53,11 @@
   "catalog.unlisted": "Unlisted",
   "catalog.everySlot": "every slot",
   "catalog.selectSlot": "Pick a layer on the left to browse its items.",
-
   "variant.title": "Colour · {item}",
   "variant.followBody": "Follow body colour",
   "variant.followHair": "Follow hair colour",
   "variant.following": "Following {slot}",
   "variant.single": "Single variant",
-
   "preview.title": "Preview",
   "preview.bgChecker": "Checkerboard",
   "preview.bgGreen": "Green",
@@ -81,12 +74,10 @@
   "preview.missingIn": "{item} has no sheets for {anims}",
   "preview.missingHint": "The layer is not drawn in these animations.",
   "preview.oversize": "Oversize layout {size} px",
-
   "dir.up": "Up",
   "dir.left": "Left",
   "dir.down": "Down",
   "dir.right": "Right",
-
   "anim.spellcast": "Spellcast",
   "anim.thrust": "Thrust",
   "anim.walk": "Walk",
@@ -102,11 +93,9 @@
   "anim.combat_idle": "Combat idle",
   "anim.backslash": "Backslash",
   "anim.halfslash": "Halfslash",
-
   "dialog.close": "Close",
   "dialog.cancel": "Cancel",
   "dialog.ok": "OK",
-
   "load.title": "Load character",
   "load.fromServer": "Saved in {dir}",
   "load.fromFile": "Open a .character.json file",
@@ -117,20 +106,16 @@
   "load.error": "Could not read the file: {error}",
   "load.dropped": "Some parts could not be restored: {items}",
   "load.modified": "modified {date}",
-
   "save.title": "Save character",
   "save.name": "Name",
   "save.toServer": "Save to {dir}",
   "save.download": "Download file",
   "save.done": "Saved as {file}",
   "save.overwrite": "A character with this name exists. Overwrite?",
-
   "new.confirm": "Discard the current character and start a new one?",
   "body.changeDropped": "Removed because they have no sheets for {body}: {items}",
-
   "toast.unsaved": "Unsaved changes",
   "toast.saved": "Saved",
-
   "slot.body": "Body",
   "slot.head": "Head",
   "slot.eyes": "Eyes",
@@ -236,5 +221,36 @@
   "slot.shield": "Shield",
   "slot.shield_paint": "Shield paint",
   "slot.shield_pattern": "Shield pattern",
-  "slot.shield_trim": "Shield trim"
+  "slot.shield_trim": "Shield trim",
+  "export.target": "Target",
+  "export.result": "Result",
+  "export.layers": "layers",
+  "export.animations": "Animations",
+  "export.all": "all",
+  "export.none": "none",
+  "export.fileCount": "{n} files",
+  "export.running": "Exporting…",
+  "export.delivery": "Delivery",
+  "export.toFolder": "Write to folder",
+  "export.zip": "Download ZIP",
+  "export.folder": "Folder",
+  "export.default": "Default",
+  "export.sb.title": "Static Bloom · paper-doll parts",
+  "export.sb.desc": "One PNG per slot and animation. LPC layers are merged into the eight Mana-Seed slots; layers behind the body go to 2clo with draw order -1. manifest.json carries the page grids and draw orders for the Unity importer.",
+  "export.sb.merge": "Merge layers into 8 slots",
+  "export.sb.perLayer": "Every LPC layer as its own sheet (no merging)",
+  "export.sb.variant": "Variant name",
+  "export.flat.title": "Finished character · flat spritesheets",
+  "export.flat.desc": "All layers composited. LPC standard sheets per animation, one universal sheet, or single frames. For prototypes, Tiled, Godot or engines without a paper doll.",
+  "export.flat.animations": "One sheet per animation",
+  "export.flat.universal": "One universal sheet (832 px wide)",
+  "export.flat.frames": "Single frames (PNG per frame)",
+  "export.char.title": "Character file",
+  "export.char.desc": "Only the selection, no pixels: {file}. For loading, sharing and versioning.",
+  "export.char.hint": "The same file the Save dialog writes, downloaded to your browser.",
+  "export.missing": "{slot} has no content in {pages}",
+  "export.missingHint": "Those cells stay empty; the rig hides the slot there.",
+  "export.doneFolder": "{n} files written to {dir}",
+  "export.doneZip": "{n} files packed, download started",
+  "export.failed": "Export failed: {error}"
 }

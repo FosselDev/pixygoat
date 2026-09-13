@@ -48,6 +48,7 @@ app.get("/api/health", async () => ({
   uptimeMs: Date.now() - started,
   spritesRoot: cfg.spritesRoot,
   charactersDir: cfg.charactersDir,
+  exportDefaults: cfg.exportDefaults,
   catalog: catalogStatus,
 }));
 
