@@ -1,0 +1,32 @@
+{
+  "name": "Epaulets",
+  "type_name": "shoulders",
+  "layer_1": {
+    "zPos": 60,
+    "male": "shoulders/epaulets/male/"
+  },
+  "variants": [
+    "bronze",
+    "gold",
+    "silver",
+    "red",
+    "blue",
+    "teal",
+    "yellow"
+  ],
+  "credits": [
+    {
+      "file": "shoulders/epaulets",
+      "notes": "",
+      "authors": [
+        "bluecarrot16"
+      ],
+      "licenses": [
+        "CC-BY-SA 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/lpc-pirates"
+      ]
+    }
+  ]
+}

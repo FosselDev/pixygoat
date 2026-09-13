@@ -1,0 +1,40 @@
+{
+  "$comment": "Slot (type_name) grouping and order for the layer stack. Type names not listed here land in the 'other' group. `primary` slots are always shown; the rest appear under 'more' in the group until they hold an item.",
+  "groups": [
+    {
+      "id": "body",
+      "primary": ["body", "head", "eyes", "eye_color", "expression", "nose", "ears"],
+      "more": ["eyebrows", "ears_inner", "furry_ears", "furry_ears_skin", "horns", "expression_crying", "wrinkes", "tail", "wings", "wings_dots", "wings_edge", "fins", "shadow", "wound_arm", "wound_brain", "wound_eye_left", "wound_eye_right", "wound_mouth", "wound_ribs", "prosthesis_hand", "prosthesis_leg", "wheelchair"]
+    },
+    {
+      "id": "hair",
+      "primary": ["hair", "beard", "mustache"],
+      "more": ["hairextl", "hairextr", "ponytail", "updo", "hairtie", "hairtie_rune"]
+    },
+    {
+      "id": "face",
+      "primary": ["facial_eyes", "earrings"],
+      "more": ["facial_left", "facial_left_trim", "facial_right", "facial_right_trim", "facial_mask", "earring_left", "earring_right", "visor", "bandages"]
+    },
+    {
+      "id": "clothing",
+      "primary": ["clothes", "legs", "shoes"],
+      "more": ["jacket", "jacket_collar", "jacket_pockets", "jacket_trim", "vest", "dress", "dress_sleeves", "dress_sleeves_trim", "dress_trim", "sleeves", "apron", "overalls", "socks", "shoes_toe", "sash", "sash_obi", "sash_tie", "belt", "buckles", "cargo", "wrists", "gloves", "arms"]
+    },
+    {
+      "id": "armour",
+      "primary": ["armour", "hat"],
+      "more": ["chainmail", "shoulders", "bracers", "bauldron", "hat_accessory", "hat_buckle", "hat_overlay", "hat_trim", "headcover", "headcover_rune", "bandana", "bandana_overlay"]
+    },
+    {
+      "id": "accessories",
+      "primary": ["neck", "cape", "backpack"],
+      "more": ["necklace", "charm", "accessory", "backpack_straps", "cape_trim", "quiver", "ammo", "ring"]
+    },
+    {
+      "id": "weapons",
+      "primary": ["weapon", "shield"],
+      "more": ["weapon_magic_crystal", "shield_paint", "shield_pattern", "shield_trim"]
+    }
+  ]
+}

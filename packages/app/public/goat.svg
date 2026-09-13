@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <rect width="16" height="16" fill="#131316"/>
+  <!-- horns -->
+  <rect x="2" y="1" width="1" height="1" fill="#c9c2b4"/>
+  <rect x="3" y="2" width="1" height="1" fill="#c9c2b4"/>
+  <rect x="12" y="1" width="1" height="1" fill="#c9c2b4"/>
+  <rect x="11" y="2" width="1" height="1" fill="#c9c2b4"/>
+  <!-- ears -->
+  <rect x="1" y="5" width="2" height="2" fill="#e8a33c"/>
+  <rect x="12" y="5" width="2" height="2" fill="#e8a33c"/>
+  <!-- head -->
+  <rect x="4" y="3" width="7" height="7" fill="#e8a33c"/>
+  <rect x="5" y="10" width="5" height="3" fill="#e8a33c"/>
+  <!-- eyes -->
+  <rect x="5" y="5" width="1" height="2" fill="#1a1408"/>
+  <rect x="9" y="5" width="1" height="2" fill="#1a1408"/>
+  <!-- muzzle -->
+  <rect x="6" y="11" width="3" height="1" fill="#a86f1e"/>
+  <rect x="7" y="12" width="1" height="1" fill="#1a1408"/>
+  <!-- beard -->
+  <rect x="7" y="13" width="1" height="2" fill="#c9c2b4"/>
+</svg>

@@ -1,0 +1,31 @@
+{
+  "name": "pixygoat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PixyGoat - a local, browser-based LPC pixel-art character designer with paper-doll export.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "npm run build --workspace @pixygoat/app && tsx packages/server/src/main.ts",
+    "dev": "concurrently -n server,app -c blue,magenta \"tsx watch packages/server/src/main.ts --dev\" \"npm run dev --workspace @pixygoat/app\"",
+    "build": "npm run build --workspace @pixygoat/app",
+    "catalog": "tsx packages/server/src/cli/build-catalog.ts",
+    "typecheck": "tsc -b packages/core packages/server packages/app",
+    "test": "vitest run",
+    "licenses": "license-checker --production --summary && license-checker --production --markdown > THIRD_PARTY_LICENSES.md"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "concurrently": "^9.1.0",
+    "license-checker": "^25.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

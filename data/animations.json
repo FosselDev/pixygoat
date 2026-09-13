@@ -1,0 +1,23 @@
+{
+  "$comment": "Standard LPC animations. Every sheet is `columns` x `rows` cells; rows are up, left, down, right (a 1-row sheet has no direction). `cycle` lists the column indices played in the preview, `frameMs` is the preview frame time. `aliases` are the names sheet definitions use for the same animation. `universalRow` is the row offset on the classic universal sheet (832 px wide).",
+  "cellSize": 64,
+  "directions": ["up", "left", "down", "right"],
+  "animations": [
+    { "id": "spellcast",   "label": "Spellcast",     "columns": 7,  "rows": 4, "cycle": [0, 1, 2, 3, 4, 5, 6], "frameMs": 110, "universalRow": 0,  "aliases": [] },
+    { "id": "thrust",      "label": "Thrust",        "columns": 8,  "rows": 4, "cycle": [0, 1, 2, 3, 4, 5, 6, 7], "frameMs": 90, "universalRow": 4,  "aliases": ["watering"] },
+    { "id": "walk",        "label": "Walk",          "columns": 9,  "rows": 4, "cycle": [1, 2, 3, 4, 5, 6, 7, 8], "frameMs": 100, "universalRow": 8,  "aliases": [] },
+    { "id": "slash",       "label": "Slash",         "columns": 6,  "rows": 4, "cycle": [0, 1, 2, 3, 4, 5], "frameMs": 90, "universalRow": 12, "aliases": [] },
+    { "id": "shoot",       "label": "Shoot",         "columns": 13, "rows": 4, "cycle": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "frameMs": 80, "universalRow": 16, "aliases": [] },
+    { "id": "hurt",        "label": "Hurt",          "columns": 6,  "rows": 1, "cycle": [0, 1, 2, 3, 4, 5], "frameMs": 120, "universalRow": 20, "aliases": [] },
+    { "id": "climb",       "label": "Climb",         "columns": 6,  "rows": 1, "cycle": [0, 1, 2, 3, 4, 5], "frameMs": 120, "universalRow": 21, "aliases": [] },
+    { "id": "idle",        "label": "Idle",          "columns": 2,  "rows": 4, "cycle": [0, 0, 1], "frameMs": 400, "universalRow": 22, "aliases": [] },
+    { "id": "jump",        "label": "Jump",          "columns": 5,  "rows": 4, "cycle": [0, 1, 2, 3, 4, 1], "frameMs": 110, "universalRow": 26, "aliases": [] },
+    { "id": "sit",         "label": "Sit",           "columns": 3,  "rows": 4, "cycle": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2], "frameMs": 120, "universalRow": 30, "aliases": [] },
+    { "id": "emote",       "label": "Emote",         "columns": 3,  "rows": 4, "cycle": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2], "frameMs": 120, "universalRow": 34, "aliases": ["emotes"] },
+    { "id": "run",         "label": "Run",           "columns": 8,  "rows": 4, "cycle": [0, 1, 2, 3, 4, 5, 6, 7], "frameMs": 75, "universalRow": 38, "aliases": [] },
+    { "id": "combat_idle", "label": "Combat idle",   "columns": 2,  "rows": 4, "cycle": [0, 0, 1], "frameMs": 400, "universalRow": 42, "aliases": ["combat"] },
+    { "id": "backslash",   "label": "1h backslash",  "columns": 13, "rows": 4, "cycle": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "frameMs": 80, "universalRow": 46, "aliases": ["1h_slash", "1h_backslash", "1h/backslash"] },
+    { "id": "halfslash",   "label": "1h halfslash",  "columns": 7,  "rows": 4, "cycle": [0, 1, 2, 3, 4, 5, 6], "frameMs": 90, "universalRow": 50, "aliases": ["1h_halfslash"] }
+  ],
+  "defaultAnimations": ["spellcast", "thrust", "walk", "slash", "shoot", "hurt"]
+}

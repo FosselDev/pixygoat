@@ -1,0 +1,2030 @@
+{
+  "wheelchair": {
+    "frameSize": 64,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "sit",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "sit",
+          "direction": "up",
+          "frame": 2
+        }
+      ],
+      [
+        {
+          "animation": "sit",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "sit",
+          "direction": "left",
+          "frame": 2
+        }
+      ],
+      [
+        {
+          "animation": "sit",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "sit",
+          "direction": "down",
+          "frame": 2
+        }
+      ],
+      [
+        {
+          "animation": "sit",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "sit",
+          "direction": "right",
+          "frame": 2
+        }
+      ]
+    ]
+  },
+  "tool_rod": {
+    "frameSize": 128,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 3
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 3
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 3
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 3
+        }
+      ]
+    ]
+  },
+  "slash_128": {
+    "frameSize": 128,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 5
+        }
+      ]
+    ]
+  },
+  "backslash_128": {
+    "frameSize": 128,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 6
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 7
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 8
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 9
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 10
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 11
+        },
+        {
+          "animation": "backslash",
+          "direction": "up",
+          "frame": 12
+        }
+      ],
+      [
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 6
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 7
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 8
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 9
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 10
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 11
+        },
+        {
+          "animation": "backslash",
+          "direction": "left",
+          "frame": 12
+        }
+      ],
+      [
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 6
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 7
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 8
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 9
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 10
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 11
+        },
+        {
+          "animation": "backslash",
+          "direction": "down",
+          "frame": 12
+        }
+      ],
+      [
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 6
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 7
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 8
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 9
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 10
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 11
+        },
+        {
+          "animation": "backslash",
+          "direction": "right",
+          "frame": 12
+        }
+      ]
+    ]
+  },
+  "halfslash_128": {
+    "frameSize": 128,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "halfslash",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "halfslash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "halfslash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "halfslash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "halfslash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "halfslash",
+          "direction": "up",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "halfslash",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "halfslash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "halfslash",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "halfslash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "halfslash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "halfslash",
+          "direction": "left",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "halfslash",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "halfslash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "halfslash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "halfslash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "halfslash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "halfslash",
+          "direction": "down",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "halfslash",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "halfslash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "halfslash",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "halfslash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "halfslash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "halfslash",
+          "direction": "right",
+          "frame": 5
+        }
+      ]
+    ]
+  },
+  "thrust_oversize": {
+    "frameSize": 192,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 7
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 7
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 7
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 7
+        }
+      ]
+    ]
+  },
+  "slash_oversize": {
+    "frameSize": 192,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 5
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 5
+        }
+      ]
+    ]
+  },
+  "walk_128": {
+    "frameSize": 128,
+    "skipFirstFrameInPreview": true,
+    "frames": [
+      [
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 6
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 7
+        },
+        {
+          "animation": "walk",
+          "direction": "up",
+          "frame": 8
+        }
+      ],
+      [
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 6
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 7
+        },
+        {
+          "animation": "walk",
+          "direction": "left",
+          "frame": 8
+        }
+      ],
+      [
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 6
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 7
+        },
+        {
+          "animation": "walk",
+          "direction": "down",
+          "frame": 8
+        }
+      ],
+      [
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 6
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 7
+        },
+        {
+          "animation": "walk",
+          "direction": "right",
+          "frame": 8
+        }
+      ]
+    ]
+  },
+  "thrust_128": {
+    "frameSize": 128,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "up",
+          "frame": 7
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "left",
+          "frame": 7
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "down",
+          "frame": 7
+        }
+      ],
+      [
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 6
+        },
+        {
+          "animation": "thrust",
+          "direction": "right",
+          "frame": 7
+        }
+      ]
+    ]
+  },
+  "slash_reverse_oversize": {
+    "frameSize": 192,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 0
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 0
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 0
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 0
+        }
+      ]
+    ]
+  },
+  "whip_oversize": {
+    "frameSize": 192,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 2
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 1
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 2
+        }
+      ]
+    ]
+  },
+  "tool_whip": {
+    "frameSize": 192,
+    "skipFirstFrameInPreview": false,
+    "frames": [
+      [
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "up",
+          "frame": 1
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "left",
+          "frame": 2
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 2
+        },
+        {
+          "animation": "slash",
+          "direction": "down",
+          "frame": 1
+        }
+      ],
+      [
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 0
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 1
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 5
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 4
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 3
+        },
+        {
+          "animation": "slash",
+          "direction": "right",
+          "frame": 2
+        }
+      ]
+    ]
+  }
+}

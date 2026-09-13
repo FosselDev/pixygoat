@@ -1,0 +1,32 @@
+{
+  "name": "Lace Cuffs",
+  "type_name": "wrists",
+  "layer_1": {
+    "zPos": 70,
+    "male": "wrists/lace/male/"
+  },
+  "variants": [
+    "bronze",
+    "gold",
+    "silver",
+    "red",
+    "blue",
+    "teal",
+    "yellow"
+  ],
+  "credits": [
+    {
+      "file": "wrists/lace",
+      "notes": "",
+      "authors": [
+        "bluecarrot16"
+      ],
+      "licenses": [
+        "OGA-BY 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/lpc-pirates"
+      ]
+    }
+  ]
+}

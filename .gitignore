@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.cache/
+spritesheets/
+content_tree.txt
+characters/*
+!characters/.gitkeep
+*.log
+.DS_Store

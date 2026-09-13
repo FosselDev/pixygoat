@@ -1,0 +1,28 @@
+{
+  "name": "Trench coat",
+  "type_name": "jacket",
+  "layer_1": {
+    "zPos": 55,
+    "male": "torso/jacket/trench/male/"
+  },
+  "variants": [
+    "dark gray",
+    "gray"
+  ],
+  "credits": [
+    {
+      "file": "torso/jacket/trench",
+      "notes": "",
+      "authors": [
+        "bluecarrot16"
+      ],
+      "licenses": [
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/lpc-gentleman"
+      ]
+    }
+  ]
+}
