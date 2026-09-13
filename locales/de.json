@@ -293,5 +293,6 @@
   "stack.warnings.one": "1 Ebene fehlt in manchen Animationen",
   "stack.warnings.other": "{n} Ebenen fehlen in manchen Animationen",
   "preview.wrongBody": "{item} ist nicht für {body} gezeichnet, nur für {bodies}",
-  "preview.wrongBodyHint": "Wähle oben eine andere Basis, oder ein Teil, das für {body} gezeichnet ist."
+  "preview.wrongBodyHint": "Wähle oben eine andere Basis, oder ein Teil, das für {body} gezeichnet ist.",
+  "catalog.direction": "Blickrichtung"
 }

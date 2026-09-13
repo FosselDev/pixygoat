@@ -5,16 +5,18 @@ import {
   buildFrameSet,
   coveredAnimations,
   customLayoutFor,
+  DIRECTIONS,
   LICENSES,
   resolveItem,
   sortLayers,
   toDrawLayers,
   type CatalogItem,
+  type Direction,
   type DrawLayer,
   type FrameSet,
   type PreviewHint,
 } from "@pixygoat/core";
-import { catalog, doc, drawLayers, effectiveVariant, resolveContext, slotStates } from "../state/store.ts";
+import { catalog, doc, drawLayers, effectiveVariant, resolveContext, slotStates, ui } from "../state/store.ts";
 import { composeFrame } from "../render/renderer.ts";
 import { variantColor } from "../render/colors.ts";
 import { language, t } from "../i18n/i18n.ts";
@@ -97,16 +99,18 @@ function previewAnimation(layers: DrawLayer[], covered: Set<string>): string {
 }
 
 /**
- * Cell of the sheet to show. The definitions carry the generator's preview
- * hint as sheet pixels - column and row in 64 px units plus a pixel nudge -
- * so dividing by the real cell size maps it onto whatever grid the animation
- * uses, 64, 128 or 192 px.
+ * Cell of the sheet to show. The column comes from the generator's preview
+ * hint, which is given as sheet pixels - column in 64 px units plus a pixel
+ * nudge - so dividing by the real cell size maps it onto whatever grid the
+ * animation uses, 64, 128 or 192 px. The row is the direction the whole
+ * catalog is set to, so every thumbnail faces the same way and hairstyles
+ * can be compared from behind. One-row sheets have no direction.
  */
-function previewCell(hint: PreviewHint, set: FrameSet): { row: number; column: number } {
+function previewCell(hint: PreviewHint, set: FrameSet, direction: Direction): { row: number; column: number } {
   const clamp = (v: number, max: number) => Math.max(0, Math.min(max, v));
   return {
     column: clamp(Math.floor((hint.column * 64 + hint.xOffset) / set.cellSize), set.columns - 1),
-    row: clamp(Math.floor((hint.row * 64 + hint.yOffset) / set.cellSize), set.rows - 1),
+    row: set.rows === 4 ? DIRECTIONS.indexOf(direction) : clamp(Math.floor((hint.row * 64 + hint.yOffset) / set.cellSize), set.rows - 1),
   };
 }
 
@@ -139,6 +143,7 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
   const bodyType = d.bodyType;
   const ctx = resolveContext.value;
   const baseLayers = drawLayers.value;
+  const direction = ui.catalogDirection.value;
   const slotVariant = d.slots[item.typeName];
   const selectedState = slotStates.value.find((s) => s.type === item.typeName);
 
@@ -165,7 +170,7 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
       const anim = previewAnimation(all, coveredAnimations(resolved));
       const geometry = buildFrameSet(all, anim);
       if (!geometry) return;
-      const { row, column } = previewCell(item.preview, geometry);
+      const { row, column } = previewCell(item.preview, geometry, direction);
       void composeFrame(all, anim, row, column).then((frame) => {
         if (cancelled || !frame) return;
         const c = canvas.getContext("2d")!;
@@ -187,7 +192,7 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
       pending.delete(canvas);
       observer?.unobserve(canvas);
     };
-  }, [item.id, variant, bodyType, baseLayers, matching]);
+  }, [item.id, variant, bodyType, baseLayers, matching, direction]);
 
   const covClass = covered === total ? "" : covered === 0 ? "none" : "part";
   const swatches = variants.slice(0, 5);

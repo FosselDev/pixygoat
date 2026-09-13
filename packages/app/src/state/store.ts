@@ -135,6 +135,8 @@ export const ui = {
   onlyMatching: signal(true),
   /** catalog sub-category filter, kept per slot so it never leaks into another */
   subcategory: signal<Record<string, string>>({}),
+  /** direction every catalog thumbnail is rendered in */
+  catalogDirection: signal<Direction>("down"),
   showUnlisted: signal(false),
   dialog: signal<null | "load" | "save" | "export" | "licenses">(null),
   toast: signal<{ text: string; kind: "info" | "warn" | "error" } | null>(null),

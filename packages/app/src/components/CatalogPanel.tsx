@@ -1,5 +1,5 @@
 import { useMemo } from "preact/hooks";
-import { availableVariants, coveredAnimations, itemAllowed, resolveItem, ANIMATIONS, type BodyType, type CatalogItem } from "@pixygoat/core";
+import { availableVariants, coveredAnimations, itemAllowed, resolveItem, ANIMATIONS, type BodyType, type CatalogItem, type Direction } from "@pixygoat/core";
 import { allowedLicenses, catalog, doc, itemsByType, licenseFilterActive, otherBodyTypes, resolveContext, selectItem, setSubcategory, subcategoryOf, ui } from "../state/store.ts";
 import { slotLabel, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
@@ -7,6 +7,14 @@ import { ItemTile } from "./ItemTile.tsx";
 import { VariantStrip } from "./VariantStrip.tsx";
 
 const TOTAL = ANIMATIONS.length;
+
+/** Arrows for the direction every thumbnail is rendered in. */
+const DIR_ICON: Record<Direction, preact.JSX.Element> = {
+  up: <Icon.Up size={13} />,
+  left: <Icon.Left size={13} />,
+  down: <Icon.Down size={13} />,
+  right: <Icon.Right size={13} />,
+};
 
 export function CatalogPanel() {
   const cat = catalog.value!;
@@ -119,16 +127,28 @@ export function CatalogPanel() {
         </div>
       </div>
 
-      {subcats.length > 0 && (
-        <div class="cat-chips">
-          <button class={`chip ${sub === "" ? "on" : ""}`} onClick={() => setSubcategory(slot, "")}>{t("catalog.allSub")} · {baseItems.length}</button>
-          {subcats.map((s) => (
-            <button class={`chip ${sub === s ? "on" : ""}`} onClick={() => setSubcategory(slot, sub === s ? "" : s)}>{s.replace(/_/g, " ")}</button>
-          ))}
-          <div style="flex-grow:1" />
-          <span class="dim" style="font-size:11px">{t("catalog.onCharacter")}</span>
+      <div class="cat-chips">
+        <div class="chips">
+          {subcats.length > 0 && (
+            <>
+              <button class={`chip ${sub === "" ? "on" : ""}`} onClick={() => setSubcategory(slot, "")}>{t("catalog.allSub")} · {baseItems.length}</button>
+              {subcats.map((s) => (
+                <button class={`chip ${sub === s ? "on" : ""}`} onClick={() => setSubcategory(slot, sub === s ? "" : s)}>{s.replace(/_/g, " ")}</button>
+              ))}
+            </>
+          )}
         </div>
-      )}
+        <div class="cat-tools" title={t("catalog.onCharacter")}>
+          <span class="dim" style="font-size:11px">{t("catalog.direction")}</span>
+          <div class="dir-picker">
+            {(["up", "left", "down", "right"] as Direction[]).map((dir) => (
+              <button class={ui.catalogDirection.value === dir ? "on" : ""} title={t(`dir.${dir}`)} onClick={() => (ui.catalogDirection.value = dir)}>
+                {DIR_ICON[dir]}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <div class="cat-grid-wrap">
         {items.length === 0 && !allSlots ? (
