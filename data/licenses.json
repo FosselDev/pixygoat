@@ -1,0 +1,114 @@
+{
+  "$comment": "Plain-language license summaries for the LPC assets. `strictness` orders licenses from most permissive to most demanding; an item listing several licenses may be used under any one of them, so the least strict one counts. This is orientation for non-lawyers, not legal advice.",
+  "licenses": {
+    "CC0": {
+      "name": "CC0 1.0 (Public Domain Dedication)",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "strictness": 0,
+      "commercial": true,
+      "modify": true,
+      "attribution": false,
+      "shareAlike": false,
+      "copyleft": false,
+      "summary": {
+        "en": "Do anything you like, no credit required.",
+        "de": "Alles erlaubt, keine Namensnennung nötig."
+      },
+      "obligations": {
+        "en": [],
+        "de": []
+      }
+    },
+    "OGA-BY": {
+      "name": "OpenGameArt Attribution (OGA-BY 3.0 / 4.0)",
+      "url": "https://static.opengameart.org/OGA-BY-3.0.txt",
+      "strictness": 1,
+      "commercial": true,
+      "modify": true,
+      "attribution": true,
+      "shareAlike": false,
+      "copyleft": false,
+      "summary": {
+        "en": "Like CC-BY, but without the clause that forbids DRM. Credit the authors and you are done.",
+        "de": "Wie CC-BY, aber ohne die Klausel gegen Kopierschutz. Autoren nennen, fertig."
+      },
+      "obligations": {
+        "en": ["Name the authors and the license (CREDITS.txt)."],
+        "de": ["Autoren und Lizenz nennen (CREDITS.txt)."]
+      }
+    },
+    "CC-BY": {
+      "name": "Creative Commons Attribution (CC-BY 3.0 / 4.0)",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "strictness": 2,
+      "commercial": true,
+      "modify": true,
+      "attribution": true,
+      "shareAlike": false,
+      "copyleft": false,
+      "summary": {
+        "en": "Use, change and sell freely as long as you credit the authors.",
+        "de": "Frei nutzen, verändern und verkaufen, solange die Autoren genannt werden."
+      },
+      "obligations": {
+        "en": ["Name the authors, the license and a link to the source (CREDITS.txt).", "Mark changes you made to the sprites.", "Do not add technical protection (DRM) that keeps others from using the art (CC-BY 3.0)."],
+        "de": ["Autoren, Lizenz und Quelle nennen (CREDITS.txt).", "Änderungen an den Sprites kenntlich machen.", "Keinen Kopierschutz (DRM) einsetzen, der andere an der Nutzung der Grafiken hindert (CC-BY 3.0)."]
+      }
+    },
+    "CC-BY-SA": {
+      "name": "Creative Commons Attribution-ShareAlike (CC-BY-SA 3.0 / 4.0)",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "strictness": 3,
+      "commercial": true,
+      "modify": true,
+      "attribution": true,
+      "shareAlike": true,
+      "copyleft": false,
+      "summary": {
+        "en": "Use, change and sell freely; credit the authors; changed sprites must stay CC-BY-SA. Your game code is not affected.",
+        "de": "Frei nutzen, verändern und verkaufen; Autoren nennen; veränderte Sprites bleiben CC-BY-SA. Dein Spielcode ist nicht betroffen."
+      },
+      "obligations": {
+        "en": ["Name the authors, the license and a link to the source (CREDITS.txt).", "If you change the sprites (recolour, edit, combine), publish the changed sprites under CC-BY-SA too.", "Composited sheets exported by PixyGoat count as changed sprites."],
+        "de": ["Autoren, Lizenz und Quelle nennen (CREDITS.txt).", "Veränderte Sprites (umgefärbt, bearbeitet, kombiniert) ebenfalls unter CC-BY-SA veröffentlichen.", "Von PixyGoat zusammengesetzte Sheets gelten als veränderte Sprites."]
+      }
+    },
+    "OGA-SA": {
+      "name": "Share-alike (listed as OGA-SA; treat like CC-BY-SA)",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "strictness": 3,
+      "commercial": true,
+      "modify": true,
+      "attribution": true,
+      "shareAlike": true,
+      "copyleft": false,
+      "summary": {
+        "en": "Credits list this as OGA-SA, which is not a published license name. Treat it like CC-BY-SA.",
+        "de": "In den Credits als OGA-SA geführt, das ist kein veröffentlichter Lizenzname. Behandle es wie CC-BY-SA."
+      },
+      "obligations": {
+        "en": ["Name the authors and the license.", "Publish changed sprites under the same terms."],
+        "de": ["Autoren und Lizenz nennen.", "Veränderte Sprites unter denselben Bedingungen veröffentlichen."]
+      }
+    },
+    "GPL": {
+      "name": "GNU General Public License (GPL 2.0 / 3.0)",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html",
+      "strictness": 4,
+      "commercial": true,
+      "modify": true,
+      "attribution": true,
+      "shareAlike": true,
+      "copyleft": true,
+      "summary": {
+        "en": "A software license applied to art. Selling is allowed, but the sprites (and arguably works built on them) must be distributed under the GPL with their sources. Prefer another license option of the same item when there is one.",
+        "de": "Eine Software-Lizenz auf Grafiken angewandt. Verkaufen ist erlaubt, aber die Sprites (und je nach Lesart darauf aufbauende Werke) müssen unter der GPL mit Quellen weitergegeben werden. Wenn das Teil auch eine andere Lizenz anbietet, nimm die."
+      },
+      "obligations": {
+        "en": ["Keep the copyright notices and the license text.", "Distribute the sprites and your changes to them under the GPL, with the source files.", "Whether the whole game must be GPL is disputed for art assets; ask before relying on GPL-only sprites in a closed-source game."],
+        "de": ["Copyright-Hinweise und Lizenztext beilegen.", "Sprites und deine Änderungen daran unter der GPL mit Quelldateien weitergeben.", "Ob das ganze Spiel GPL sein muss, ist bei Grafiken umstritten; vor GPL-only-Sprites in einem Closed-Source-Spiel Rat einholen."]
+      }
+    }
+  },
+  "aspects": ["commercial", "modify", "attribution", "shareAlike", "copyleft"]
+}

@@ -1,12 +1,13 @@
 import { useState } from "preact/hooks";
-import type { BodyType } from "@pixygoat/core";
-import { bodyTypes, canRedo, canUndo, dirty, doc, randomize, redo, replaceDocument, setBodyType, setName, starterCharacter, toast, ui, undo } from "../state/store.ts";
+import { analyzeCharacter, type BodyType } from "@pixygoat/core";
+import { bodyTypes, canRedo, canUndo, dirty, doc, randomize, redo, replaceDocument, setBodyType, setName, slotStates, starterCharacter, toast, ui, undo } from "../state/store.ts";
 import { LANGUAGES, language, setLanguage, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 
 export function TopBar() {
   const d = doc.value;
   const [nameDraft, setNameDraft] = useState<string | null>(null);
+  const effective = analyzeCharacter(slotStates.value.filter((s) => s.visible && s.item).map((s) => s.item!)).effective;
 
   const commitName = () => {
     if (nameDraft !== null && nameDraft.trim() && nameDraft !== d.name) setName(nameDraft.trim());
@@ -66,7 +67,10 @@ export function TopBar() {
       </div>
       <div class="sep" />
       <div class="actions">
-        <button class="btn" onClick={() => (ui.dialog.value = "licenses")}>{t("top.licenses")}</button>
+        <button class="btn" onClick={() => (ui.dialog.value = "licenses")}>
+          {t("top.licenses")}
+          {effective && <span class="mono" style="padding:1px 5px;border-radius:3px;background:var(--accent-bg);color:var(--accent)">{effective}</span>}
+        </button>
         <select value={language.value} onChange={(e) => setLanguage((e.target as HTMLSelectElement).value)} title={t("top.language")} style="width:auto">
           {LANGUAGES.map((l) => (
             <option value={l.id}>{l.label}</option>

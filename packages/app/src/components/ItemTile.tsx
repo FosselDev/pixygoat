@@ -14,6 +14,7 @@ interface Props {
   total: number;
   variants: string[];
   typeLabel?: string;
+  blocked?: boolean;
   onPick: () => void;
 }
 
@@ -45,7 +46,7 @@ function observe(el: Element, cb: () => void) {
   observer.observe(el);
 }
 
-export function ItemTile({ item, selected, matching, covered, total, variants, typeLabel, onPick }: Props) {
+export function ItemTile({ item, selected, matching, covered, total, variants, typeLabel, blocked, onPick }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const d = doc.value;
   const bodyType = d.bodyType;
@@ -98,7 +99,7 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
   const covClass = covered === total ? "" : covered === 0 ? "none" : "part";
   const swatches = variants.slice(0, 5);
   return (
-    <button class={`tile ${selected ? "on" : ""} ${matching ? "" : "na"}`} onClick={onPick} title={matching ? item.name : t("catalog.notForBody")}>
+    <button class={`tile ${selected ? "on" : ""} ${matching && !blocked ? "" : "na"}`} onClick={onPick} title={!matching ? t("catalog.notForBody") : blocked ? t("lic.blocked") : item.name}>
       <div class="thumb checker">
         {matching ? <canvas ref={ref} width={96} height={96} class="px" /> : <span class="dim">{t("catalog.notForBody")}</span>}
         {matching && <span class={`cov ${covClass}`}>{covered}/{total}</span>}
@@ -114,7 +115,7 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
           {variants.length === 1 && <span class="more">{variants[0]}</span>}
         </div>
       </div>
-      <span class="lic">{item.licenses.join(" ")}</span>
+      <span class="lic" style={blocked ? "color:var(--warn)" : ""}>{item.licenses.join(" ")}</span>
     </button>
   );
 }

@@ -1,6 +1,6 @@
 import { useMemo } from "preact/hooks";
-import { availableVariants, coveredAnimations, resolveItem, ANIMATIONS, type CatalogItem } from "@pixygoat/core";
-import { catalog, doc, itemsByType, resolveContext, selectItem, subcategoryOf, ui } from "../state/store.ts";
+import { availableVariants, coveredAnimations, itemAllowed, resolveItem, ANIMATIONS, type CatalogItem } from "@pixygoat/core";
+import { allowedLicenses, catalog, doc, itemsByType, licenseFilterActive, resolveContext, selectItem, subcategoryOf, ui } from "../state/store.ts";
 import { slotLabel, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 import { ItemTile } from "./ItemTile.tsx";
@@ -19,6 +19,7 @@ export function CatalogPanel() {
   const ctx = resolveContext.value;
   const subOf = subcategoryOf.value;
   const bodyType = d.bodyType;
+  const allowed = allowedLicenses.value;
 
   const baseItems = allSlots ? cat.items : (itemsByType.value.get(slot) ?? []);
 
@@ -84,6 +85,9 @@ export function CatalogPanel() {
           )}
         </div>
         <span class="mono dim">{t("catalog.count", { n: items.length })}</span>
+        {licenseFilterActive.value && (
+          <button class="chip warn" onClick={() => (ui.dialog.value = "licenses")}>{t("lic.filterActive", { n: allowed.size })}</button>
+        )}
         <div style="flex-grow:1" />
         <div class="search">
           <Icon.Search size={14} style="color:var(--muted)" />
@@ -145,6 +149,7 @@ export function CatalogPanel() {
                   total={TOTAL}
                   variants={inf.variants}
                   typeLabel={allSlots ? slotLabel(it.typeName) : undefined}
+                  blocked={!itemAllowed(it, allowed)}
                   onPick={() => onPick(it)}
                 />
               );

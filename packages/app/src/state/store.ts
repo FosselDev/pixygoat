@@ -10,6 +10,7 @@ import {
   toDrawLayers,
   ANIMATIONS,
   BODY_TYPES,
+  LICENSE_KEYS,
   type BodyType,
   type Catalog,
   type CatalogItem,
@@ -138,6 +139,28 @@ export const ui = {
   toast: signal<{ text: string; kind: "info" | "warn" | "error" } | null>(null),
   expandedGroups: signal<Record<string, boolean>>({}),
 };
+
+// Allowed licenses for the catalog filter (persisted). Items offering none of
+// them are greyed out, never hidden.
+function loadAllowed(): Set<string> {
+  try {
+    const raw = localStorage.getItem("pixygoat.licenses");
+    if (raw) return new Set(JSON.parse(raw) as string[]);
+  } catch {
+    /* ignore */
+  }
+  return new Set(LICENSE_KEYS);
+}
+export const allowedLicenses = signal<Set<string>>(loadAllowed());
+export function setAllowedLicenses(set: Set<string>) {
+  allowedLicenses.value = set;
+  try {
+    localStorage.setItem("pixygoat.licenses", JSON.stringify([...set]));
+  } catch {
+    /* ignore */
+  }
+}
+export const licenseFilterActive = computed(() => allowedLicenses.value.size < LICENSE_KEYS.length);
 
 let toastTimer: number | undefined;
 export function toast(text: string, kind: "info" | "warn" | "error" = "info", ms = 4000) {
