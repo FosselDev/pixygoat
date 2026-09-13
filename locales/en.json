@@ -359,5 +359,10 @@
   "about.disclaimer": "Written to be useful, not to be a legal opinion. When something is worth money or worth a lawsuit, read the licence text itself.",
   "about.made": "PixyGoat is made by Fossel",
   "about.wibecoded": "100% wibecoded by Claude Fable 5.1",
-  "about.creditsWish": "Not a condition of the licence, only a wish: if PixyGoat helped you make something, a mention of Fossel in your credits is appreciated."
+  "about.creditsWish": "Not a condition of the licence, only a wish: if PixyGoat helped you make something, a mention of Fossel in your credits is appreciated.",
+  "about.contact.title": "Getting in touch",
+  "about.contact.body": "For a commercial licence, a question about the tool, or a bug worth knowing about, write to the author. The address is behind the button rather than on the page, so that harvesters have to work for it.",
+  "about.contact.reveal": "Show the address",
+  "about.contact.copy": "Copy",
+  "about.contact.copied": "Copied"
 }

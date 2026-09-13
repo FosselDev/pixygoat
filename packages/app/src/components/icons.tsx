@@ -166,6 +166,12 @@ export const Icon = {
       <path d="M3 6l5 5 5-5" />
     </Svg>
   ),
+  Mail: (p: P) => (
+    <Svg {...p}>
+      <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" />
+      <path d="M2 4.5l6 4 6-4" />
+    </Svg>
+  ),
   Globe: (p: P) => (
     <Svg {...p}>
       <circle cx="8" cy="8" r="6" />

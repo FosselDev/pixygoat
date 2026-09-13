@@ -1,6 +1,8 @@
 import type { ComponentChildren } from "preact";
+import { useState } from "preact/hooks";
 import { LICENSES, LICENSE_KEYS } from "@pixygoat/core";
 import { ui } from "../state/store.ts";
+import { authorAddress } from "../contact.ts";
 import { language, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 
@@ -10,6 +12,38 @@ function Section({ title, children }: { title: string; children: ComponentChildr
       <h3>{title}</h3>
       {children}
     </section>
+  );
+}
+
+/**
+ * The address appears on request rather than on load. See contact.ts for what
+ * that buys and what it does not.
+ */
+function Contact() {
+  const [address, setAddress] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  if (address === null) {
+    return (
+      <button class="btn sm" onClick={() => setAddress(authorAddress())}>
+        <Icon.Mail size={13} />
+        {t("about.contact.reveal")}
+      </button>
+    );
+  }
+
+  const copy = () => {
+    void navigator.clipboard?.writeText(address).then(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <span class="contact">
+      <a href={`mailto:${address}`} rel="nofollow noopener">{address}</a>
+      <button class="btn sm" onClick={copy}>{copied ? t("about.contact.copied") : t("about.contact.copy")}</button>
+    </span>
   );
 }
 
@@ -64,6 +98,11 @@ export function AboutPage() {
           <p>{t("about.tool.body")}</p>
           <pre class="mono license-text">{t("about.licenseText")}</pre>
           <p class="wish">{t("about.creditsWish")}</p>
+        </Section>
+
+        <Section title={t("about.contact.title")}>
+          <p>{t("about.contact.body")}</p>
+          <p style="margin-top:10px"><Contact /></p>
         </Section>
 
         <Section title={t("about.art.title")}>
