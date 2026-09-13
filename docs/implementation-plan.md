@@ -70,7 +70,7 @@ Alle Abhängigkeiten sind MIT, Apache-2.0 oder BSD. Vor jedem Release läuft
 ### Ordnerstruktur
 
 ```
-character-designer/
+pixygoat/
 ├── spritesheets/              unverändert, wird nur gelesen
 ├── data/
 │   ├── definitions/           sheet_definitions vom Commit e7fa0aee616 (JSON, unverändert)
