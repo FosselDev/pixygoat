@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { planStaticBloom, sanitizeVariantName, slotForType } from "./static-bloom.ts";
+import { planUnityPaperDoll, sanitizeVariantName, slotForType } from "./unity-paperdoll.ts";
 import type { CatalogItem } from "../catalog/types.ts";
 import type { DrawLayer } from "../compose/compose.ts";
 
@@ -11,9 +11,9 @@ const layer = (id: string, zPos: number, sheets: Record<string, string>, custom?
   id, zPos, sheets, isMask: false, ...(custom ? { customAnimation: custom.animation, customSheet: custom.sheet } : {}),
 });
 
-describe("planStaticBloom", () => {
+describe("planUnityPaperDoll", () => {
   it("merges layers into slots, sends back layers to 2clo and builds pages", () => {
-    const plan = planStaticBloom(
+    const plan = planUnityPaperDoll(
       [
         { type: "body", item: item("body", "body"), variant: "light", layers: [layer("body#1", 10, { walk: "b/walk/light.png", slash: "b/slash/light.png" })] },
         { type: "hair", item: item("hair_long", "hair"), variant: "black", layers: [layer("hair_long#1", 120, { walk: "h/fg/walk/black.png" }), layer("hair_long#2", 5, { walk: "h/bg/walk/black.png" })] },

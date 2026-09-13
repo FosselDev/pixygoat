@@ -1,5 +1,5 @@
 {
-  "$comment": "How LPC slots (type_name) are merged into the eight Static-Bloom / Mana-Seed paper-doll slots. Every layer drawn behind the body (zPos below the body layer) goes to `back` regardless of its type and is exported with draw order -1. Types not listed fall back to `default`.",
+  "$comment": "How LPC slots (type_name) are merged into the eight Mana-Seed paper-doll slots. Every layer drawn behind the body (zPos below the body layer) goes to `back` regardless of its type and is exported with draw order -1. Types not listed fall back to `default`.",
   "back": "2clo",
   "default": "1out",
   "bodyZPos": 10,

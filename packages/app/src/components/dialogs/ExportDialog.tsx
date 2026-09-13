@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { ANIMATIONS, sanitizeVariantName, type StaticBloomPlan } from "@pixygoat/core";
+import { ANIMATIONS, sanitizeVariantName, type UnityPaperDollPlan } from "@pixygoat/core";
 import { Dialog } from "./Dialog.tsx";
 import { coverage, doc, slotStates, toast, ui, update } from "../../state/store.ts";
 import { downloadDocument } from "../../state/persistence.ts";
-import { currentPlan, runFlatExport, runStaticBloomExport, type Delivery } from "../../export/run-export.ts";
+import { currentPlan, runFlatExport, runUnityPaperDollExport, type Delivery } from "../../export/run-export.ts";
 import { t } from "../../i18n/i18n.ts";
 import { Icon } from "../icons.tsx";
 
@@ -14,7 +14,7 @@ function slotName(slot: string): string {
 }
 
 /** "Hieb (128 px)" instead of the page code "slash128". */
-function pageName(plan: StaticBloomPlan | null, code: string): string {
+function pageName(plan: UnityPaperDollPlan | null, code: string): string {
   const page = plan?.manifest.pages[code];
   if (!page) return code;
   const label = t(`anim.${page.animation}`);
@@ -23,16 +23,27 @@ function pageName(plan: StaticBloomPlan | null, code: string): string {
 
 const SB_SLOTS = ["0bas", "1out", "2clo", "3fac", "4har", "5hat", "6tla", "7tlb"];
 
-type Target = "static-bloom" | "flat" | "character";
+type Target = "unity" | "flat" | "character";
 type FlatMode = "animations" | "universal" | "frames";
 
-interface Defaults { staticBloomDir: string; flatDir: string }
+interface Defaults { unityDir: string; flatDir: string }
 
 const LS_KEY = "pixygoat.export";
 
-function loadPrefs(): Partial<{ target: Target; flatMode: FlatMode; delivery: Delivery; staticBloomDir: string; flatDir: string; perLayer: boolean }> {
+const TARGETS: Target[] = ["unity", "flat", "character"];
+
+/**
+ * Remembered dialog state. What comes back was written by an older version of
+ * this dialog as often as not, so the target is checked against the list
+ * rather than trusted: a name that no longer exists would leave no card
+ * selected and an export button that does nothing.
+ */
+function loadPrefs(): Partial<{ target: Target; flatMode: FlatMode; delivery: Delivery; unityDir: string; flatDir: string; perLayer: boolean }> {
   try {
-    return JSON.parse(localStorage.getItem(LS_KEY) ?? "{}");
+    const prefs = JSON.parse(localStorage.getItem(LS_KEY) ?? "{}") as Partial<{ target: Target }> & Record<string, unknown>;
+    if (prefs.target && !TARGETS.includes(prefs.target)) delete prefs.target;
+    if (typeof prefs["staticBloomDir"] === "string" && !prefs["unityDir"]) prefs["unityDir"] = prefs["staticBloomDir"];
+    return prefs;
   } catch {
     return {};
   }
@@ -41,12 +52,12 @@ function loadPrefs(): Partial<{ target: Target; flatMode: FlatMode; delivery: De
 export function ExportDialog() {
   const d = doc.value;
   const prefs = useMemo(loadPrefs, []);
-  const [target, setTarget] = useState<Target>(prefs.target ?? "static-bloom");
+  const [target, setTarget] = useState<Target>(prefs.target ?? "unity");
   const [flatMode, setFlatMode] = useState<FlatMode>(prefs.flatMode ?? "animations");
   const [delivery, setDelivery] = useState<Delivery>(prefs.delivery ?? "folder");
   const [perLayer, setPerLayer] = useState(prefs.perLayer ?? false);
-  const [variantName, setVariantName] = useState(d.export?.staticBloom?.variantName ?? sanitizeVariantName(d.name));
-  const [sbDir, setSbDir] = useState(d.export?.staticBloom?.targetDir ?? prefs.staticBloomDir ?? "");
+  const [variantName, setVariantName] = useState(d.export?.unity?.variantName ?? sanitizeVariantName(d.name));
+  const [unityDir, setUnityDir] = useState(d.export?.unity?.targetDir ?? prefs.unityDir ?? "");
   const [flatDir, setFlatDir] = useState(d.export?.flat?.targetDir ?? prefs.flatDir ?? "");
   const [animations, setAnimations] = useState<string[]>(ANIMATIONS.map((a) => a.id));
   const [busy, setBusy] = useState<{ done: number; total: number; label: string } | null>(null);
@@ -57,7 +68,7 @@ export function ExportDialog() {
       const h = (await r.json()) as { exportDefaults?: Defaults };
       if (h.exportDefaults) {
         setDefaults(h.exportDefaults);
-        setSbDir((v) => v || h.exportDefaults!.staticBloomDir);
+        setUnityDir((v) => v || h.exportDefaults!.unityDir);
         setFlatDir((v) => v || h.exportDefaults!.flatDir);
       }
     });
@@ -65,7 +76,7 @@ export function ExportDialog() {
 
   const savePrefs = () => {
     try {
-      localStorage.setItem(LS_KEY, JSON.stringify({ target, flatMode, delivery, staticBloomDir: sbDir, flatDir, perLayer }));
+      localStorage.setItem(LS_KEY, JSON.stringify({ target, flatMode, delivery, unityDir, flatDir, perLayer }));
     } catch {
       /* ignore */
     }
@@ -73,7 +84,7 @@ export function ExportDialog() {
 
   const missing = coverage.value;
   const states = slotStates.value.filter((s) => s.visible && s.item);
-  const plan = useMemo(() => (target === "static-bloom" ? currentPlan(variantName, perLayer, animations) : null), [target, variantName, perLayer, animations, states]);
+  const plan = useMemo(() => (target === "unity" ? currentPlan(variantName, perLayer, animations) : null), [target, variantName, perLayer, animations, states]);
 
   const toggleAnim = (id: string) => setAnimations((a) => (a.includes(id) ? a.filter((x) => x !== id) : [...a, id]));
 
@@ -89,8 +100,8 @@ export function ExportDialog() {
     const progress = (done: number, total: number, label: string) => setBusy({ done, total, label });
     try {
       const result =
-        target === "static-bloom"
-          ? await runStaticBloomExport({ variantName, perLayer, animations, delivery, targetDir: sbDir }, progress)
+        target === "unity"
+          ? await runUnityPaperDollExport({ variantName, perLayer, animations, delivery, targetDir: unityDir }, progress)
           : await runFlatExport({ mode: flatMode, animations, delivery, targetDir: flatDir }, progress);
       if (!result.ok) {
         toast(t("export.failed", { error: result.error ?? "?" }), "error", 8000);
@@ -98,7 +109,7 @@ export function ExportDialog() {
       }
       update((doc) => {
         doc.export ??= {};
-        if (target === "static-bloom") doc.export.staticBloom = { variantName, targetDir: sbDir };
+        if (target === "unity") doc.export.unity = { variantName, targetDir: unityDir };
         else doc.export.flat = { targetDir: flatDir };
       });
       toast(result.targetDir ? t("export.doneFolder", { n: result.files, dir: result.targetDir }) : t("export.doneZip", { n: result.files }), "info", 8000);
@@ -110,7 +121,7 @@ export function ExportDialog() {
     }
   };
 
-  const fileCount = target === "static-bloom" ? (plan?.sheets.length ?? 0) + 4 : target === "flat" ? (flatMode === "animations" ? animations.length : flatMode === "universal" ? 1 : "…") : 1;
+  const fileCount = target === "unity" ? (plan?.sheets.length ?? 0) + 4 : target === "flat" ? (flatMode === "animations" ? animations.length : flatMode === "universal" ? 1 : "…") : 1;
 
   return (
     <Dialog
@@ -120,7 +131,7 @@ export function ExportDialog() {
         <>
           <span class="mono dim left">{busy ? `${busy.done}/${busy.total} ${busy.label}` : t("export.fileCount", { n: String(fileCount) })}</span>
           <button class="btn" onClick={() => (ui.dialog.value = null)} disabled={!!busy}>{t("dialog.cancel")}</button>
-          <button class="btn primary" onClick={run} disabled={!!busy || (target !== "character" && animations.length === 0) || (delivery === "folder" && target === "static-bloom" && !sbDir.trim()) || (delivery === "folder" && target === "flat" && !flatDir.trim())}>
+          <button class="btn primary" onClick={run} disabled={!!busy || (target !== "character" && animations.length === 0) || (delivery === "folder" && target === "unity" && !unityDir.trim()) || (delivery === "folder" && target === "flat" && !flatDir.trim())}>
             <Icon.Export size={14} />
             {busy ? t("export.running") : t("top.export")}
           </button>
@@ -131,29 +142,29 @@ export function ExportDialog() {
         <div style="display:flex;flex-direction:column;gap:10px">
           <span class="heading">{t("export.target")}</span>
 
-          <button class={`card ${target === "static-bloom" ? "on" : ""}`} onClick={() => setTarget("static-bloom")}>
+          <button class={`card ${target === "unity" ? "on" : ""}`} onClick={() => setTarget("unity")}>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <h3>{t("export.sb.title")}</h3>
+              <h3>{t("export.unity.title")}</h3>
               <span class="mono" style="padding:2px 6px;border-radius:3px;background:var(--accent-bg);color:var(--accent)">char_a_&lt;page&gt;_&lt;slot&gt;_&lt;variant&gt;_v01.png</span>
             </div>
-            <p>{t("export.sb.desc")}</p>
-            {target === "static-bloom" && (
+            <p>{t("export.unity.desc")}</p>
+            {target === "unity" && (
               <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px" onClick={(e) => e.stopPropagation()}>
                 <label class="row">
                   <span class={`cb ${!perLayer ? "on" : ""}`} onClick={() => setPerLayer(false)}>{!perLayer && <Icon.Check size={10} />}</span>
-                  <span>{t("export.sb.merge")}</span>
+                  <span>{t("export.unity.merge")}</span>
                   <span class="mono dim" title={SB_SLOTS.map(slotName).join(", ")}>{SB_SLOTS.join(" ")}</span>
                 </label>
                 <label class="row">
                   <span class={`cb ${perLayer ? "on" : ""}`} onClick={() => setPerLayer(true)}>{perLayer && <Icon.Check size={10} />}</span>
-                  <span>{t("export.sb.perLayer")}</span>
+                  <span>{t("export.unity.perLayer")}</span>
                 </label>
                 <div class="row">
-                  <label>{t("export.sb.variant")}</label>
+                  <label>{t("export.unity.variant")}</label>
                   <input type="text" value={variantName} onInput={(e) => setVariantName((e.target as HTMLInputElement).value)} />
                   <span class="mono dim">{sanitizeVariantName(variantName)}</span>
                 </div>
-                <DeliveryRow delivery={delivery} setDelivery={setDelivery} dir={sbDir} setDir={setSbDir} defaultDir={defaults?.staticBloomDir} />
+                <DeliveryRow delivery={delivery} setDelivery={setDelivery} dir={unityDir} setDir={setUnityDir} defaultDir={defaults?.unityDir} />
               </div>
             )}
           </button>
@@ -201,10 +212,10 @@ export function ExportDialog() {
 
         <div style="display:flex;flex-direction:column;gap:10px;background:var(--bg);border-radius:8px;padding:14px;border:1px solid var(--line)">
           <span class="heading">{t("export.result")}</span>
-          {target === "static-bloom" && plan && (
+          {target === "unity" && plan && (
             <>
               <div class="mono" style="display:flex;flex-direction:column;gap:2px;color:var(--muted);max-height:260px;overflow-y:auto">
-                <span style="color:var(--text)">{delivery === "folder" ? sbDir || "…" : `${plan.variant}_static-bloom.zip`}</span>
+                <span style="color:var(--text)">{delivery === "folder" ? unityDir || "…" : `${plan.variant}_unity.zip`}</span>
                 {plan.sheets.map((s) => (
                   <span>├─ {s.file} <span class="dim">{s.page.columns * s.page.cellSize}×{s.page.rows * s.page.cellSize}</span></span>
                 ))}

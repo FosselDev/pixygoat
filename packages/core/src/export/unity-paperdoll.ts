@@ -1,7 +1,11 @@
 /**
- * Planning of the Static-Bloom paper-doll export: which LPC layers end up in
- * which Mana-Seed slot sheet, which pages exist and what the manifest says.
- * Rendering happens in the app; this module only decides.
+ * Planning of the Unity paper-doll export: which LPC layers end up in which
+ * slot sheet, which pages exist and what the manifest says. Rendering happens
+ * in the app; this module only decides.
+ *
+ * The eight slots and the sheet naming follow the Mana-Seed convention, which
+ * is what the Unity importer on the other end reads. Nothing here knows about
+ * any particular game.
  */
 import slotMappingJson from "../../../../data/slot-mapping.json";
 import { ANIMATIONS, CUSTOM_ANIMATIONS, getAnimation } from "../catalog/animations.ts";
@@ -24,7 +28,7 @@ export const LOOPING_ANIMATIONS = new Set(["walk", "run", "idle", "combat_idle",
 const typeToSlot = new Map<string, string>();
 for (const [slot, types] of Object.entries(SLOT_MAPPING.slots)) for (const t of types) typeToSlot.set(t, slot);
 
-/** Static-Bloom slot for an LPC type name (front layers). */
+/** Paper-doll slot for an LPC type name (front layers). */
 export function slotForType(typeName: string, overrides?: Record<string, string>): string {
   return overrides?.[typeName] ?? typeToSlot.get(typeName) ?? SLOT_MAPPING.default;
 }
@@ -62,8 +66,8 @@ export interface SheetSpec {
   file: string;
 }
 
-export interface StaticBloomManifest {
-  format: "pixygoat.static-bloom";
+export interface UnityPaperDollManifest {
+  format: "pixygoat.paperdoll";
   version: 1;
   generator: string;
   variant: string;
@@ -81,14 +85,14 @@ export interface StaticBloomManifest {
   credits: string;
 }
 
-export interface StaticBloomPlan {
+export interface UnityPaperDollPlan {
   variant: string;
   pages: PageSpec[];
   sheets: SheetSpec[];
-  manifest: StaticBloomManifest;
+  manifest: UnityPaperDollManifest;
 }
 
-export interface StaticBloomOptions {
+export interface UnityPaperDollOptions {
   variantName: string;
   characterName: string;
   bodyType: string;
@@ -112,7 +116,7 @@ export function pageCodeFor(animation: string, layout: string | null): string {
 }
 
 /** Builds the export plan. Layers must belong to visible slots only. */
-export function planStaticBloom(slots: ExportSlotInput[], opts: StaticBloomOptions): StaticBloomPlan {
+export function planUnityPaperDoll(slots: ExportSlotInput[], opts: UnityPaperDollOptions): UnityPaperDollPlan {
   const mapping = opts.mapping ?? SLOT_MAPPING;
   const variant = sanitizeVariantName(opts.variantName);
   const allLayers = slots.flatMap((s) => s.layers);
@@ -134,7 +138,7 @@ export function planStaticBloom(slots: ExportSlotInput[], opts: StaticBloomOptio
 
   const pages: PageSpec[] = [];
   const sheets: SheetSpec[] = [];
-  const manifestSlots: StaticBloomManifest["slots"] = {};
+  const manifestSlots: UnityPaperDollManifest["slots"] = {};
   const missing: Record<string, Set<string>> = {};
   const slotsUsed = new Set(layerSlot.values());
 
@@ -174,15 +178,15 @@ export function planStaticBloom(slots: ExportSlotInput[], opts: StaticBloomOptio
     }
   }
 
-  const drawOrder: StaticBloomManifest["drawOrder"] = {};
+  const drawOrder: UnityPaperDollManifest["drawOrder"] = {};
   if (!opts.perLayer && slotsUsed.has(mapping.back)) drawOrder[mapping.back] = { "*": -1 };
   if (opts.perLayer) {
     // per-layer export: keep LPC z order as the draw order relative to the body (0)
     for (const s of slots) for (const l of s.layers) drawOrder[layerSlot.get(l.id)!] = { "*": l.zPos - mapping.bodyZPos };
   }
 
-  const manifest: StaticBloomManifest = {
-    format: "pixygoat.static-bloom",
+  const manifest: UnityPaperDollManifest = {
+    format: "pixygoat.paperdoll",
     version: 1,
     generator: "PixyGoat 0.1.0",
     variant,

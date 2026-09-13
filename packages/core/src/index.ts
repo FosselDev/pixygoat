@@ -6,7 +6,7 @@ export * from "./catalog/definitions.ts";
 export * from "./catalog/groups.ts";
 export * from "./compose/compose.ts";
 export * from "./character/document.ts";
-export * from "./export/static-bloom.ts";
+export * from "./export/unity-paperdoll.ts";
 export * from "./export/credits.ts";
 export * from "./export/universal.ts";
 export * from "./licenses/analyze.ts";

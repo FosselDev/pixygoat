@@ -39,7 +39,7 @@ Eine lokale Single-Page-App, gestartet über einen kleinen Node-Server
 (später Docker), mit der ein Charakter aus den LPC-Sprites zusammengestellt,
 animiert geprüft, gespeichert und in drei Formaten exportiert wird:
 
-1. Static-Bloom-Paper-Doll-Parts (Slot-Sheets im Mana-Seed-Namensschema +
+1. Unity-Paper-Doll-Parts (Slot-Sheets im Mana-Seed-Namensschema +
    `manifest.json`), direkt in den Unity-Ordner geschrieben.
 2. Fertige, flache Spritesheets (je Animation, Universal-Sheet, Einzelframes).
 3. Charakter-Datei (`*.character.json`).
@@ -77,13 +77,13 @@ pixygoat/
 │   ├── animations.json        Standard-Animationen: Zeilen, Spalten, Zyklen, Ordnernamen
 │   ├── custom-animations.json Oversize-Layouts (128/192 px) als Daten
 │   ├── licenses.json          Lizenztexte, Kurzfassungen, Symbole, Pflichten (Abschnitt 8)
-│   └── slot-mapping.json      LPC type_name → Static-Bloom-Slot (Abschnitt 6)
+│   └── slot-mapping.json      LPC type_name → Paper-Doll-Slot (Abschnitt 6)
 ├── packages/
 │   ├── core/                  reine Logik, ohne DOM und ohne Node-APIs
 │   │   ├── catalog/           Typen, Kompatibilität, Suche
 │   │   ├── character/         Dokumentmodell, Validierung, Migration
 │   │   ├── compose/           Ebenen-Sortierung, Frame-Mathematik, Oversize-Polsterung
-│   │   ├── export/            Static-Bloom-Manifest, Sheet-Layouts, Credits-Text
+│   │   ├── export/            Unity-Manifest, Sheet-Layouts, Credits-Text
 │   │   └── licenses/          Lizenzlogik (strengste Lizenz, Pflichten)
 │   ├── server/                Fastify-Server, Katalog-Builder, Datei-Export
 │   └── app/                   Preact-App (UI, Worker, Vorschau)
@@ -125,7 +125,7 @@ Fingerprint über Ordner-mtimes und Definitionen):
 GET /api/catalog            komprimierter Katalog (gzip, ETag)
 GET /api/health             Version, Sprite-Root, Katalog-Stand
 GET /sprites/<pfad>         statisch, Cache-Control: immutable
-POST /api/export/static-bloom   Body: Charakter + Optionen → schreibt Dateien, gibt Bericht zurück
+POST /api/export/write          Body: Dateien + Zielordner → schreibt sie, gibt Bericht zurück
 POST /api/export/flat           dito für flache Sheets (oder ZIP-Download aus dem Browser)
 GET/POST /api/characters    Speichern/Laden im Ordner `characters/` (zusätzlich zu Datei-Download)
 ```
@@ -150,7 +150,7 @@ Der Sprite-Root ist per `--sprites <pfad>` oder `SPRITES_DIR` konfigurierbar.
     "clothes": { "item": "torso_clothes_longsleeve", "variant": "charcoal" }
   },
   "preview": { "animation": "walk", "direction": "down", "zoom": 6 },
-  "export": { "staticBloom": { "variantName": "josua", "targetDir": "…" } }
+  "export": { "unity": { "variantName": "josua", "targetDir": "…" } }
 }
 ```
 
@@ -164,11 +164,11 @@ Der Sprite-Root ist per `--sprites <pfad>` oder `SPRITES_DIR` konfigurierbar.
 
 ---
 
-## 6. Export für Static Bloom
+## 6. Export nach Unity
 
 ### Zuordnung LPC → Slots
 
-| Static-Bloom-Slot | LPC type_names (Auszug) |
+| Paper-Doll-Slot | LPC type_names (Auszug) |
 |---|---|
 | `0bas` Body | body, head, eyes, eye_color, eyebrows, nose, ears, ears_inner, furry_ears, horns, expression, wrinkes, wound_*, tail, wings, fins, shadow, prosthesis_* |
 | `1out` Outfit | clothes, legs, shoes, socks, dress, sleeves, jacket, vest, apron, overalls, armour, chainmail, shoulders, bracers, gloves, wrists, belt, buckles, sash, cargo, neck, necklace, charm, backpack, backpack_straps, bauldron, quiver, ammo, bandages |
@@ -199,7 +199,7 @@ entfällt die Seite.
 ### Rück-Ebenen (bg / behind)
 
 LPC zeichnet z. B. Haar-Rückseite, Umhang hinten und Schwert hinter dem Körper
-als eigene Ebenen mit `zPos < 10`. Static Bloom hat einen Renderer je Slot.
+als eigene Ebenen mit `zPos < 10`. Das Rig hat einen Renderer je Slot.
 Lösung (freigegeben): alle Ebenen mit `zPos` unter dem Körper werden in
 **einen** Rück-Slot komponiert (`2clo`), und `manifest.json` trägt für diesen
 Slot die Zeichenreihenfolge `-1` für alle Frames. Frames, in denen LPC eine
@@ -211,7 +211,7 @@ Manifest geschrieben.
 
 ```json
 {
-  "format": "sprite-forge.static-bloom", "version": 1,
+  "format": "pixygoat.paperdoll", "version": 1,
   "variant": "josua", "cellSize": 64,
   "pages": { "walk": { "columns": 9, "rows": 4, "cellSize": 64 }, "slash128": { "columns": 6, "rows": 4, "cellSize": 128 } },
   "slots": { "0bas": ["body","head","hair"], "2clo": ["cape:back","hair:back"] },
@@ -226,7 +226,7 @@ Manifest geschrieben.
 
 Kleine, rückwärtskompatible Ergänzung an `CharacterPartImporter`:
 
-- Menüpunkt "Static Bloom → Import Sprite Forge Manifest": liest
+- Menüpunkt "Import PixyGoat Manifest": liest
   `manifest.json` neben den Sheets, legt fehlende Page-Assets mit dem
   richtigen Raster an, füllt `Draw Order Overrides` aus `drawOrder` und
   `HidesSlots` aus `hides`. Bestehende Tabellen werden nur nach Rückfrage
@@ -299,7 +299,7 @@ Umsetzung des freigegebenen Mockups. Wesentliche Verhaltensregeln:
 | 2 | Vorschau | Compose-Modul, Worker, animierte Vorschau, alle 15 Animationen, Oversize | Beispielcharakter läuft in allen Animationen pixelgleich zum Online-Generator (Vergleichsbild) |
 | 3 | Auswahl-UI | Ebenen-Stack, Katalog mit Thumbnails, Farben, Körpertypen, Suche, Filter, Warnungen, Undo/Redo | Mockup-Funktionen vollständig, flüssiges Scrollen bei 96+ Kacheln |
 | 4 | Speichern und flacher Export | Charakter-JSON, Laden per Datei/Drag-and-drop, Import aus Generator-URL/JSON, flache Sheets, ZIP, Credits | Export eines Charakters entspricht dem Generator-Export (Bildvergleich) |
-| 5 | Static-Bloom-Export | Slot-Komposition, Pages, Oversize-Polsterung, `manifest.json`, Schreiben in den Zielordner, Unity-Importer-Erweiterung, Doku | Beispielcharakter läuft im Static-Bloom-Rig mit Walk und Slash inklusive Rück-Ebene |
+| 5 | Unity-Export | Slot-Komposition, Pages, Oversize-Polsterung, `manifest.json`, Schreiben in den Zielordner, Unity-Importer-Erweiterung, Doku | Beispielcharakter läuft im Paper-Doll-Rig mit Walk und Slash inklusive Rück-Ebene |
 | 6 | Lizenzen und Sprachen | Lizenz-Panel, Filter, Erklärungen, Credits, en/de, Umschalter | Jede im Katalog vorkommende Lizenz hat eine Erklärung; UI ist vollständig übersetzt |
 | 7 | Feinschliff | Tastatur, Zufall, Docker, `THIRD_PARTY_LICENSES.md`, README, Smoke-Test | Docker-Container startet mit gemountetem Sprite-Ordner |
 
@@ -315,7 +315,7 @@ Stand. Ein Git-Repository wird in Meilenstein 0 angelegt.
 | Erststart-Scan über 300.000 Dateien dauert | Nur Verzeichnisse lesen, PNG-Header statt Dekodierung, Cache mit Fingerprint, Fortschrittsanzeige |
 | Thumbnails für tausende Teile | Rendering im Worker, nur sichtbare Kacheln, IndexedDB-Cache, kleine Ausschnitte |
 | Rück-Ebenen in einem Slot verlieren die LPC-Feinsortierung untereinander | Innerhalb des Rück-Slots wird nach LPC-zPos komponiert; nur die Relation zum Körper ist -1 |
-| Static-Bloom-Rig kennt keine Pages mit anderer Zellgröße im selben Clip-Satz | Oversize nur als eigene Pages; Doku beschreibt, dass Clips je Page angelegt werden |
+| Das Paper-Doll-Rig kennt keine Pages mit anderer Zellgröße im selben Clip-Satz | Oversize nur als eigene Pages; Doku beschreibt, dass Clips je Page angelegt werden |
 | Kinder-Körpertyp hat wenige Teile | "Passend"-Filter macht das sichtbar; kein Sonderfall im Code |
 | Assets ohne Definition | "Unlisted"-Einträge, standardmäßig ausgeblendet |
 | Spätere Asset-Updates ändern Ordnernamen | Aliase aus neueren Definitionen werden beim Katalogbau berücksichtigt; Migration im Charakter-Dokument |
@@ -326,7 +326,7 @@ Stand. Ein Git-Repository wird in Meilenstein 0 angelegt.
 
 1. App-Name: "Sprite Forge" (Platzhalter) oder ein anderer Name?
 2. Ort der gespeicherten Charaktere: `characters/` im Projekt (Vorschlag) oder frei wählbar?
-3. Standard-Zielordner für den Static-Bloom-Export: `E:\00_dev\static-bloom\staticbloom-poc\Assets\_Project\Art\Characters\LPC\Sheets\` (Vorschlag).
+3. Standard-Zielordner für den Unity-Export: `exports/unity` im Repo, per `PIXYGOAT_UNITY_DIR` auf einen `Assets/`-Pfad umstellbar.
 
 ---
 
@@ -339,7 +339,7 @@ Stand. Ein Git-Repository wird in Meilenstein 0 angelegt.
 | 2 | Vorschau | erledigt (alle 15 Animationen, Oversize-Layouts, 4 Richtungen, Zoom, Hintergründe, Raster, Ebenen-Explosion, Filmstreifen) |
 | 3 | Auswahl-UI | erledigt bis auf "Unlisted"-Teile (284 Ordner ohne Definition bleiben in 1.0 unsichtbar) |
 | 4 | Speichern und flacher Export | erledigt (Server-Ablage `characters/`, Datei-Download, Drag-and-drop, Autosave; Export je Animation, Universal-Sheet, Einzelframes, ZIP oder Ordner, Credits) |
-| 5 | Static-Bloom-Export | erledigt (Slot-Sheets, Pages, Oversize, `manifest.json`; Unity-Importer `PixyGoatManifestImporter` erzeugt Pages, Slicing, Parts, Zeichenreihenfolge; Testimport mit 15 Pages und 4 Parts erfolgreich) |
+| 5 | Unity-Export | erledigt (Slot-Sheets, Pages, Oversize, `manifest.json`; Unity-Importer `PixyGoatManifestImporter` erzeugt Pages, Slicing, Parts, Zeichenreihenfolge; Testimport mit 15 Pages und 4 Parts erfolgreich) |
 | 6 | Lizenzen und Sprachen | erledigt (Lizenz-Panel mit wirksamer Lizenz, Pflichten, Je-Teil-Tabelle, Filter; en/de umschaltbar) |
 | 7 | Feinschliff | erledigt: Tastatur, Zufall, Dockerfile + compose, `THIRD_PARTY_LICENSES.md`, README. Offen: Docker-Build noch nicht ausgeführt, kein Playwright-Smoke-Test |
 

@@ -2,16 +2,16 @@ import {
   collectCredits,
   creditsCsv,
   creditsText,
-  planStaticBloom,
+  planUnityPaperDoll,
   type ExportSlotInput,
-  type StaticBloomPlan,
+  type UnityPaperDollPlan,
 } from "@pixygoat/core";
 import { doc, drawLayers, slotStates } from "../state/store.ts";
 import {
   downloadZip,
   renderFrames,
   renderPerAnimation,
-  renderStaticBloom,
+  renderUnityPaperDoll,
   renderUniversal,
   textFile,
   writeToFolder,
@@ -21,7 +21,7 @@ import {
 
 export type Delivery = "folder" | "zip";
 
-export interface StaticBloomExportOptions {
+export interface UnityPaperDollExportOptions {
   variantName: string;
   perLayer: boolean;
   animations: string[];
@@ -49,9 +49,9 @@ export function exportSlotInputs(): ExportSlotInput[] {
     .map((s) => ({ type: s.type, item: s.item!, variant: s.variant, layers: s.layers }));
 }
 
-export function currentPlan(variantName: string, perLayer: boolean, animations: string[]): StaticBloomPlan {
+export function currentPlan(variantName: string, perLayer: boolean, animations: string[]): UnityPaperDollPlan {
   const d = doc.value;
-  return planStaticBloom(exportSlotInputs(), { variantName, characterName: d.name, bodyType: d.bodyType, animations, perLayer });
+  return planUnityPaperDoll(exportSlotInputs(), { variantName, characterName: d.name, bodyType: d.bodyType, animations, perLayer });
 }
 
 function commonFiles(): OutFile[] {
@@ -73,15 +73,15 @@ async function deliver(files: OutFile[], delivery: Delivery, targetDir: string, 
   return r.ok ? { ok: true, files: files.length, targetDir } : { ok: false, files: 0, error: r.error };
 }
 
-export async function runStaticBloomExport(opts: StaticBloomExportOptions, progress?: Progress): Promise<ExportResult> {
+export async function runUnityPaperDollExport(opts: UnityPaperDollExportOptions, progress?: Progress): Promise<ExportResult> {
   const plan = currentPlan(opts.variantName, opts.perLayer, opts.animations);
-  const sheets = await renderStaticBloom(plan, progress);
+  const sheets = await renderUnityPaperDoll(plan, progress);
   const files: OutFile[] = [
     ...sheets,
     { path: "manifest.json", blob: new Blob([JSON.stringify(plan.manifest, null, 2)], { type: "application/json" }) },
     ...commonFiles(),
   ];
-  return deliver(files, opts.delivery, opts.targetDir, `${plan.variant}_static-bloom.zip`);
+  return deliver(files, opts.delivery, opts.targetDir, `${plan.variant}_unity.zip`);
 }
 
 export async function runFlatExport(opts: FlatExportOptions, progress?: Progress): Promise<ExportResult> {

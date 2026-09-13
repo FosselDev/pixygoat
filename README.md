@@ -4,7 +4,7 @@ A local, browser-based pixel-art character designer for the
 [Universal LPC Spritesheet](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator)
 assets. Build a character from body, head, hair, clothing, armour and weapons,
 check every animation live, and export it either as flat spritesheets or as
-paper-doll parts for the Static Bloom Unity rig.
+paper-doll parts for a Unity paper-doll rig.
 
 ## Requirements
 
@@ -33,7 +33,7 @@ Options (flags or environment variables):
 | `--host <addr>` | `PIXYGOAT_HOST` | `127.0.0.1` |
 | `--characters <dir>` | `PIXYGOAT_CHARACTERS` | `./characters` |
 | `--cache <dir>` | `PIXYGOAT_CACHE` | `./.cache` |
-| | `PIXYGOAT_UNITY_DIR` | Static Bloom `Art/Characters/LPC` when found |
+| | `PIXYGOAT_UNITY_DIR` | `exports/unity` in this repository |
 | | `PIXYGOAT_EXPORT_DIR` | `./exports/flat` |
 | `--rebuild` | | force a catalog rebuild |
 
@@ -64,7 +64,7 @@ oversize layouts, slot grouping and mapping, license texts) and `locales/`.
 ## Documentation
 
 - [docs/implementation-plan.md](docs/implementation-plan.md) – decisions, architecture, milestones
-- [docs/static-bloom-export.md](docs/static-bloom-export.md) – export format and the Unity importer
+- [docs/unity-export.md](docs/unity-export.md) – export format and the Unity importer
 
 ## Licenses
 

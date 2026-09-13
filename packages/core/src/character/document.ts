@@ -23,7 +23,7 @@ export interface CharacterDocument {
   slots: Record<string, SlotSelection>;
   preview?: { animation?: string; direction?: string; zoom?: number };
   export?: {
-    staticBloom?: { variantName?: string; targetDir?: string };
+    unity?: { variantName?: string; targetDir?: string };
     flat?: { targetDir?: string };
   };
   createdAt?: string;

@@ -1,14 +1,20 @@
-# Export für Static Bloom
+# Export nach Unity
 
-Wie PixyGoat einen LPC-Charakter in das Paper-Doll-Format von Static Bloom
-bringt, was dabei entsteht und wie der Import in Unity läuft.
+Wie PixyGoat einen LPC-Charakter in ein Paper-Doll-Format bringt, das eine
+Unity-Seite Sheet für Sheet einlesen kann, was dabei entsteht und was der
+Import daraus baut.
+
+Das Format ist bewusst engine-nah, aber nicht spielspezifisch: acht Slots im
+Mana-Seed-Namensschema, ein Raster je Seite, und ein Manifest, das alles
+mitliefert, was ein Importer sonst raten müsste.
 
 ## Kurzfassung
 
-1. In PixyGoat **Exportieren → Static Bloom · Paper-Doll-Parts**, Ordner ist
-   standardmäßig `Assets/_Project/Art/Characters/LPC` im Unity-Projekt.
-2. In Unity **Tools → Static Bloom → Characters → Build PixyGoat Character…**
-   und die geschriebene `manifest.json` wählen.
+1. In PixyGoat **Exportieren → Unity · Paper-Doll-Parts**, Zielordner
+   voreingestellt auf `exports/unity` oder auf das, was
+   `PIXYGOAT_UNITY_DIR` sagt — sinnvollerweise ein Pfad unter `Assets/`.
+2. In Unity **Build PixyGoat Character…** aufrufen und die geschriebene
+   `manifest.json` wählen.
 3. Die Rückfrage beantworten: **Playable character** hängt Rigidbody2D,
    Kapsel-Collider und die Spieler-Komponenten an, **Graphics only** liefert
    ein Prefab, das nur zeichnet.
@@ -83,7 +89,7 @@ wird dann nicht geschrieben.
 
 ```json
 {
-  "format": "pixygoat.static-bloom",
+  "format": "pixygoat.paperdoll",
   "variant": "josua",
   "pages": { "walk": { "columns": 9, "rows": 4, "cellSize": 64, "directions": ["up","left","down","right"],
                        "cycle": [1,2,3,4,5,6,7,8], "frameMs": 100, "loop": true },
@@ -109,10 +115,16 @@ wird dann nicht geschrieben.
 
 ## Die Unity-Seite
 
-Zwei Dateien in `Assets/_Project/Editor/Characters/`:
-`PixyGoatManifestImporter.cs` für Sheets, Seiten und Parts und
-`PixyGoatCharacterBuilder.cs` für Clips, Controller und Prefab. Der Builder
-ruft den Importer auf, **Build PixyGoat Character…** ist also der ganze Weg.
+**Noch nicht Teil dieses Repos.** Der Importer ist bisher eine
+Referenzimplementierung im Unity-Projekt, das PixyGoat zuerst beliefert hat;
+hierher gehört er, sobald klar ist, wie weit er sich von den Annahmen dieses
+einen Projekts lösen lässt (siehe *Offen* unten). Was er tut, steht trotzdem
+hier, weil es beschreibt, was das Format verlangt.
+
+Zwei Dateien im Editor-Ordner: `PixyGoatManifestImporter.cs` für Sheets,
+Seiten und Parts, `PixyGoatCharacterBuilder.cs` für Clips, Controller und
+Prefab. Der Builder ruft den Importer auf, **Build PixyGoat Character…** ist
+also der ganze Weg.
 
 Der Importer:
 
@@ -128,8 +140,9 @@ Der Importer:
    Tabellen für dieselben Slots werden nur nach Rückfrage ersetzt.
 5. Setzt `HidesSlots` aus `hides`.
 
-Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in
-`StaticBloom.Editor.asmdef` (Grid-Slicing über `ISpriteEditorDataProvider`).
+Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in der
+Editor-asmdef, die ihn enthält (Grid-Slicing über
+`ISpriteEditorDataProvider`).
 
 **Der Builder erzeugt zusätzlich:**
 
@@ -137,7 +150,8 @@ Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in
   Rate 200, Abschluss-Key und der Schleifeneinstellung aus `loop`. Bei einer
   Oversize-Page zeigen sie auf die 128- oder 192-px-Sprites; da alle Slots der
   Page dasselbe Raster haben, läuft der Rig unverändert.
-- **Animator Controller** auf den Parametern von `PlayerAnimator`: `facingX`,
+- **Animator Controller** auf den Parametern, die die Spielerlogik des
+  Zielprojekts ohnehin schreibt: `facingX`,
   `facingY`, `isMoving`, `weaponDrawn`, `attackActive` und der Trigger
   `isAttack`. Richtungen laufen als 2D-Blend-Tree, weil Sprite-Kurven diskret
   gewählt und nie interpoliert werden. `facingY` ist auf −1 voreingestellt:
@@ -152,10 +166,10 @@ Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in
   Play-Klick unsichtbar: das Rig liest den Frame-Index aus dem Body-Renderer
   zurück, und ein leerer Renderer löst nichts auf.
 - **Spieler-Komponenten**, auf Wunsch: Rigidbody2D ohne Schwerkraft, ein
-  flacher Kapsel-Collider an den Füßen und die Kette aus `PlayerAim`,
-  `PlayerWeaponState`, `PlayerActionState`, `PlayerMovementDynamic` und
-  `PlayerAnimator`. Ohne sie schreibt niemand die Animator-Parameter, und die
-  Figur bewegt sich, ohne zu laufen.
+  flacher Kapsel-Collider an den Füßen und die Bewegungs- und
+  Animationskomponenten des Zielprojekts. Ohne sie schreibt niemand die
+  Animator-Parameter, und die Figur bewegt sich, ohne zu laufen. Dieser
+  Schritt ist der spielspezifischste von allen.
 
 **Danach von Hand:** nur noch die Zustände im Controller ergänzen, wenn das
 Spiel mehr braucht als Stehen, Gehen, Kampfhaltung und Angriff.
@@ -163,3 +177,19 @@ Spiel mehr braucht als Stehen, Gehen, Kampfhaltung und Angriff.
 **Nicht importierbar:** der Export "jede LPC-Ebene als eigenes Sheet". Er
 erzeugt Slot-Codes, für die der Rig keinen Renderer hat; der Importer meldet
 sie und überspringt die Sheets.
+
+## Offen
+
+Der Export heißt jetzt nach seinem Ziel und nicht mehr nach einem Spiel, aber
+verallgemeinert ist er damit noch nicht. Was bisher aus einem einzelnen
+Projekt stammt und irgendwann eine Entscheidung braucht:
+
+- **Die acht Slots** sind Mana-Seed. Ein anderes Rig hat andere, vielleicht
+  mehr. Die Zuordnung liegt schon als Daten in `slot-mapping.json`, der
+  Slot-Satz selbst noch nicht.
+- **Sorting Layer, Pixel pro Unit und der Versatz `(0, 0.375, 0)`** sind
+  Annahmen über das Zielprojekt. Sie gehören ins Manifest oder in den Dialog.
+- **Der Importer selbst** liegt außerhalb dieses Repos. Er sollte hierher, mit
+  dem spielspezifischen Teil hinter einer klaren Naht.
+- **Andere Engines.** Godot und Tiled lesen dasselbe Rastermodell; ein zweiter
+  Exporter wäre vor allem ein anderes Manifest.

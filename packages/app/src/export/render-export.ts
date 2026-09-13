@@ -12,7 +12,7 @@ import {
   CELL_SIZE,
   type DrawLayer,
   type FrameOp,
-  type StaticBloomPlan,
+  type UnityPaperDollPlan,
 } from "@pixygoat/core";
 import { loadSprites } from "../render/images.ts";
 import { triggerDownload } from "../state/persistence.ts";
@@ -50,8 +50,8 @@ async function toPng(canvas: OffscreenCanvas): Promise<Blob> {
   return canvas.convertToBlob({ type: "image/png" });
 }
 
-/** Static-Bloom slot sheets according to the plan. */
-export async function renderStaticBloom(plan: StaticBloomPlan, progress?: Progress): Promise<OutFile[]> {
+/** Paper-doll slot sheets according to the plan. */
+export async function renderUnityPaperDoll(plan: UnityPaperDollPlan, progress?: Progress): Promise<OutFile[]> {
   const out: OutFile[] = [];
   let i = 0;
   for (const sheet of plan.sheets) {

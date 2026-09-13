@@ -16,16 +16,18 @@ export interface ServerConfig {
   appDist: string;
   dev: boolean;
   forceRebuild: boolean;
-  exportDefaults: { staticBloomDir: string; flatDir: string };
+  exportDefaults: { unityDir: string; flatDir: string };
 }
 
-/** Default Static-Bloom target: the Unity project next to this repo when present. */
-function defaultStaticBloomDir(): string {
+/**
+ * Where the Unity export lands by default: a folder inside this repository,
+ * unless PIXYGOAT_UNITY_DIR points somewhere else - typically an Assets path
+ * in the Unity project that is going to read it. The export dialog offers this
+ * as a suggestion and remembers whatever a character was last exported to.
+ */
+function defaultUnityDir(): string {
   const env = process.env.PIXYGOAT_UNITY_DIR;
-  if (env) return resolve(env);
-  const candidate = resolve(REPO_ROOT, "..", "..", "static-bloom", "staticbloom-poc", "Assets", "_Project", "Art", "Characters", "LPC");
-  if (existsSync(resolve(candidate, "..", ".."))) return candidate;
-  return resolve(REPO_ROOT, "exports", "static-bloom");
+  return env ? resolve(env) : resolve(REPO_ROOT, "exports", "unity");
 }
 
 function arg(name: string): string | undefined {
@@ -49,7 +51,7 @@ export function loadConfig(): ServerConfig {
     dev: process.argv.includes("--dev"),
     forceRebuild: process.argv.includes("--rebuild"),
     exportDefaults: {
-      staticBloomDir: defaultStaticBloomDir(),
+      unityDir: defaultUnityDir(),
       flatDir: resolve(process.env.PIXYGOAT_EXPORT_DIR ?? resolve(REPO_ROOT, "exports", "flat")),
     },
   };
