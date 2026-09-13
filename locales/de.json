@@ -280,5 +280,18 @@
   "lic.readText": "Lizenztext lesen",
   "lic.blocked": "Lizenz durch deinen Filter nicht erlaubt",
   "lic.filterActive": "Lizenzfilter aktiv ({n} erlaubt)",
-  "lic.tipLeast": "Am wenigsten einschränkend: {license}"
+  "lic.tipLeast": "Am wenigsten einschränkend: {license}",
+  "catalog.onlyFor": "Nur für",
+  "catalog.onlyForLong": "keine Sheets für {body}, nur für {bodies}",
+  "stack.onlyFor": "nur für {bodies}",
+  "stack.moreCount": "{n} weitere Slots",
+  "stack.bodyConflict": "{n} Teile haben keine Sheets für {body}",
+  "stack.moreCount.one": "1 weiterer Slot",
+  "stack.moreCount.other": "{n} weitere Slots",
+  "stack.bodyConflict.one": "1 Teil hat keine Sheets für {body}",
+  "stack.bodyConflict.other": "{n} Teile haben keine Sheets für {body}",
+  "stack.warnings.one": "1 Ebene fehlt in manchen Animationen",
+  "stack.warnings.other": "{n} Ebenen fehlen in manchen Animationen",
+  "preview.wrongBody": "{item} ist nicht für {body} gezeichnet, nur für {bodies}",
+  "preview.wrongBodyHint": "Wähle oben eine andere Basis, oder ein Teil, das für {body} gezeichnet ist."
 }

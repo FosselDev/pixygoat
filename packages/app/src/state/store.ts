@@ -263,6 +263,18 @@ export const coverage = computed(() => {
   return missing;
 });
 
+/**
+ * Body types a part has sheets for, other than the current one. The answer to
+ * "why does this part show nothing?" - used by the catalog tile, the layer
+ * stack and the preview warning.
+ */
+export function otherBodyTypes(item: CatalogItem): BodyType[] {
+  const cat = catalog.value;
+  if (!cat) return [];
+  const ctx = resolveContext.value;
+  return BODY_TYPES.filter((b) => b !== doc.value.bodyType && availableVariants(cat, item, b, ctx).length > 0);
+}
+
 // ---------------------------------------------------------------------------
 // Selection commands
 

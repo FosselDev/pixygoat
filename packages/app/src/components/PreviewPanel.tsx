@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { ANIMATIONS, buildFrameSet, DIRECTIONS, getAnimation, type Direction } from "@pixygoat/core";
-import { coverage, drawLayers, slotStates, ui, type Background } from "../state/store.ts";
+import { coverage, doc, drawLayers, otherBodyTypes, slotStates, ui, type Background } from "../state/store.ts";
 import { SheetCache, layerSignature, type ComposedSheet } from "../render/renderer.ts";
 import { loadSprites } from "../render/images.ts";
-import { slotLabel, t } from "../i18n/i18n.ts";
+import { slotLabel, t, tn } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 
 const cache = new SheetCache();
@@ -203,16 +203,29 @@ export function PreviewPanel() {
         <div class="warnbox">
           <Icon.Warn size={16} />
           <div>
-            {missingHere.map((s) => (
-              <div class="t">{t("preview.missingIn", { item: `${slotLabel(s.type)} · ${s.item!.name}`, anims: missing.get(s.type)!.map((a) => t(`anim.${a}`)).join(", ") })}</div>
-            ))}
-            <div class="d">{t("preview.missingHint")}</div>
+            {missingHere.map((s) => {
+              const label = `${slotLabel(s.type)} · ${s.item!.name}`;
+              // No animation at all means the part was drawn for another body
+              // type; naming it beats listing all fifteen animations.
+              if (s.covered.size === 0) {
+                const bodies = otherBodyTypes(s.item!);
+                return (
+                  <div class="t">
+                    {bodies.length
+                      ? t("preview.wrongBody", { item: label, body: t(`body.${doc.value.bodyType}`), bodies: bodies.map((b) => t(`body.${b}`)).join(", ") })
+                      : `${label} – ${t("catalog.notForBody")}`}
+                  </div>
+                );
+              }
+              return <div class="t">{t("preview.missingIn", { item: label, anims: missing.get(s.type)!.map((a) => t(`anim.${a}`)).join(", ") })}</div>;
+            })}
+            <div class="d">{missingHere.some((s) => s.covered.size === 0) ? t("preview.wrongBodyHint", { body: t(`body.${doc.value.bodyType}`) }) : t("preview.missingHint")}</div>
           </div>
         </div>
       ) : missing.size > 0 ? (
         <div class="okbox">
           <Icon.Warn size={14} style="color:var(--warn)" />
-          <span>{t("stack.warnings", { n: missing.size })}</span>
+          <span>{tn("stack.warnings", missing.size)}</span>
         </div>
       ) : (
         <div class="okbox">

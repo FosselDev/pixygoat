@@ -280,5 +280,18 @@
   "lic.readText": "Read the license text",
   "lic.blocked": "License not allowed by your filter",
   "lic.filterActive": "License filter active ({n} allowed)",
-  "lic.tipLeast": "Least restrictive option: {license}"
+  "lic.tipLeast": "Least restrictive option: {license}",
+  "catalog.onlyFor": "Only for",
+  "catalog.onlyForLong": "no sheets for {body}, only for {bodies}",
+  "stack.onlyFor": "only for {bodies}",
+  "stack.moreCount": "{n} more slots",
+  "stack.bodyConflict": "{n} parts have no sheets for {body}",
+  "stack.moreCount.one": "1 more slot",
+  "stack.moreCount.other": "{n} more slots",
+  "stack.bodyConflict.one": "1 part has no sheets for {body}",
+  "stack.bodyConflict.other": "{n} parts have no sheets for {body}",
+  "stack.warnings.one": "1 layer is missing in some animations",
+  "stack.warnings.other": "{n} layers are missing in some animations",
+  "preview.wrongBody": "{item} was not drawn for {body}, only for {bodies}",
+  "preview.wrongBodyHint": "Pick another base above, or a part that was drawn for {body}."
 }

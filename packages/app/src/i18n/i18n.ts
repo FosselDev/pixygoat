@@ -44,6 +44,17 @@ export function t(key: string, params?: Record<string, string | number>): string
   return s.replace(/\{(\w+)\}/g, (_, k: string) => String(params[k] ?? `{${k}}`));
 }
 
+/**
+ * Counted text. Looks up `<key>.one` for exactly one and `<key>.other`
+ * otherwise, so German reads "1 Teil hat" instead of "1 Teile haben"; falls
+ * back to the bare key when no counted form exists.
+ */
+export function tn(key: string, n: number, params?: Record<string, string | number>): string {
+  const counted = `${key}.${n === 1 ? "one" : "other"}`;
+  const known = active.value[counted] ?? dictionaries.en![counted];
+  return t(known ? counted : key, { n, ...params });
+}
+
 /** Label of a slot (type name); falls back to a humanised id. */
 export function slotLabel(typeName: string): string {
   const key = `slot.${typeName}`;

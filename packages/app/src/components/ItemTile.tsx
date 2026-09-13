@@ -29,6 +29,8 @@ interface Props {
   variants: string[];
   typeLabel?: string;
   blocked?: boolean;
+  /** body types the part does have sheets for, when it has none for this one */
+  otherBodies?: string[];
   onPick: () => void;
 }
 
@@ -131,7 +133,7 @@ function observe(el: Element, cb: () => void) {
   observer.observe(el);
 }
 
-export function ItemTile({ item, selected, matching, covered, total, variants, typeLabel, blocked, onPick }: Props) {
+export function ItemTile({ item, selected, matching, covered, total, variants, typeLabel, blocked, otherBodies, onPick }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const d = doc.value;
   const bodyType = d.bodyType;
@@ -202,9 +204,29 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
     .filter(Boolean)
     .join("\n");
   return (
-    <button class={`tile ${selected ? "on" : ""} ${matching && !blocked ? "" : "na"}`} onClick={onPick} title={!matching ? t("catalog.notForBody") : blocked ? t("lic.blocked") : item.name}>
+    <button class={`tile ${selected ? "on" : ""} ${matching && !blocked ? "" : "na"}`} onClick={onPick} title={
+        !matching
+          ? `${item.name} – ${otherBodies && otherBodies.length ? t("catalog.onlyForLong", { bodies: otherBodies.map((b) => t(`body.${b}`)).join(", "), body: t(`body.${bodyType}`) }) : t("catalog.notForBody")}`
+          : blocked
+            ? t("lic.blocked")
+            : item.name
+      }>
       <div class="thumb checker">
-        {matching ? <canvas ref={ref} width={96} height={96} class="px" /> : <span class="dim">{t("catalog.notForBody")}</span>}
+        {matching ? (
+          <canvas ref={ref} width={96} height={96} class="px" />
+        ) : (
+          <span class="na-hint">
+            <Icon.Warn size={14} />
+            {otherBodies && otherBodies.length > 0 ? (
+              <>
+                <span class="dim">{t("catalog.onlyFor")}</span>
+                <span>{otherBodies.map((b) => t(`body.${b}`)).join(" · ")}</span>
+              </>
+            ) : (
+              <span class="dim">{t("catalog.notForBody")}</span>
+            )}
+          </span>
+        )}
         {matching && <span class={`cov ${covClass}`}>{covered}/{total}</span>}
         {selected && <span class="check"><Icon.Check size={10} /></span>}
       </div>

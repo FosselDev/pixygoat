@@ -1,6 +1,6 @@
 import { useMemo } from "preact/hooks";
-import { availableVariants, coveredAnimations, itemAllowed, resolveItem, ANIMATIONS, type CatalogItem } from "@pixygoat/core";
-import { allowedLicenses, catalog, doc, itemsByType, licenseFilterActive, resolveContext, selectItem, setSubcategory, subcategoryOf, ui } from "../state/store.ts";
+import { availableVariants, coveredAnimations, itemAllowed, resolveItem, ANIMATIONS, type BodyType, type CatalogItem } from "@pixygoat/core";
+import { allowedLicenses, catalog, doc, itemsByType, licenseFilterActive, otherBodyTypes, resolveContext, selectItem, setSubcategory, subcategoryOf, ui } from "../state/store.ts";
 import { slotLabel, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 import { ItemTile } from "./ItemTile.tsx";
@@ -39,12 +39,14 @@ export function CatalogPanel() {
   const sub = subcats.includes(subWanted) ? subWanted : "";
 
   const info = useMemo(() => {
-    const m = new Map<string, { matching: boolean; covered: number; variants: string[] }>();
+    const m = new Map<string, { matching: boolean; covered: number; variants: string[]; bodies: BodyType[] }>();
     for (const it of baseItems) {
       const variants = it.available ? availableVariants(cat, it, bodyType, ctx) : [];
       let covered = 0;
       if (variants.length) covered = coveredAnimations(resolveItem(cat, it, bodyType, variants[0]!, ctx)).size;
-      m.set(it.id, { matching: variants.length > 0, covered, variants });
+      // Only for the ones that do not fit: which body types were they drawn for?
+      const bodies: BodyType[] = variants.length ? [] : otherBodyTypes(it);
+      m.set(it.id, { matching: variants.length > 0, covered, variants, bodies });
     }
     return m;
   }, [baseItems, bodyType, ctx, cat]);
@@ -155,6 +157,7 @@ export function CatalogPanel() {
                   variants={inf.variants}
                   typeLabel={allSlots ? slotLabel(it.typeName) : undefined}
                   blocked={!itemAllowed(it, allowed)}
+                  otherBodies={inf.bodies}
                   onPick={() => onPick(it)}
                 />
               );
