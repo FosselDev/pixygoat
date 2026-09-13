@@ -161,6 +161,12 @@ export const Icon = {
       <path d="M3 4h10M6 4V2.5h4V4M4.5 4l.7 9h5.6l.7-9" />
     </Svg>
   ),
+  License: (p: P) => (
+    <Svg {...p}>
+      <circle cx="8" cy="6" r="4.2" />
+      <path d="M5.6 9.6L5 14l3-1.6L11 14l-.6-4.4" />
+    </Svg>
+  ),
   Link: (p: P) => (
     <Svg {...p}>
       <path d="M6.5 9.5l3-3" />

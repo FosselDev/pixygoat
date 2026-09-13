@@ -279,5 +279,6 @@
   "lic.explain": "Die Lizenzen erklärt",
   "lic.readText": "Lizenztext lesen",
   "lic.blocked": "Lizenz durch deinen Filter nicht erlaubt",
-  "lic.filterActive": "Lizenzfilter aktiv ({n} erlaubt)"
+  "lic.filterActive": "Lizenzfilter aktiv ({n} erlaubt)",
+  "lic.tipLeast": "Am wenigsten einschränkend: {license}"
 }

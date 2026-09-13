@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "preact/hooks";
-import { resolveItem, sortLayers, toDrawLayers, type CatalogItem, type DrawLayer } from "@pixygoat/core";
+import { bestLicense, LICENSES, resolveItem, sortLayers, toDrawLayers, type CatalogItem, type DrawLayer } from "@pixygoat/core";
 import { catalog, doc, drawLayers, effectiveVariant, resolveContext, slotStates } from "../state/store.ts";
 import { composeFrame } from "../render/renderer.ts";
 import { variantColor } from "../render/colors.ts";
-import { t } from "../i18n/i18n.ts";
+import { language, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 
 interface Props {
@@ -24,6 +24,13 @@ function cropY(type: string): number {
   if (/^(clothes|jacket|vest|dress|sleeves|apron|overalls|sash|belt|buckles|cargo|wrists|gloves|arms|armour|chainmail|shoulders|bracers|bauldron|neck|necklace|charm|backpack|cape|quiver|ammo|weapon|shield|body|tail|wings|fins|shadow|wheelchair|ring|accessory)/.test(type)) return 8;
   return 0;
 }
+
+/**
+ * Colour of the license badge, by how demanding the item's least demanding
+ * option is: green nothing to do, grey credit the authors, amber share-alike,
+ * red the item leaves no choice but GPL.
+ */
+const LICENSE_COLORS = ["var(--ok)", "var(--dim)", "var(--dim)", "var(--warn)", "var(--err)"];
 
 let observer: IntersectionObserver | null = null;
 const pending = new Map<Element, () => void>();
@@ -98,6 +105,18 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
 
   const covClass = covered === total ? "" : covered === 0 ? "none" : "part";
   const swatches = variants.slice(0, 5);
+
+  const best = bestLicense(item);
+  const licInfo = best ? LICENSES[best] : undefined;
+  const licColor = licInfo ? LICENSE_COLORS[Math.min(licInfo.strictness, 4)]! : "var(--dim)";
+  const licTitle = [
+    item.licenses.length ? item.licenses.join(" · ") : "?",
+    best && item.licenses.length > 1 ? t("lic.tipLeast", { license: best }) : "",
+    licInfo ? (licInfo.summary[language.value] ?? licInfo.summary.en ?? "") : "",
+    blocked ? t("lic.blocked") : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
   return (
     <button class={`tile ${selected ? "on" : ""} ${matching && !blocked ? "" : "na"}`} onClick={onPick} title={!matching ? t("catalog.notForBody") : blocked ? t("lic.blocked") : item.name}>
       <div class="thumb checker">
@@ -113,9 +132,11 @@ export function ItemTile({ item, selected, matching, covered, total, variants, t
           ))}
           {variants.length > 5 && <span class="more">+{variants.length - 5}</span>}
           {variants.length === 1 && <span class="more">{variants[0]}</span>}
+          <span class="lic" style={`color:${licColor}`} title={licTitle}>
+            <Icon.License size={13} />
+          </span>
         </div>
       </div>
-      <span class="lic" style={blocked ? "color:var(--warn)" : ""}>{item.licenses.join(" ")}</span>
     </button>
   );
 }

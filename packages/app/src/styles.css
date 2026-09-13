@@ -148,10 +148,12 @@ a { color: var(--accent); }
 .tile .meta { padding: 7px 9px 8px; display: flex; flex-direction: column; gap: 5px; }
 .tile .name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tile.on .name { color: var(--accent-soft); font-weight: 600; }
-.tile .sw { display: flex; gap: 3px; align-items: center; height: 10px; }
-.tile .sw span { width: 10px; height: 10px; border-radius: 2px; }
-.tile .sw .more { width: auto; font-size: 10px; color: var(--dim); line-height: 10px; }
-.tile .lic { position: absolute; bottom: 8px; right: 8px; font-family: var(--font-mono); font-size: 9px; color: var(--dim); }
+.tile .sw { display: flex; gap: 3px; align-items: center; height: 14px; overflow: hidden; }
+.tile .sw span { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.tile .sw .more { width: auto; font-size: 10px; color: var(--dim); line-height: 10px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* license badge: one symbol at the end of the swatch row, details on hover */
+.tile .sw .lic { width: auto; height: auto; margin-left: auto; padding-left: 4px; display: inline-flex; align-items: center; flex-shrink: 0; cursor: help; }
+.tile .sw .lic:hover { filter: brightness(1.4); }
 
 /* variant strip */
 .variants { border-top: 1px solid var(--line); background: var(--panel); padding: 10px 16px; display: flex; align-items: center; gap: 12px; min-height: 52px; }
