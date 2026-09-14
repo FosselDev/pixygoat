@@ -1,9 +1,9 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCompress from "@fastify/compress";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
-import { loadConfig, type ServerConfig } from "./config.ts";
+import { loadConfig, REPO_ROOT, type ServerConfig } from "./config.ts";
 import { loadOrBuildCatalog, type BuildProgress } from "./catalog/build.ts";
 import { registerCharacterRoutes } from "./routes/characters.ts";
 import { registerExportRoutes } from "./routes/export.ts";
@@ -12,6 +12,9 @@ import { writeSettings } from "./settings.ts";
 
 /** What the app still has to ask for before a catalog can be built. */
 type Missing = "sprites" | "definitions";
+
+/** Read rather than repeated: a second copy of the version only ever drifts. */
+const VERSION = (JSON.parse(readFileSync(`${REPO_ROOT}/package.json`, "utf8")) as { version: string }).version;
 
 type CatalogStatus =
   | { state: "unconfigured"; missing: Missing[] }
@@ -79,7 +82,7 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
 
   app.get("/api/health", async () => ({
     name: "PixyGoat",
-    version: "0.1.0",
+    version: VERSION,
     uptimeMs: Date.now() - started,
     spritesRoot: cfg.spritesRoot,
     spritesConfigured: cfg.spritesConfigured,

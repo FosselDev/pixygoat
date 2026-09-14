@@ -1,6 +1,6 @@
 {
   "name": "pixygoat",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "PixyGoat - a local, browser-based LPC pixel-art character designer with paper-doll export.",
   "author": "Fossel",
