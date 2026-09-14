@@ -46,7 +46,9 @@ PixyGoat reads the `spritesheets/` folder of the
 pinned to commit `e7fa0aee616` (2025-07-21). The catalogue is built against
 exactly that snapshot; a newer one may hold parts it does not know.
 
-That folder alone, at that commit — around 300 000 files, 0.55 GB:
+That folder alone, at that commit. It is around 300 000 files: 0.55 GB of
+data, but closer to 1.2 GB on disk, because hundreds of thousands of tiny
+PNGs each round up to a full cluster.
 
 ```bash
 git clone --filter=blob:none --no-checkout --sparse \
