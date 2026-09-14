@@ -296,7 +296,6 @@ server for the scan, the catalogue, sprites, character storage and file export;
 `locales/`; the sheet definitions are not in here and are fetched at setup
 time — `data/upstream.json` says from where.
 
-- [docs/implementation-plan.md](docs/implementation-plan.md) — decisions, architecture, milestones
 - [docs/unity-export.md](docs/unity-export.md) — export format, the Unity importer, and what is not general yet
 
 ## Licence and credits
