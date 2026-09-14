@@ -294,8 +294,6 @@ function Filmstrip({ sheet, row, column, onPick }: { sheet: ComposedSheet | null
       c.drawImage(sheet.canvas, i * cell, row * cell, cell, cell, 0, 0, size, size);
     });
   }, [sheet, row, cols]);
-  const cycle = sheet?.set.cycle ?? [];
-  const pos = cycle.indexOf(column);
   return (
     <div class="filmstrip">
       <div class="frames" ref={ref}>
@@ -304,7 +302,10 @@ function Filmstrip({ sheet, row, column, onPick }: { sheet: ComposedSheet | null
         ))}
       </div>
       <div class="bar">
-        {cycle.length > 0 && <span style={`left:${(pos / cycle.length) * 100}%;width:${(1 / cycle.length) * 100}%`} />}
+        {/* Same frame the box highlights: a cycle can skip or repeat columns
+            (walk skips the rest frame, sit holds each pose), so its own
+            length does not match the strip's column count. */}
+        {cols > 0 && <span style={`left:${(column / cols) * 100}%;width:${(1 / cols) * 100}%`} />}
       </div>
     </div>
   );
