@@ -35,7 +35,7 @@ Runs on your own machine, in your own browser.
 
 ## Install
 
-Five steps, about ten minutes, most of it spent downloading sprites. Everything
+Four steps, about ten minutes, most of it spent downloading sprites. Everything
 stays on your machine; nothing is uploaded anywhere.
 
 ### 1. Install Node.js 22 or newer
@@ -58,53 +58,54 @@ cd pixygoat
 Without git: download the repository as a ZIP from GitHub, unpack it, and `cd`
 into the unpacked folder.
 
-### 3. Get the LPC sprites
-
-The sprites are not part of this repository and never will be: they were drawn
-by the LPC community and carry their own licences, so you fetch them from the
-source.
-
-PixyGoat reads the `spritesheets/` folder of the
-[Universal LPC Spritesheet Character Generator](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator),
-pinned to commit `e7fa0aee616` (2025-07-21). The catalogue is built against
-exactly that snapshot; a newer one may hold parts it does not know.
-
-That folder alone, at that commit. It is around 300 000 files: 0.55 GB of
-data, but closer to 1.2 GB on disk, because hundreds of thousands of tiny
-PNGs each round up to a full cluster.
-
-```bash
-git clone --filter=blob:none --no-checkout --sparse \
-  https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator.git lpc
-cd lpc
-git sparse-checkout set spritesheets
-git checkout e7fa0aee616
-cd ..
-```
-
-Without git, download the
-[ZIP of that commit](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator/archive/e7fa0aee616f21d31b0f56b5dad96d761719b984.zip)
-and keep its `spritesheets/` folder — that route pulls the whole repository, not
-just the sprites.
-
-Then either move that `spritesheets/` folder next to this README, or leave it
-where it is and point PixyGoat at it in the next step.
-
-### 4. Install the dependencies and start
+### 3. Install the dependencies and start
 
 ```bash
 npm install
 npm start
 ```
 
-`npm start` builds the app and runs the local server. If the sprites are not
-sitting next to this README, PixyGoat does not know where they are and asks:
-the first page offers a folder picker, marks the folders that hold what it
-needs, and writes the answer to `pixygoat.settings.json` — from then on it
-starts straight into the app.
+`npm start` builds the app and runs the local server. The terminal keeps it
+running; `Ctrl+C` stops it.
 
-To skip that and say it up front, use the environment variable — set once, it
-applies to every start and wins over the picker:
+### 4. Open it and let it ask
+
+<http://127.0.0.1:4600>
+
+PixyGoat needs two things it does not ship, and both come from the
+[Universal LPC Spritesheet Character Generator](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator)
+at commit `e7fa0aee616` (2025-07-21). The catalogue is built against exactly
+that snapshot; a newer one may hold parts it does not know, and its definitions
+sit in subfolders this version cannot read.
+
+- **The sheet definitions** — 667 small JSON files, about 3 MB. One button,
+  three seconds: PixyGoat fetches the one folder out of that repository without
+  cloning it.
+- **The sprites** — around 300 000 PNGs: 0.55 GB over the wire, closer to
+  1.2 GB on disk because hundreds of thousands of tiny files each round up to a
+  full cluster, five to fifteen minutes. If they are already somewhere on this
+  machine, the setup usually finds them; if not, it hands you the command with
+  the target already filled in and watches the folder while you run it.
+
+Neither is uploaded anywhere and neither is copied into this repository: the
+definitions land in `.cache/`, the sprites stay wherever you put them.
+
+<details>
+<summary>Doing it in the terminal instead</summary>
+
+One checkout gives you both halves, and PixyGoat finds the definitions by
+itself when they sit next to the sprites:
+
+```bash
+cd ..
+git clone --filter=blob:none --no-checkout --sparse   https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator.git lpc
+cd lpc
+git sparse-checkout set spritesheets sheet_definitions
+git checkout e7fa0aee616
+cd ../pixygoat
+```
+
+Then point PixyGoat at the sprites — set once, it applies to every start:
 
 ```bash
 # macOS/Linux
@@ -117,17 +118,21 @@ $env:PIXYGOAT_SPRITES = "..\lpc\spritesheets"
 npm start
 ```
 
+Without git, download the
+[ZIP of that commit](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator/archive/e7fa0aee616f21d31b0f56b5dad96d761719b984.zip),
+unpack it and keep its `spritesheets/` and `sheet_definitions/` folders — that
+route pulls the whole repository, not just the parts PixyGoat reads.
+
+`npm run definitions` fetches the definitions on their own, without a browser.
+
+</details>
+
 The first start scans the spritesheet folder — about a minute for 300 000 files
 — and caches the catalogue in `.cache/`. Later starts take a few seconds. If
 you ever swap the sprite folder for another snapshot, start once with
 `PIXYGOAT_REBUILD=1 npm start` (`$env:PIXYGOAT_REBUILD = "1"` on PowerShell).
 
-### 5. Open it
-
-<http://127.0.0.1:4600>
-
-The terminal keeps the server running; `Ctrl+C` stops it. Characters you save
-land in `characters/`, exports in `exports/`.
+Characters you save land in `characters/`, exports in `exports/`.
 
 <details>
 <summary>Flags and environment variables</summary>
@@ -135,6 +140,9 @@ land in `characters/`, exports in `exports/`.
 The flag beats the environment variable beats `pixygoat.settings.json` (what
 the setup page writes) beats `./spritesheets` — but only among the folders that
 actually exist, so a stale variable cannot outvote the folder you just picked.
+The definitions are looked for in the same order, and then in two more places:
+`sheet_definitions/` next to the sprite folder, and whatever the setup fetched
+into `.cache/upstream/`.
 
 Prefer the environment variable over the flag: on Windows, `npm start --
 --sprites <dir>` can fail with `Unknown cli flag: --sprites` because npm
@@ -146,6 +154,7 @@ variable works either way, so it is the reliable option through `npm start`.
 | Flag | Variable | Default |
 |---|---|---|
 | `--sprites <dir>` | `PIXYGOAT_SPRITES` | `./spritesheets` |
+| `--definitions <dir>` | `PIXYGOAT_DEFINITIONS` | next to the sprites, else `.cache/upstream/` |
 | `--port <n>` | `PIXYGOAT_PORT` | `4600` |
 | `--host <addr>` | `PIXYGOAT_HOST` | `127.0.0.1` |
 | `--characters <dir>` | `PIXYGOAT_CHARACTERS` | `./characters` |
@@ -153,6 +162,8 @@ variable works either way, so it is the reliable option through `npm start`.
 | | `PIXYGOAT_UNITY_DIR` | `./exports/unity` |
 | | `PIXYGOAT_EXPORT_DIR` | `./exports/flat` |
 | `--rebuild` | `PIXYGOAT_REBUILD` | force a catalogue rebuild |
+| | `PIXYGOAT_UPSTREAM_REPO` | where the definitions are fetched from |
+| | `PIXYGOAT_UPSTREAM_REF` | which commit, tag or branch |
 
 </details>
 
@@ -179,6 +190,16 @@ docker compose up --build
 - **Parts are missing or the catalogue looks wrong** — you are probably on
   another snapshot than `e7fa0aee616`. Check out that commit and start once with
   `PIXYGOAT_REBUILD=1`.
+- **It says the definitions are in subfolders** — that is a snapshot newer than
+  `e7fa0aee616`, where the generator sorted them into `arms/`, `body/`, `hair/`
+  and so on. This version reads the flat folder; leave `PIXYGOAT_UPSTREAM_REF`
+  unset to get the pinned one.
+- **The fetch says no public repository answered** — that is the address, not
+  your account. GitHub replies to an unknown repository the same way it replies
+  to a private one, and git reads that as a login it should ask for. Check the
+  URL.
+- **It opens with 0 parts** — it will not any more: a sprite folder that holds
+  nothing usable is refused, forgotten, and asked for again on the next start.
 - **`Unknown cli flag: --sprites` (or `--port`, `--rebuild`, ...)** — this is
   npm itself, not PixyGoat: recent npm rejects unrecognized flags passed after
   `npm start --`, even though they are meant for the script. Use the matching
@@ -258,13 +279,16 @@ on request.
 npm run dev        # server on 4600 with reload, Vite app on 5173
 npm test           # core unit tests
 npm run typecheck
-npm run catalog    # build the catalogue on the command line
+npm run catalog      # build the catalogue on the command line
+npm run definitions  # fetch the sheet definitions without the browser
 ```
 
 `packages/core` holds the catalogue model, compositing, export planning and
 licence analysis, with no DOM and no Node APIs; `packages/server` is a Fastify
 server for the scan, the catalogue, sprites, character storage and file export;
-`packages/app` is the Preact UI. Data lives in `data/` and `locales/`.
+`packages/app` is the Preact UI. PixyGoat's own data lives in `data/` and
+`locales/`; the sheet definitions are not in here and are fetched at setup
+time — `data/upstream.json` says from where.
 
 - [docs/implementation-plan.md](docs/implementation-plan.md) — decisions, architecture, milestones
 - [docs/unity-export.md](docs/unity-export.md) — export format, the Unity importer, and what is not general yet
@@ -280,9 +304,12 @@ with the tool.
 somebody in the LPC community and carries its own licence — CC0, CC-BY, CC-BY-SA,
 OGA-BY or GPL. The strictest part on a sheet sets the rules for that sheet, the
 in-app licence panel explains what each one allows, and every export writes the
-credits next to the files. The sheet definitions under `data/definitions/` come
-from the [Universal LPC Spritesheet Character Generator](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator)
-and carry the artists' credits. Third-party npm packages are listed in
+credits next to the files. **This repository contains no LPC content at all** —
+neither the sprites nor the sheet definitions that describe them. Both are
+fetched from the
+[Universal LPC Spritesheet Character Generator](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator)
+on your machine, under their own terms, and the definitions carry the artists'
+credits into every export. Third-party npm packages are listed in
 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 Not a condition, only a wish: if PixyGoat helped you make something, a mention

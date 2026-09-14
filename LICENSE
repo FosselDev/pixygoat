@@ -85,14 +85,14 @@ The **licensor** is the individual or entity offering these terms, and the **sof
 
 ----------------------------------------------------------------------------
 
-The sprite sheet definitions in data/definitions/ originate from the
-Universal LPC Spritesheet Character Generator repository
+This repository contains no LPC content: neither the sprite artwork nor the
+sheet definitions that describe it. Both are fetched on your own machine from
+the Universal LPC Spritesheet Character Generator repository
 (https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator)
-and are included as data; the sprite artwork they describe is licensed by its
-respective authors as listed in each definition's credits. Neither the
-definitions nor the artwork are covered by the license above - the sprites you
-export carry their own terms, whatever they are, and a noncommercial license on
-this tool neither adds to them nor takes anything away.
+and are licensed by their respective authors, as listed in each definition's
+credits. Neither is covered by the license above - the sprites you export carry
+their own terms, whatever they are, and a noncommercial license on this tool
+neither adds to them nor takes anything away.
 
 Third-party npm packages are listed in THIRD_PARTY_LICENSES.md; all of them are
 permissively licensed.

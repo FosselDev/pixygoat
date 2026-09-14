@@ -21,11 +21,18 @@ wird er in `docs/` gepflegt und pro Meilenstein abgehakt.
   Palette-Recoloring zur Laufzeit (heutiger Repo-Stand) ist für 1.0 nicht nötig,
   wird aber im Datenmodell vorgesehen (`variantSource: "file" | "palette"`).
 - Der aktuelle Repo-Stand hat Ordner umbenannt (z. B. `arms/gloves` →
-  `arms/hands/gloves`, `female` → `thin`) und Assets ergänzt. Für 1.0 gilt der
-  Juli-2025-Stand. Ein späteres Update der Assets ist ein Austausch von
-  `spritesheets/` plus `data/definitions/` – der Katalog wird neu gebaut.
-- Lizenz des Generator-Codes: **GPL-3.0**. Es wird **kein Code** übernommen,
-  nur die JSON-Daten (Definitionen, Credits, Frame-Layouts als Daten). Sprite
+  `arms/hands/gloves`, `female` → `thin`) und Assets ergänzt; die
+  `sheet_definitions` liegen dort inzwischen in Unterordnern (`arms/`, `body/`,
+  `hair/` …), die diese Version nicht liest. Für 1.0 gilt der Juli-2025-Stand.
+  Ein späteres Update der Assets ist ein Austausch von `spritesheets/` plus den
+  Definitionen – der Katalog wird neu gebaut.
+- **Seit 14.09.2026 liegen die Definitionen nicht mehr im Repo** (Lizenzgrund,
+  siehe unten): sie werden beim Setup aus dem Generator-Repo geholt
+  (`data/upstream.json`, `npm run definitions`) oder neben den Sprites
+  gefunden. PixyGoat liefert damit keinerlei LPC-Inhalte aus.
+- Lizenz des Generator-Codes: **GPL-3.0**. Es wird **kein Code** übernommen und
+  seit 14.09.2026 auch keine Daten mehr mitgeliefert: die JSON-Definitionen
+  holt der Nutzer selbst von der Quelle. Sprite
   Forge selbst steht unter **PolyForm Noncommercial 1.0.0** (Stand 14.09.2026;
   bis dahin MIT) und bleibt damit frei
   verteil- und verkaufbar. Die Sprites tragen ihre eigenen Lizenzen (siehe
@@ -72,8 +79,8 @@ Alle Abhängigkeiten sind MIT, Apache-2.0 oder BSD. Vor jedem Release läuft
 ```
 pixygoat/
 ├── spritesheets/              unverändert, wird nur gelesen
-├── data/
-│   ├── definitions/           sheet_definitions vom Commit e7fa0aee616 (JSON, unverändert)
+├── data/                      nur PixyGoats eigene Daten, kein LPC-Inhalt
+│   ├── upstream.json          woher die sheet_definitions geholt werden (Repo, Commit, Ordner)
 │   ├── animations.json        Standard-Animationen: Zeilen, Spalten, Zyklen, Ordnernamen
 │   ├── custom-animations.json Oversize-Layouts (128/192 px) als Daten
 │   ├── licenses.json          Lizenztexte, Kurzfassungen, Symbole, Pflichten (Abschnitt 8)
