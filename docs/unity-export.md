@@ -1,73 +1,72 @@
-# Export nach Unity
+# Exporting to Unity
 
-Wie PixyGoat einen LPC-Charakter in ein Paper-Doll-Format bringt, das eine
-Unity-Seite Sheet für Sheet einlesen kann, was dabei entsteht und was der
-Import daraus baut.
+How PixyGoat turns an LPC character into a paper-doll format a Unity side can
+read sheet by sheet, what it writes, and what the import builds from it.
 
-Das Format ist bewusst engine-nah, aber nicht spielspezifisch: acht Slots im
-Mana-Seed-Namensschema, ein Raster je Seite, und ein Manifest, das alles
-mitliefert, was ein Importer sonst raten müsste.
+The format is deliberately close to an engine without being specific to one
+game: eight slots in the Mana Seed naming scheme, one grid per page, and a
+manifest carrying everything an importer would otherwise have to guess.
 
-## Kurzfassung
+## The short version
 
-1. In PixyGoat **Exportieren → Unity · Paper-Doll-Parts**, Zielordner
-   voreingestellt auf `exports/unity` oder auf das, was
-   `PIXYGOAT_UNITY_DIR` sagt — sinnvollerweise ein Pfad unter `Assets/`.
-2. In Unity **Build PixyGoat Character…** aufrufen und die geschriebene
-   `manifest.json` wählen.
-3. Die Rückfrage beantworten: **Playable character** hängt Rigidbody2D,
-   Kapsel-Collider und die Spieler-Komponenten an, **Graphics only** liefert
-   ein Prefab, das nur zeichnet.
+1. In PixyGoat, **Export → Unity · paper-doll parts**. The target folder
+   defaults to `exports/unity`, or to whatever `PIXYGOAT_UNITY_DIR` says —
+   sensibly a path under `Assets/`.
+2. In Unity, run **Build PixyGoat Character…** and pick the `manifest.json`
+   that was written.
+3. Answer the question: **Playable character** attaches a Rigidbody2D, a
+   capsule collider and the player components; **Graphics only** gives you a
+   prefab that nothing but draws.
 
-Fertig. Der Befehl legt Seiten, Parts, Clips, Animator Controller und Prefab
-an. Wer nur die Sheets und Parts will, nimmt **Import PixyGoat Manifest…**
-und baut den Rest von Hand (Abschnitt 5 in `paperdoll-usage.md`).
+That is all. The command creates pages, parts, clips, an animator controller
+and a prefab. If you only want the sheets and parts, use **Import PixyGoat
+Manifest…** and build the rest by hand.
 
-## Was PixyGoat schreibt
+## What PixyGoat writes
 
 ```
 LPC/
 ├── Sheets/
-│   ├── char_a_walk_0bas_<variant>_v01.png       9×4 Zellen à 64 px
+│   ├── char_a_walk_0bas_<variant>_v01.png       9×4 cells of 64 px
 │   ├── char_a_walk_1out_<variant>_v01.png
-│   ├── char_a_walk_2clo_<variant>_v01.png       Rück-Ebenen, Zeichenreihenfolge -1
-│   ├── char_a_slash128_6tla_<variant>_v01.png   6×4 Zellen à 128 px (Oversize)
+│   ├── char_a_walk_2clo_<variant>_v01.png       back layers, draw order -1
+│   ├── char_a_slash128_6tla_<variant>_v01.png   6×4 cells of 128 px (oversize)
 │   └── …
 ├── manifest.json
-├── character.json      die PixyGoat-Auswahl, zum Wiederladen
-├── CREDITS.txt         Autoren und Lizenzen der verwendeten Sprites
+├── character.json      the PixyGoat selection, for loading it again
+├── CREDITS.txt         authors and licences of every sprite used
 └── CREDITS.csv
 ```
 
-Der Dateiname folgt dem Mana-Seed-Schema, das `CharacterPartImporter` liest:
-`char_a_<page>_<layer>_<variant>_v<nn>`. Page-Codes enthalten keine
-Unterstriche (`combat_idle` → `combatidle`), der Variantenname wird auf
-Buchstaben und Ziffern reduziert.
+File names follow the Mana Seed scheme that `CharacterPartImporter` reads:
+`char_a_<page>_<layer>_<variant>_v<nn>`. Page codes carry no underscores
+(`combat_idle` → `combatidle`), and the variant name is reduced to letters and
+digits.
 
 ### Slots
 
-| Slot | Inhalt aus LPC |
+| Slot | What goes in it, from LPC |
 |---|---|
-| `0bas` | Körper, Kopf, Augen, Nase, Ohren, Ausdruck, Schwanz, Flügel, Schatten, Wunden, Prothesen |
-| `1out` | Kleidung, Beine, Schuhe, Handschuhe, Gürtel, Rüstung, Schultern, Hals, Rucksack, Umhang (Vorderseite) |
-| `2clo` | **alle Ebenen hinter dem Körper**: Haar-Rückseite, Umhang hinten, Waffe/Schild hinter der Figur |
-| `3fac` | Brillen, Augenklappen, Masken, Ohrringe, Visier, Bart, Schnurrbart |
-| `4har` | Haare und Haarteile |
-| `5hat` | Kopfbedeckungen, Bandanas |
-| `6tla` | Waffen und Werkzeuge (Vorderseite) |
-| `7tlb` | Schilde |
+| `0bas` | body, head, eyes, nose, ears, expression, tail, wings, shadow, wounds, prostheses |
+| `1out` | clothes, legs, shoes, gloves, belts, armour, shoulders, neck, backpack, cape (front) |
+| `2clo` | **every layer behind the body**: hair back, cape back, a weapon or shield behind the figure |
+| `3fac` | glasses, eye patches, masks, earrings, visor, beard, moustache |
+| `4har` | hair and hair pieces |
+| `5hat` | headwear, bandanas |
+| `6tla` | weapons and tools (front) |
+| `7tlb` | shields |
 
-Die Zuordnung liegt in `data/slot-mapping.json`. LPC zeichnet Ebenen nach
-`zPos`; alles unter dem Körper (`zPos < 10`) landet in `2clo`, unabhängig vom
-Typ. Innerhalb eines Slots bleibt die LPC-Reihenfolge erhalten, weil der Slot
-als Composite gerendert wird.
+The mapping lives in `data/slot-mapping.json`. LPC orders layers by `zPos`;
+everything below the body (`zPos < 10`) goes to `2clo` whatever its type is.
+Within a slot the LPC order survives, because the slot is rendered as a
+composite.
 
 ### Pages
 
-Eine Page je LPC-Animation, Raster = Spalten × 4 Zeilen (up, left, down,
-right); `hurt` und `climb` haben eine Zeile.
+One page per LPC animation, the grid being columns × 4 rows (up, left, down,
+right); `hurt` and `climb` have a single row.
 
-| Page | Raster | Page | Raster |
+| Page | Grid | Page | Grid |
 |---|---|---|---|
 | spellcast | 7×4 | idle | 2×4 |
 | thrust | 8×4 | jump | 5×4 |
@@ -78,12 +77,11 @@ right); `hurt` und `climb` haben eine Zeile.
 | climb | 6×1 | backslash | 13×4 |
 | | | halfslash | 7×4 |
 
-**Oversize:** Trägt der Charakter eine Waffe mit 128- oder 192-px-Frames,
-bekommt die betroffene Animation eine Page mit dieser Zellgröße, etwa
-`slash128` (6×4 à 128 px). Alle Slots dieser Page sind auf die große Zelle
-gepolstert, der Körper sitzt zentriert. Die Regel "alle Ebenen einer Page
-teilen ein Raster" bleibt damit erhalten. Die 64-px-Page derselben Animation
-wird dann nicht geschrieben.
+**Oversize:** if the character carries a weapon with 128 or 192 px frames, the
+animation it affects gets a page at that cell size instead — `slash128`, for
+example, 6×4 at 128 px. Every slot on that page is padded to the larger cell
+and the body sits centred, so the rule that all layers of a page share one grid
+still holds. The 64 px page of the same animation is then not written.
 
 ### manifest.json
 
@@ -103,99 +101,93 @@ wird dann nicht geschrieben.
 }
 ```
 
-- `drawOrder`: je Slot entweder `"*": n` für alle Pages oder ein Page-Code mit
-  einem Array je Frame. PixyGoat schreibt heute nur die Rück-Ebene mit `-1`;
-  das Format trägt aber auch Frame-Tabellen, falls ein späterer Export sie
-  braucht.
-- `missing`: Slots ohne Inhalt in einer Page. Die Zellen bleiben leer, der Rig
-  schaltet den Renderer dort ab.
-- `cycle`, `frameMs`, `loop`: welche Spalten in welcher Reihenfolge laufen, wie
-  lange ein Bild steht und ob die Animation sich wiederholt. Damit baut der
-  Unity-Befehl die Clips, ohne etwas über LPC zu wissen.
+- `drawOrder`: per slot, either `"*": n` for every page, or a page code with one
+  array per frame. Today PixyGoat only ever writes the back layer at `-1`, but
+  the format carries per-frame tables in case a later export needs them.
+- `missing`: slots with nothing in them on a page. The cells stay empty and the
+  rig switches that renderer off.
+- `cycle`, `frameMs`, `loop`: which columns run in which order, how long a frame
+  is held, and whether the animation repeats. That is what lets the Unity
+  command build the clips without knowing anything about LPC.
 
-## Die Unity-Seite
+## The Unity side
 
-**Noch nicht Teil dieses Repos.** Der Importer ist bisher eine
-Referenzimplementierung im Unity-Projekt, das PixyGoat zuerst beliefert hat;
-hierher gehört er, sobald klar ist, wie weit er sich von den Annahmen dieses
-einen Projekts lösen lässt (siehe *Offen* unten). Was er tut, steht trotzdem
-hier, weil es beschreibt, was das Format verlangt.
+**Not part of this repository yet.** The importer is so far a reference
+implementation living in the Unity project PixyGoat first fed; it belongs here
+once it is clear how far it can be pulled loose from that one project's
+assumptions (see *Open* below). What it does is written down anyway, because it
+describes what the format asks for.
 
-Zwei Dateien im Editor-Ordner: `PixyGoatManifestImporter.cs` für Sheets,
-Seiten und Parts, `PixyGoatCharacterBuilder.cs` für Clips, Controller und
-Prefab. Der Builder ruft den Importer auf, **Build PixyGoat Character…** ist
-also der ganze Weg.
+Two files in the editor folder: `PixyGoatManifestImporter.cs` for sheets, pages
+and parts, `PixyGoatCharacterBuilder.cs` for clips, controller and prefab. The
+builder calls the importer, so **Build PixyGoat Character…** is the whole way.
 
-Der Importer:
+The importer:
 
-1. Legt für jede Page in `manifest.json` ein Page-Asset an (oder findet es
-   über den Page-Code) und setzt `Columns`/`Rows`.
-2. Setzt je Sheet: Sprite Mode Multiple, PPU 32, Point-Filter, keine
-   Kompression, Mesh Type Full Rect, und slict auf **Grid By Cell Size** mit
-   der Zellgröße der Page. Vollständig transparente Zellen werden
-   ausgelassen, genau wie beim manuellen Slicing.
-3. Ruft `CharacterPartImporter.Import` für jedes Sheet, so dass je Slot ein
-   Part-Asset mit einem Eintrag je Page entsteht (`Part_2clo_josua_v01`).
-4. Schreibt die Tabellen aus `drawOrder` in die Page-Assets. Bestehende
-   Tabellen für dieselben Slots werden nur nach Rückfrage ersetzt.
-5. Setzt `HidesSlots` aus `hides`.
+1. Creates a page asset for every page in `manifest.json` (or finds it by its
+   page code) and sets `Columns` and `Rows`.
+2. Sets, per sheet: sprite mode multiple, 32 pixels per unit, point filtering,
+   no compression, mesh type full rect, and slices on **grid by cell size**
+   using the page's cell size. Fully transparent cells are left out, exactly as
+   they are when slicing by hand.
+3. Calls `CharacterPartImporter.Import` for each sheet, so that every slot ends
+   up as a part asset with one entry per page (`Part_2clo_josua_v01`).
+4. Writes the tables from `drawOrder` into the page assets. Existing tables for
+   the same slots are only replaced after asking.
+5. Sets `HidesSlots` from `hides`.
 
-Der Menüpunkt braucht die Referenz `Unity.2D.Sprite.Editor` in der
-Editor-asmdef, die ihn enthält (Grid-Slicing über
-`ISpriteEditorDataProvider`).
+The menu item needs a reference to `Unity.2D.Sprite.Editor` in the editor asmdef
+that holds it, for grid slicing through `ISpriteEditorDataProvider`.
 
-**Der Builder erzeugt zusätzlich:**
+**The builder also produces:**
 
-- **Clips**, einen je Seite und Richtung, auf dem `0bas`-Renderer, mit Sample
-  Rate 200, Abschluss-Key und der Schleifeneinstellung aus `loop`. Bei einer
-  Oversize-Page zeigen sie auf die 128- oder 192-px-Sprites; da alle Slots der
-  Page dasselbe Raster haben, läuft der Rig unverändert.
-- **Animator Controller** auf den Parametern, die die Spielerlogik des
-  Zielprojekts ohnehin schreibt: `facingX`,
-  `facingY`, `isMoving`, `weaponDrawn`, `attackActive` und der Trigger
-  `isAttack`. Richtungen laufen als 2D-Blend-Tree, weil Sprite-Kurven diskret
-  gewählt und nie interpoliert werden. `facingY` ist auf −1 voreingestellt:
-  der Ursprung ist im Blend-Tree keine Richtung, und eine Figur, für die
-  niemand die Blickrichtung schreibt, zeigt sonst ihren Rücken. Ein
-  vorhandener Controller bleibt unangetastet, fehlende Parameter ergänzt der
-  Befehl trotzdem.
-- **Prefab** mit `SortingGroup` auf Sorting Layer Entities, acht Slot-Kindern
-  auf `(0, 0.375, 0)` und einem `PaperDollRig`, dessen Body Slot, Animation
-  Source Part und Default Parts gesetzt sind. Jeder Renderer trägt die
-  Ruhepose fest eingetragen, sonst bleibt der Charakter bis zum ersten
-  Play-Klick unsichtbar: das Rig liest den Frame-Index aus dem Body-Renderer
-  zurück, und ein leerer Renderer löst nichts auf.
-- **Spieler-Komponenten**, auf Wunsch: Rigidbody2D ohne Schwerkraft, ein
-  flacher Kapsel-Collider an den Füßen und die Bewegungs- und
-  Animationskomponenten des Zielprojekts. Ohne sie schreibt niemand die
-  Animator-Parameter, und die Figur bewegt sich, ohne zu laufen. Dieser
-  Schritt ist der spielspezifischste von allen.
+- **Clips**, one per page and direction, on the `0bas` renderer, at sample rate
+  200, with a closing key and the looping taken from `loop`. On an oversize page
+  they point at the 128 or 192 px sprites; since every slot of that page shares
+  the grid, the rig runs unchanged.
+- **An animator controller** on the parameters the target project's player logic
+  writes anyway: `facingX`, `facingY`, `isMoving`, `weaponDrawn`,
+  `attackActive`, and the `isAttack` trigger. Directions run as a 2D blend tree,
+  because sprite curves are chosen discretely and never interpolated. `facingY`
+  defaults to −1: the origin is not a direction in a blend tree, and a figure
+  nobody writes a facing for would otherwise show you its back. An existing
+  controller is left alone, though missing parameters are still added.
+- **A prefab** with a `SortingGroup` on sorting layer Entities, eight slot
+  children at `(0, 0.375, 0)`, and a `PaperDollRig` whose body slot, animation
+  source part and default parts are set. Every renderer carries the rest pose
+  written in, or the character stays invisible until the first play click: the
+  rig reads the frame index back from the body renderer, and an empty renderer
+  resolves to nothing.
+- **Player components**, on request: a Rigidbody2D without gravity, a flat
+  capsule collider at the feet, and the target project's movement and animation
+  components. Without them nobody writes the animator parameters and the figure
+  moves without walking. This step is the most game-specific of all.
 
-**Danach von Hand:** nur noch die Zustände im Controller ergänzen, wenn das
-Spiel mehr braucht als Stehen, Gehen, Kampfhaltung und Angriff.
+**Left to do by hand:** only adding states to the controller, if the game needs
+more than standing, walking, a combat stance and an attack.
 
-**Unbeaufsichtigt aufrufen:** `Build` nimmt `replaceExisting` und
-`replaceDrawOrder`. Ohne Wert fragt der Befehl per Dialog nach — was aus einem
-Skript heraus heißt, dass der Lauf hinter einem Fenster wartet, das niemand
-sieht. Wer aus Code oder über eine Werkzeugbrücke baut, beantwortet beide
-vorher.
+**Calling it unattended:** `Build` takes `replaceExisting` and
+`replaceDrawOrder`. Without values the command asks in a dialog — which, from a
+script, means the run waits behind a window nobody can see. Anyone building from
+code or across a tool bridge answers both up front.
 
-**Nicht importierbar:** der Export "jede LPC-Ebene als eigenes Sheet". Er
-erzeugt Slot-Codes, für die der Rig keinen Renderer hat; der Importer meldet
-sie und überspringt die Sheets.
+**Not importable:** the "every LPC layer as its own sheet" export. It produces
+slot codes the rig has no renderer for; the importer reports them and skips
+those sheets.
 
-## Offen
+## Open
 
-Der Export heißt jetzt nach seinem Ziel und nicht mehr nach einem Spiel, aber
-verallgemeinert ist er damit noch nicht. Was bisher aus einem einzelnen
-Projekt stammt und irgendwann eine Entscheidung braucht:
+The export is named after its target rather than after a game now, but that has
+not made it general. What still comes from one single project and will need a
+decision one day:
 
-- **Die acht Slots** sind Mana-Seed. Ein anderes Rig hat andere, vielleicht
-  mehr. Die Zuordnung liegt schon als Daten in `slot-mapping.json`, der
-  Slot-Satz selbst noch nicht.
-- **Sorting Layer, Pixel pro Unit und der Versatz `(0, 0.375, 0)`** sind
-  Annahmen über das Zielprojekt. Sie gehören ins Manifest oder in den Dialog.
-- **Der Importer selbst** liegt außerhalb dieses Repos. Er sollte hierher, mit
-  dem spielspezifischen Teil hinter einer klaren Naht.
-- **Andere Engines.** Godot und Tiled lesen dasselbe Rastermodell; ein zweiter
-  Exporter wäre vor allem ein anderes Manifest.
+- **The eight slots** are Mana Seed. Another rig has different ones, possibly
+  more. The mapping is already data in `slot-mapping.json`; the set of slots
+  itself is not.
+- **The sorting layer, the pixels per unit and the `(0, 0.375, 0)` offset** are
+  assumptions about the target project. They belong in the manifest, or in the
+  dialog.
+- **The importer itself** lives outside this repository. It should come here,
+  with the game-specific part behind a clear seam.
+- **Other engines.** Godot and Tiled read the same grid model; a second exporter
+  would mostly be a different manifest.
