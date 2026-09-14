@@ -11,21 +11,44 @@ export interface DirEntry {
 
 export type DirIndex = Map<string, DirEntry>;
 
+export interface ScanProgress {
+  dirs: number;
+  files: number;
+  /** top-level folders walked to the end */
+  done: number;
+  /** how many there are, known as soon as the root has been read */
+  total: number;
+  /** the one being walked right now, e.g. "hair" */
+  current?: string;
+}
+
 /**
  * Walks the sprites root once and records, per directory, the PNG file stems
  * and sub-directory names. Around 16k directories and 300k files take a few
  * seconds; nothing is decoded here.
+ *
+ * How far along it is can only be told in top-level folders: the tree below
+ * them is unknown until it has been walked. Counting how many of `body`,
+ * `hair`, `weapon` and the rest are finished is coarse but true, which beats a
+ * bar that guesses.
  */
 export async function scanSprites(
   root: string,
-  onProgress?: (dirs: number, files: number) => void,
+  onProgress?: (p: ScanProgress) => void,
 ): Promise<DirIndex> {
   const index: DirIndex = new Map();
   let files = 0;
+  let done = 0;
+  let total = 0;
+  let current: string | undefined;
+  /** directories still to be walked, per top-level folder */
+  const pending = new Map<string, number>();
   const stack: string[] = [""];
+
   while (stack.length) {
     const rel = stack.pop()!;
     const abs = rel ? join(root, rel) : root;
+    const top = rel.split("/")[0] || undefined;
     const entry: DirEntry = { files: [], dirs: [], mtimeMs: 0 };
     try {
       entry.mtimeMs = (await stat(abs)).mtimeMs;
@@ -34,7 +57,10 @@ export async function scanSprites(
         if (d.name.startsWith(".")) continue;
         if (d.isDirectory()) {
           entry.dirs.push(d.name);
-          stack.push(rel ? `${rel}/${d.name}` : d.name);
+          const child = rel ? `${rel}/${d.name}` : d.name;
+          stack.push(child);
+          const childTop = child.split("/")[0]!;
+          pending.set(childTop, (pending.get(childTop) ?? 0) + 1);
         } else if (d.isFile() && d.name.toLowerCase().endsWith(".png")) {
           entry.files.push(d.name.slice(0, -4));
           files++;
@@ -47,9 +73,17 @@ export async function scanSprites(
     entry.files.sort();
     entry.dirs.sort();
     index.set(rel, entry);
-    if (onProgress && index.size % 1000 === 0) onProgress(index.size, files);
+
+    if (rel === "") total = entry.dirs.length;
+    if (top) {
+      current = top;
+      const left = (pending.get(top) ?? 1) - 1;
+      pending.set(top, left);
+      if (left === 0) done++;
+    }
+    if (onProgress && index.size % 200 === 0) onProgress({ dirs: index.size, files, done, total, current });
   }
-  onProgress?.(index.size, files);
+  onProgress?.({ dirs: index.size, files, done, total });
   return index;
 }
 

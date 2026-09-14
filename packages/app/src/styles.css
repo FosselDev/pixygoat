@@ -289,10 +289,27 @@ a { color: var(--accent); }
 kbd { font-family: var(--font-mono); font-size: 10px; padding: 1px 5px; border: 1px solid var(--line-3); border-radius: 3px; color: var(--muted); }
 .drop-hint { position: fixed; inset: 0; border: 3px dashed var(--accent); background: rgba(232,163,60,0.08); z-index: 70; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--accent-soft); pointer-events: none; }
 
+/* waiting: a goat grazing its way along a pixel track */
+/* the goat stands on top of the track, so the component reserves its height */
+.gp { width: min(420px, 100%); display: flex; flex-direction: column; gap: 9px; padding-top: 20px; }
+.gp-track { position: relative; height: 10px; border: 1px solid var(--line-2); border-radius: 2px; background-color: var(--bg); background-image: repeating-linear-gradient(90deg, var(--line) 0 calc(100% / 32 - 2px), transparent calc(100% / 32 - 2px) calc(100% / 32)); }
+.gp-fill { height: 100%; width: 0; background-image: repeating-linear-gradient(90deg, var(--accent) 0 calc(420px / 32 - 2px), transparent calc(420px / 32 - 2px) calc(420px / 32)); background-size: 420px 100%; transition: width 0.25s steps(4); }
+.gp-goat { position: absolute; bottom: 7px; left: 0; margin-left: -11px; color: var(--accent); filter: drop-shadow(0 0 8px rgba(232, 163, 60, 0.35)); transition: left 0.25s steps(4); animation: gp-hop 0.5s steps(2) infinite; }
+@keyframes gp-hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+/* nothing to count yet: the goat wanders and eats a patch as it goes */
+.gp.wander .gp-goat { animation: gp-hop 0.5s steps(2) infinite, gp-wander 3.2s steps(16) infinite alternate; }
+.gp.wander .gp-fill { width: 26%; animation: gp-graze 3.2s steps(16) infinite alternate; }
+@keyframes gp-wander { from { left: 4%; } to { left: 96%; } }
+@keyframes gp-graze { from { margin-left: 0; width: 6%; } to { margin-left: 74%; width: 26%; } }
+.gp-text { display: flex; align-items: baseline; gap: 8px; font-size: 11px; color: var(--muted); }
+.gp-label { flex: 1; }
+.gp-detail { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gp-pct { color: var(--accent); font-variant-numeric: tabular-nums; }
+
 /* first start: pick the spritesheet folder */
 .setup { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 20px; background: radial-gradient(1100px 560px at 50% 20%, #1c1a16 0%, var(--bg) 68%); }
 .setup-card { position: relative; width: min(760px, 100%); display: flex; flex-direction: column; gap: 12px; padding: 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
-.setup-card header { display: flex; align-items: flex-start; gap: 14px; }
+.setup-card header { display: flex; align-items: flex-start; gap: 14px; padding-right: 96px; }
 .setup-card header .goat { color: var(--accent); flex-shrink: 0; }
 .setup-card h1 { font-family: var(--font-display); font-size: 26px; margin: 0; letter-spacing: -0.01em; }
 .setup-card header p { margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 52ch; text-wrap: pretty; }
@@ -304,7 +321,9 @@ kbd { font-family: var(--font-mono); font-size: 10px; padding: 1px 5px; border: 
 .setup .crumbs .linkish { padding: 2px 5px; border-radius: 4px; color: inherit; }
 .setup .crumbs .linkish:hover { background: var(--line); color: var(--text); }
 .setup .crumbs .btn { margin-right: 4px; }
-.setup .dirlist { height: 268px; overflow-y: auto; border: 1px solid var(--line-2); border-radius: 6px; background: var(--bg); }
+.setup .dirlist { position: relative; height: min(268px, 42vh); min-height: 160px; overflow-y: auto; border: 1px solid var(--line-2); border-radius: 6px; background: var(--bg); }
+.setup .dirlist.reading > .dirrow, .setup .dirlist.reading > .empty { opacity: 0.25; }
+.setup .dirlist-wait { position: sticky; top: 0; z-index: 1; display: flex; justify-content: center; padding: 22px 16px; background: linear-gradient(var(--bg) 70%, transparent); }
 .setup .dirrow { display: flex; align-items: center; gap: 9px; width: 100%; padding: 7px 11px; font-size: 12px; color: #c4c4cc; border-bottom: 1px solid var(--line); text-align: left; }
 .setup .dirrow:last-child { border-bottom: none; }
 .setup .dirrow:hover { background: var(--panel-2); color: var(--text); }

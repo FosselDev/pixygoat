@@ -13,13 +13,20 @@ import {
 } from "@pixygoat/core";
 import { readPngSize, scanSprites, type DirIndex } from "./scan.ts";
 
+/** What the app draws a bar from. `total` is absent while it cannot be known. */
+export interface BuildProgress {
+  phase: "scan" | "probe" | "match" | "cache";
+  done?: number;
+  total?: number;
+}
+
 export interface BuildOptions {
   spritesRoot: string;
   definitionsDir: string;
   cacheDir: string;
   /** rebuild even when the cached catalog matches the fingerprint */
   force?: boolean;
-  log?: (msg: string) => void;
+  log?: (msg: string, progress?: BuildProgress) => void;
 }
 
 const CATALOG_VERSION = 1;
@@ -35,8 +42,14 @@ export async function loadOrBuildCatalog(opts: BuildOptions): Promise<Catalog> {
   const cacheFile = join(opts.cacheDir, "catalog.json");
   const t0 = Date.now();
 
-  log("scanning sprites directory…");
-  const index = await scanSprites(opts.spritesRoot, (d, f) => log(`  ${d} directories, ${f} files`));
+  log("scanning sprites directory…", { phase: "scan" });
+  const index = await scanSprites(opts.spritesRoot, (p) =>
+    log(`  ${p.current ? `${p.current}: ` : ""}${p.dirs} directories, ${p.files} files`, {
+      phase: "scan",
+      done: p.done,
+      total: p.total || undefined,
+    }),
+  );
 
   const definitions = await loadDefinitions(opts.definitionsDir);
   const fingerprint = fingerprintOf(index, definitions);
@@ -53,8 +66,9 @@ export async function loadOrBuildCatalog(opts: BuildOptions): Promise<Catalog> {
     }
   }
 
-  log("building catalog…");
+  log("building catalog…", { phase: "probe", done: 0, total: index.size });
   const catalog = await buildCatalog(index, definitions, opts.spritesRoot, fingerprint, t0, log);
+  log("writing cache…", { phase: "cache" });
   await mkdir(opts.cacheDir, { recursive: true });
   await writeFile(cacheFile, JSON.stringify(catalog));
   log(`catalog built: ${catalog.meta.itemCount} items, ${catalog.meta.sheetDirCount} sheet dirs (${catalog.meta.buildMs} ms)`);
@@ -88,7 +102,7 @@ async function buildCatalog(
   spritesRoot: string,
   fingerprint: string,
   t0: number,
-  log: (msg: string) => void,
+  log: (msg: string, progress?: BuildProgress) => void,
 ): Promise<Catalog> {
   const variantTable: string[] = [];
   const variantIdx = new Map<string, number>();
@@ -124,7 +138,11 @@ async function buildCatalog(
   }
 
   let probed = 0;
+  let seen = 0;
   for (const [path, entry] of index) {
+    // Counted per directory rather than per probe: only some hold sheets, and
+    // a bar that jumps to the end and waits is worse than none.
+    if (++seen % 500 === 0) log(`  probed ${probed} sheets`, { phase: "probe", done: seen, total: index.size });
     if (path === "") continue;
     if (ANIMATION_IDS.has(basename(path)) && !definedDirs.has(path)) continue;
     const animDirs = entry.dirs.filter((d) => ANIMATION_IDS.has(d));
@@ -147,10 +165,10 @@ async function buildCatalog(
       if (size) sheet.files = { w: size.width, h: size.height, v: looseFiles.map(vIndex) };
     }
     if (Object.keys(sheet.anims).length > 0 || sheet.files) sheets[path] = sheet;
-    if (probed % 2000 === 0 && probed > 0) log(`  probed ${probed} sheets`);
   }
 
   // Items from definitions, availability checked against the sheet dirs.
+  log("matching definitions…", { phase: "match", done: 0, total: definitions.size });
   const items: CatalogItem[] = [];
   const covered = new Set<string>();
   for (const [id, raw] of definitions) {

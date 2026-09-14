@@ -25,7 +25,17 @@ import {
 // Catalog
 
 export const catalog = signal<Catalog | null>(null);
-export const catalogStatus = signal<{ state: "loading" | "unconfigured" | "building" | "ready" | "error"; message?: string }>({ state: "loading" });
+export interface CatalogProgress {
+  phase: "scan" | "probe" | "match" | "cache";
+  done?: number;
+  total?: number;
+}
+
+export const catalogStatus = signal<{
+  state: "loading" | "unconfigured" | "building" | "ready" | "error";
+  message?: string;
+  progress?: CatalogProgress;
+}>({ state: "loading" });
 
 export const itemsById = computed(() => {
   const map = new Map<string, CatalogItem>();

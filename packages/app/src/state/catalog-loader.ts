@@ -1,5 +1,5 @@
 import type { Catalog } from "@pixygoat/core";
-import { catalog, catalogStatus, draft } from "./store.ts";
+import { catalog, catalogStatus, draft, type CatalogProgress } from "./store.ts";
 import { loadAutosave } from "./persistence.ts";
 
 /** Fetches the catalog, polling while the server is still building it. */
@@ -12,9 +12,9 @@ export async function loadCatalog(): Promise<void> {
       const res = await fetch("/api/catalog");
       if (res.status === 503) {
         failures = 0;
-        const body = (await res.json()) as { status?: { state?: string; message?: string } };
+        const body = (await res.json()) as { status?: { state?: string; message?: string; progress?: CatalogProgress } };
         const state = body.status?.state === "unconfigured" ? "unconfigured" : "building";
-        catalogStatus.value = { state, message: body.status?.message };
+        catalogStatus.value = { state, message: body.status?.message, progress: body.status?.progress };
         await new Promise((r) => setTimeout(r, state === "unconfigured" ? 3000 : 1500));
         continue;
       }

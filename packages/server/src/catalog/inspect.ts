@@ -52,12 +52,15 @@ export async function inspectSpritesDir(path: string, definitionsDir: string): P
   const report: SpritesDirReport = { path, exists: false, matched: [], expected: expected.size, usable: false };
   try {
     if (!(await stat(path)).isDirectory()) return report;
+    report.exists = true;
+    // Windows keeps folders nobody may read (C:\PerfLogs) right next to the
+    // ones people browse, so an unreadable candidate is a folder that holds no
+    // sprites - not a reason to fail the listing it appears in.
+    const entries = await readdir(path, { withFileTypes: true });
+    report.matched = entries.filter((e) => e.isDirectory() && expected.has(e.name)).map((e) => e.name).sort();
+    report.usable = report.matched.length >= 2;
   } catch {
-    return report;
+    /* unreadable: report what is known so far */
   }
-  report.exists = true;
-  const entries = await readdir(path, { withFileTypes: true });
-  report.matched = entries.filter((e) => e.isDirectory() && expected.has(e.name)).map((e) => e.name).sort();
-  report.usable = report.matched.length >= 2;
   return report;
 }

@@ -4,6 +4,7 @@ import { readDroppedFile } from "../state/persistence.ts";
 import { t } from "../i18n/i18n.ts";
 import { StartScreen } from "./StartScreen.tsx";
 import { SetupScreen } from "./SetupScreen.tsx";
+import { GoatProgress } from "./GoatProgress.tsx";
 import { AboutPage } from "./AboutPage.tsx";
 import { TopBar } from "./TopBar.tsx";
 import { SlotStack } from "./SlotStack.tsx";
@@ -103,14 +104,21 @@ export function App() {
   if (!catalog.value) {
     const st = catalogStatus.value;
     if (st.state === "unconfigured") return <SetupScreen />;
+    const p = st.progress;
     return (
       <div class="loading">
         <div class="goat"><Icon.Goat size={112} /></div>
         <h1>{t("app.name")}</h1>
         <div class="msg">
           {st.state === "error" ? t("app.error") : st.state === "building" ? t("app.building") : t("app.loading")}
-          {st.message ? <div class="dim" style="margin-top:6px">{st.message}</div> : null}
         </div>
+        {st.state === "building" && (
+          <GoatProgress
+            value={p?.total ? (p.done ?? 0) / p.total : undefined}
+            label={p ? t(`phase.${p.phase}`) : t("app.loading")}
+            detail={st.message?.trim()}
+          />
+        )}
       </div>
     );
   }

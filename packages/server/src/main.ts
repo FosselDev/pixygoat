@@ -4,14 +4,14 @@ import fastifyCompress from "@fastify/compress";
 import { existsSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { loadConfig, type ServerConfig } from "./config.ts";
-import { loadOrBuildCatalog } from "./catalog/build.ts";
+import { loadOrBuildCatalog, type BuildProgress } from "./catalog/build.ts";
 import { registerCharacterRoutes } from "./routes/characters.ts";
 import { registerExportRoutes } from "./routes/export.ts";
 import { registerSetupRoutes } from "./routes/setup.ts";
 
 type CatalogStatus =
   | { state: "unconfigured" }
-  | { state: "building"; message?: string }
+  | { state: "building"; message?: string; progress?: BuildProgress }
   | { state: "ready" }
   | { state: "error"; message: string };
 
@@ -37,8 +37,8 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
       definitionsDir: cfg.definitionsDir,
       cacheDir: cfg.cacheDir,
       force: cfg.forceRebuild,
-      log: (m) => {
-        catalogStatus = { state: "building", message: m };
+      log: (m, progress) => {
+        catalogStatus = { state: "building", message: m, progress };
         app.log.info(`[catalog] ${m}`);
       },
     })
@@ -109,8 +109,13 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
       prefix: "/",
       decorateReply: true,
       index: ["index.html"],
-      cacheControl: true,
-      maxAge: "1h",
+      cacheControl: false,
+      // Vite hashes every asset name, so those never change under a browser.
+      // index.html is the one file that does, and caching it hands people the
+      // previous build after an update until the cache happens to expire.
+      setHeaders: (reply, path) => {
+        reply.header("Cache-Control", path.endsWith(".html") ? "no-cache" : "public, max-age=31536000, immutable");
+      },
     });
     app.setNotFoundHandler((req, reply) => {
       if (req.url.startsWith("/api/") || req.url.startsWith("/sprites/")) {

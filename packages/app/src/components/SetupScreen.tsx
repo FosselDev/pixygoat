@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { catalogStatus } from "../state/store.ts";
 import { LANGUAGES, language, setLanguage, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
+import { GoatProgress } from "./GoatProgress.tsx";
 
 interface Entry {
   name: string;
@@ -54,17 +55,23 @@ export function SetupScreen() {
   const [manual, setManual] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [reading, setReading] = useState(false);
 
   const browse = async (path?: string) => {
     setError(null);
-    const res = await fetch(`/api/setup/browse?path=${encodeURIComponent(path ?? "")}`);
-    const body = (await res.json()) as Listing & { error?: string };
-    if (!res.ok || body.error) {
-      setError(t("setup.cannotOpen", { dir: path ?? "", error: body.error ?? `HTTP ${res.status}` }));
-      return;
+    setReading(true);
+    try {
+      const res = await fetch(`/api/setup/browse?path=${encodeURIComponent(path ?? "")}`);
+      const body = (await res.json()) as Listing & { error?: string };
+      if (!res.ok || body.error) {
+        setError(t("setup.cannotOpen", { dir: path ?? "", error: body.error ?? `HTTP ${res.status}` }));
+        return;
+      }
+      setListing(body);
+      setManual(body.path);
+    } finally {
+      setReading(false);
     }
-    setListing(body);
-    setManual(body.path);
   };
 
   useEffect(() => {
@@ -149,7 +156,12 @@ export function SetupScreen() {
           ))}
         </div>
 
-        <div class="dirlist">
+        <div class={`dirlist ${reading ? "reading" : ""}`}>
+          {reading && (
+            <div class="dirlist-wait">
+              <GoatProgress label={t("setup.reading")} detail={manual} />
+            </div>
+          )}
           {listing?.entries.length === 0 && <div class="empty dim">{t("setup.noFolders")}</div>}
           {listing?.entries.map((e) => (
             <button class={`dirrow ${e.matched >= 2 ? "hit" : ""}`} key={e.path} onClick={() => void browse(e.path)}>
@@ -159,7 +171,6 @@ export function SetupScreen() {
               <Icon.Right size={13} />
             </button>
           ))}
-          {!listing && <div class="empty dim">{t("setup.loading")}</div>}
         </div>
 
         <div class="row manual">
