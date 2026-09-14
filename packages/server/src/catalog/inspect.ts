@@ -19,6 +19,8 @@ export interface DefinitionsDirReport {
   exists: boolean;
   /** how many JSON files the folder holds */
   count: number;
+  /** JSON one level down, counted only when the folder itself has none */
+  nested: number;
   /** enough of a match to build a catalog from */
   usable: boolean;
 }
@@ -90,6 +92,19 @@ export async function inspectSpritesDir(path: string, definitionsDir: string): P
   return report;
 }
 
+async function countNestedJson(path: string): Promise<number> {
+  let found = 0;
+  const entries = await readdir(path, { withFileTypes: true });
+  for (const e of entries.filter((d) => d.isDirectory()).slice(0, 20)) {
+    try {
+      found += (await readdir(join(path, e.name))).filter((f) => f.endsWith(".json")).length;
+    } catch {
+      /* unreadable subfolder: it contributes nothing */
+    }
+  }
+  return found;
+}
+
 /** Enough files to tell definitions from a folder that happens to hold JSON. */
 const DEFINITION_SAMPLE = 8;
 
@@ -101,7 +116,7 @@ const DEFINITION_SAMPLE = 8;
  * else in a JSON folder does both by accident.
  */
 export async function inspectDefinitionsDir(path: string): Promise<DefinitionsDirReport> {
-  const report: DefinitionsDirReport = { path, exists: false, count: 0, usable: false };
+  const report: DefinitionsDirReport = { path, exists: false, count: 0, nested: 0, usable: false };
   try {
     if (!(await stat(path)).isDirectory()) return report;
     report.exists = true;
@@ -119,6 +134,11 @@ export async function inspectDefinitionsDir(path: string): Promise<DefinitionsDi
         /* not a definition: try the next one */
       }
     }
+    // Upstream sorted the definitions into arms/, body/, hair/ and so on after
+    // the pinned snapshot. PixyGoat reads the flat layout, so that folder is
+    // unusable - but it is worth telling apart from a folder with nothing in
+    // it, because the two need opposite advice.
+    if (report.count === 0) report.nested = await countNestedJson(path);
   } catch {
     /* unreadable: report what is known so far */
   }

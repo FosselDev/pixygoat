@@ -1,14 +1,12 @@
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, readdirSync } from "node:fs";
+import { UPSTREAM, type UpstreamSource } from "@pixygoat/core";
 import { readSettings } from "./settings.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 /** repository root (packages/server/src -> ../../..) */
 export const REPO_ROOT = resolve(here, "..", "..", "..");
-
-/** What the upstream generator repository calls its definitions folder. */
-export const UPSTREAM_DEFINITIONS_DIR = "sheet_definitions";
 
 export type SpritesSource = "flag" | "env" | "settings" | "default";
 export type DefinitionsSource = "flag" | "env" | "settings" | "sprites" | "cache" | "bundled";
@@ -28,6 +26,10 @@ export interface ServerConfig {
   definitionsConfigured: boolean;
   definitionsSource: DefinitionsSource;
   definitionsIgnored: { source: string; path: string }[];
+  /** the repository the definitions are fetched from, and at which commit */
+  upstream: UpstreamSource;
+  /** working copy for whatever is fetched from upstream */
+  upstreamDir: string;
   cacheDir: string;
   charactersDir: string;
   appDist: string;
@@ -109,15 +111,17 @@ export function definitionCandidates(input: {
   env?: string;
   settings?: string;
   spritesRoot: string;
-  cacheDir: string;
+  upstreamDir: string;
   repoRoot: string;
+  /** what the folder is called upstream, and therefore everywhere else */
+  definitionsPath: string;
 }): Candidate<DefinitionsSource>[] {
   return [
     ...candidate("flag", input.flag, true),
     ...candidate("env", input.env, true),
     ...candidate("settings", input.settings, true),
-    ...candidate("sprites", join(dirname(input.spritesRoot), UPSTREAM_DEFINITIONS_DIR), false),
-    ...candidate("cache", join(input.cacheDir, "upstream", UPSTREAM_DEFINITIONS_DIR), false),
+    ...candidate("sprites", join(dirname(input.spritesRoot), input.definitionsPath), false),
+    ...candidate("cache", join(input.upstreamDir, input.definitionsPath), false),
     // A copy somebody put into the repository by hand. PixyGoat ships none.
     ...candidate("bundled", join(input.repoRoot, "data", "definitions"), false),
   ];
@@ -147,6 +151,19 @@ function defaultUnityDir(): string {
   return env ? resolve(env) : resolve(REPO_ROOT, "exports", "unity");
 }
 
+/**
+ * The pinned snapshot, unless somebody points PixyGoat at a fork, a mirror or
+ * a newer commit. The catalogue was built against the pinned one; another may
+ * describe parts this version has never heard of.
+ */
+function resolveUpstream(): UpstreamSource {
+  return {
+    ...UPSTREAM,
+    repo: process.env.PIXYGOAT_UPSTREAM_REPO ?? UPSTREAM.repo,
+    ref: process.env.PIXYGOAT_UPSTREAM_REF ?? UPSTREAM.ref,
+  };
+}
+
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
   return i >= 0 ? process.argv[i + 1] : undefined;
@@ -164,14 +181,17 @@ export function loadConfig(): ServerConfig {
     existsSync,
   );
   const cacheDir = resolve(arg("cache") ?? process.env.PIXYGOAT_CACHE ?? resolve(REPO_ROOT, ".cache"));
+  const upstream = resolveUpstream();
+  const upstreamDir = join(cacheDir, "upstream");
   const definitions = pickPath(
     definitionCandidates({
       flag: arg("definitions"),
       env: process.env.PIXYGOAT_DEFINITIONS,
       settings: settings.definitionsRoot,
       spritesRoot: sprites.path,
-      cacheDir,
+      upstreamDir,
       repoRoot: REPO_ROOT,
+      definitionsPath: upstream.definitionsPath,
     }),
     holdsDefinitions,
   );
@@ -184,6 +204,8 @@ export function loadConfig(): ServerConfig {
     definitionsConfigured: definitions.configured,
     definitionsSource: definitions.source,
     definitionsIgnored: definitions.ignored,
+    upstream,
+    upstreamDir,
     port: Number(arg("port") ?? process.env.PIXYGOAT_PORT ?? 4600),
     host: arg("host") ?? process.env.PIXYGOAT_HOST ?? "127.0.0.1",
     cacheDir,

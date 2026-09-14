@@ -32,9 +32,18 @@ describe("inspectDefinitionsDir", () => {
     expect(report.usable).toBe(false);
   });
 
+  it("tells an empty folder from one that keeps its definitions a level down", async () => {
+    const dir = folder({});
+    mkdirSync(join(dir, "hair"));
+    writeFileSync(join(dir, "hair", "hair_plain.json"), JSON.stringify(HAIR));
+    const report = await inspectDefinitionsDir(dir);
+    expect(report).toMatchObject({ exists: true, count: 0, nested: 1, usable: false });
+    expect(await inspectDefinitionsDir(folder({}))).toMatchObject({ count: 0, nested: 0 });
+  });
+
   it("reports a missing folder instead of throwing", async () => {
     const report = await inspectDefinitionsDir(join(tmpdir(), "pixygoat-does-not-exist"));
-    expect(report).toMatchObject({ exists: false, count: 0, usable: false });
+    expect(report).toMatchObject({ exists: false, count: 0, nested: 0, usable: false });
   });
 
   it("survives broken JSON in the folder", async () => {

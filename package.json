@@ -21,6 +21,7 @@
     "dev": "concurrently -n server,app -c blue,magenta \"tsx watch packages/server/src/main.ts --dev\" \"npm run dev --workspace @pixygoat/app\"",
     "build": "npm run build --workspace @pixygoat/app",
     "catalog": "tsx packages/server/src/cli/build-catalog.ts",
+    "definitions": "tsx packages/server/src/cli/fetch-definitions.ts",
     "typecheck": "tsc -b packages/core packages/server packages/app",
     "test": "vitest run",
     "licenses": "node scripts/third-party-licenses.mjs"

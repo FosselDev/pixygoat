@@ -46,7 +46,12 @@ describe("pickPath", () => {
 });
 
 describe("definitionCandidates", () => {
-  const base = { spritesRoot: join(A, "lpc", "spritesheets"), cacheDir: join(A, "cache"), repoRoot: B };
+  const base = {
+    spritesRoot: join(A, "lpc", "spritesheets"),
+    upstreamDir: join(A, "cache", "upstream"),
+    repoRoot: B,
+    definitionsPath: "sheet_definitions",
+  };
 
   it("prefers what the user named, then the folder next to the sprites", () => {
     const c = definitionCandidates({ ...base, env: C });
