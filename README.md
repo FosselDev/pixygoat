@@ -35,9 +35,41 @@ Runs on your own machine, in your own browser.
 
 ## Quick start
 
+You need **Node.js 22 or newer** and the LPC spritesheets. The sprites are not
+part of this repository and never will be: they were drawn by the LPC community
+and carry their own licences, so you fetch them from the source.
+
+### 1. Get the sprites
+
+PixyGoat reads the `spritesheets/` folder of the
+[Universal LPC Spritesheet Character Generator](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator),
+pinned to commit `e7fa0aee616` (2025-07-21). The catalogue is built against
+exactly that snapshot; a newer one may hold parts it does not know.
+
+That folder alone, at that commit — around 300 000 files, 0.55 GB:
+
+```bash
+git clone --filter=blob:none --no-checkout --sparse \
+  https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator.git lpc
+cd lpc
+git sparse-checkout set spritesheets
+git checkout e7fa0aee616
+```
+
+Without git, download the
+[ZIP of that commit](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator/archive/e7fa0aee616f21d31b0f56b5dad96d761719b984.zip)
+and keep its `spritesheets/` folder — that route pulls the whole repository, not
+just the sprites.
+
+Then either move the folder next to this README, or leave it where it is and
+point PixyGoat at it with `--sprites <path>` or `PIXYGOAT_SPRITES`.
+
+### 2. Run
+
 ```bash
 npm install
-npm start
+npm start                              # sprites in ./spritesheets
+npm start -- --sprites ../lpc/spritesheets   # or wherever you put them
 ```
 
 Then open <http://127.0.0.1:4600>. The first start scans the spritesheet folder
@@ -45,10 +77,6 @@ Then open <http://127.0.0.1:4600>. The first start scans the spritesheet folder
 Later starts take a few seconds.
 
 ![The start screen](docs/images/start.png)
-
-You need **Node.js 22 or newer** and the LPC `spritesheets/` folder next to this
-README, or anywhere else with `--sprites <path>`. It has to be the snapshot of
-the generator repository from 2025-07-21, commit `e7fa0aee616`.
 
 <details>
 <summary>Flags and environment variables</summary>
