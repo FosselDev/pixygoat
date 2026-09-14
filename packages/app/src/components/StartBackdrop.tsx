@@ -9,20 +9,25 @@ const FRAME_MS = 130;
 const ROW_BY_DIRECTION = { left: 1, right: 3 };
 
 /**
- * Bands the crowd walks in, as fractions of the height; the gap between them
- * is the headline. Far away at the top, so the small ones walk there - which
- * reads as depth and keeps a four times scaled character off the logo.
+ * Bands the crowd walks in, given as where their feet land as a fraction of
+ * the height; the gap between the two is the headline and the pitch. Measuring
+ * from the feet rather than the top is what keeps them out of the text: a
+ * character scaled four times is 256 pixels tall, and anchoring that by its
+ * top edge drops its legs straight through the paragraph.
+ *
+ * Small ones walk far away at the top, big ones close by at the bottom, where
+ * a little cropping at the edge reads as depth rather than as a mistake.
  */
 const LANES = [
-  { top: 0.05, bottom: 0.20, scales: [2, 2, 3] },
-  { top: 0.58, bottom: 0.84, scales: [3, 4, 4] },
+  { near: 0.17, far: 0.30, scales: [2, 2, 3] },
+  { near: 0.97, far: 1.06, scales: [3, 4, 4] },
 ];
 
 interface Walker {
   sheet: ComposedSheet;
   /** left edge in css pixels */
   x: number;
-  /** top edge as a fraction of the height, so a resize moves the crowd with it */
+  /** where the feet land, as a fraction of the height, so a resize carries the crowd with it */
   lane: number;
   /** whole numbers only, so the pixels stay square */
   scale: number;
@@ -93,7 +98,7 @@ export function StartBackdrop({ documents }: { documents: CharacterDocument[] })
         walkers.push({
           sheet,
           x: Math.random() * Math.max(width, 600),
-          lane: lane.top + Math.random() * (lane.bottom - lane.top),
+          lane: lane.near + Math.random() * (lane.far - lane.near),
           scale,
           speed: (Math.random() < 0.5 ? -1 : 1) * (8 + scale * 4 + Math.random() * 6),
           phase: Math.random() * WALK_CYCLE.length,
@@ -122,7 +127,7 @@ export function StartBackdrop({ documents }: { documents: CharacterDocument[] })
         const step = still ? 0 : Math.floor(now / FRAME_MS + w.phase) % WALK_CYCLE.length;
         const column = still ? 0 : WALK_CYCLE[step]!;
         const row = w.speed < 0 ? ROW_BY_DIRECTION.left : ROW_BY_DIRECTION.right;
-        const y = Math.min(Math.max(0, w.lane * height), Math.max(0, height - size));
+        const y = w.lane * height - size;
 
         ctx.globalAlpha = w.alpha;
         ctx.drawImage(w.sheet.canvas, column * cell, row * cell, cell, cell,
