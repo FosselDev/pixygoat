@@ -166,9 +166,7 @@ export function AboutPage() {
 
         <p class="disclaimer">{t("about.disclaimer")}</p>
 
-        <p class="made">
-          {t("about.made")} · {t("about.wibecoded")}
-        </p>
+        <p class="made">{t("about.made")}</p>
       </div>
     </div>
   );

@@ -184,7 +184,7 @@ export function StartScreen() {
         <footer class="colophon">
           <span>{t("footer.by")}</span>
           <span class="dot">·</span>
-          <span>{t("footer.wibecoded")}</span>
+          <span>{t("footer.support")}</span>
           <span class="dot">·</span>
           <span>{t("footer.license")}</span>
           <span class="dot">·</span>
