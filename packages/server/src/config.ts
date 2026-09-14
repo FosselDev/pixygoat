@@ -49,7 +49,7 @@ export function loadConfig(): ServerConfig {
     charactersDir: resolve(arg("characters") ?? process.env.PIXYGOAT_CHARACTERS ?? resolve(REPO_ROOT, "characters")),
     appDist: resolve(REPO_ROOT, "packages", "app", "dist"),
     dev: process.argv.includes("--dev"),
-    forceRebuild: process.argv.includes("--rebuild"),
+    forceRebuild: process.argv.includes("--rebuild") || !!process.env.PIXYGOAT_REBUILD,
     exportDefaults: {
       unityDir: defaultUnityDir(),
       flatDir: resolve(process.env.PIXYGOAT_EXPORT_DIR ?? resolve(REPO_ROOT, "exports", "flat")),

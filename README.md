@@ -98,16 +98,24 @@ npm start
 ```
 
 `npm start` builds the app and runs the local server. If the sprites live
-somewhere else, say so once — the flag works the same on every start:
+somewhere else, point PixyGoat at them with an environment variable — set it
+once, it applies to every start:
 
 ```bash
-npm start -- --sprites ../lpc/spritesheets
+# macOS/Linux
+PIXYGOAT_SPRITES=../lpc/spritesheets npm start
+```
+
+```powershell
+# Windows PowerShell
+$env:PIXYGOAT_SPRITES = "..\lpc\spritesheets"
+npm start
 ```
 
 The first start scans the spritesheet folder — about a minute for 300 000 files
 — and caches the catalogue in `.cache/`. Later starts take a few seconds. If
 you ever swap the sprite folder for another snapshot, start once with
-`npm start -- --rebuild`.
+`PIXYGOAT_REBUILD=1 npm start` (`$env:PIXYGOAT_REBUILD = "1"` on PowerShell).
 
 ### 5. Open it
 
@@ -119,6 +127,13 @@ land in `characters/`, exports in `exports/`.
 <details>
 <summary>Flags and environment variables</summary>
 
+Prefer the environment variable over the flag: on Windows, `npm start --
+--sprites <dir>` can fail with `Unknown cli flag: --sprites` because npm
+validates arguments after `--` against its own config schema before handing
+them to the script. The flags work when the server runs directly
+(`npx tsx packages/server/src/main.ts --sprites <dir>`); the environment
+variable works either way, so it is the reliable option through `npm start`.
+
 | Flag | Variable | Default |
 |---|---|---|
 | `--sprites <dir>` | `PIXYGOAT_SPRITES` | `./spritesheets` |
@@ -128,7 +143,7 @@ land in `characters/`, exports in `exports/`.
 | `--cache <dir>` | `PIXYGOAT_CACHE` | `./.cache` |
 | | `PIXYGOAT_UNITY_DIR` | `./exports/unity` |
 | | `PIXYGOAT_EXPORT_DIR` | `./exports/flat` |
-| `--rebuild` | | force a catalogue rebuild |
+| `--rebuild` | `PIXYGOAT_REBUILD` | force a catalogue rebuild |
 
 </details>
 
@@ -148,13 +163,18 @@ docker compose up --build
 <summary>It does not start</summary>
 
 - **`EADDRINUSE ... 4600`** — something else already holds the port, most likely
-  a PixyGoat you forgot to stop. Close it, or start with `--port 4601`.
-- **`Sprites directory not found: ...`** — the path is wrong. `--sprites` wants
-  the `spritesheets/` folder itself, not its parent, and it is printed in full
-  so you can compare it with where the folder really is.
+  a PixyGoat you forgot to stop. Close it, or start with `PIXYGOAT_PORT=4601`.
+- **`Sprites directory not found: ...`** — the path is wrong. `PIXYGOAT_SPRITES`
+  wants the `spritesheets/` folder itself, not its parent, and it is printed in
+  full so you can compare it with where the folder really is.
 - **Parts are missing or the catalogue looks wrong** — you are probably on
   another snapshot than `e7fa0aee616`. Check out that commit and start once with
-  `--rebuild`.
+  `PIXYGOAT_REBUILD=1`.
+- **`Unknown cli flag: --sprites` (or `--port`, `--rebuild`, ...)** — this is
+  npm itself, not PixyGoat: recent npm rejects unrecognized flags passed after
+  `npm start --`, even though they are meant for the script. Use the matching
+  `PIXYGOAT_*` environment variable instead (see *Flags and environment
+  variables* above).
 
 </details>
 
