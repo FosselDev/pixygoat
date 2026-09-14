@@ -16,7 +16,7 @@ Runs on your own machine, in your own browser.
 
 </div>
 
-![The editor: layer stack, catalogue and live preview](docs/images/editor.png)
+![The start screen](docs/images/start.png)
 
 ## What it does
 
@@ -33,13 +33,36 @@ Runs on your own machine, in your own browser.
   paper-doll parts with a manifest so an engine can swap hair and weapons at
   runtime without a clip per garment.
 
-## Quick start
+## Install
 
-You need **Node.js 22 or newer** and the LPC spritesheets. The sprites are not
-part of this repository and never will be: they were drawn by the LPC community
-and carry their own licences, so you fetch them from the source.
+Five steps, about ten minutes, most of it spent downloading sprites. Everything
+stays on your machine; nothing is uploaded anywhere.
 
-### 1. Get the sprites
+### 1. Install Node.js 22 or newer
+
+```bash
+node --version
+```
+
+If that prints anything below `v22`, install it from
+[nodejs.org](https://nodejs.org/) (the LTS build will do) and open a new
+terminal afterwards.
+
+### 2. Get PixyGoat
+
+```bash
+git clone https://github.com/FosselDev/pixygoat.git
+cd pixygoat
+```
+
+Without git: download the repository as a ZIP from GitHub, unpack it, and `cd`
+into the unpacked folder.
+
+### 3. Get the LPC sprites
+
+The sprites are not part of this repository and never will be: they were drawn
+by the LPC community and carry their own licences, so you fetch them from the
+source.
 
 PixyGoat reads the `spritesheets/` folder of the
 [Universal LPC Spritesheet Character Generator](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator),
@@ -56,6 +79,7 @@ git clone --filter=blob:none --no-checkout --sparse \
 cd lpc
 git sparse-checkout set spritesheets
 git checkout e7fa0aee616
+cd ..
 ```
 
 Without git, download the
@@ -63,22 +87,34 @@ Without git, download the
 and keep its `spritesheets/` folder — that route pulls the whole repository, not
 just the sprites.
 
-Then either move the folder next to this README, or leave it where it is and
-point PixyGoat at it with `--sprites <path>` or `PIXYGOAT_SPRITES`.
+Then either move that `spritesheets/` folder next to this README, or leave it
+where it is and point PixyGoat at it in the next step.
 
-### 2. Run
+### 4. Install the dependencies and start
 
 ```bash
 npm install
-npm start                              # sprites in ./spritesheets
-npm start -- --sprites ../lpc/spritesheets   # or wherever you put them
+npm start
 ```
 
-Then open <http://127.0.0.1:4600>. The first start scans the spritesheet folder
-— about a minute for 300 000 files — and caches the catalogue in `.cache/`.
-Later starts take a few seconds.
+`npm start` builds the app and runs the local server. If the sprites live
+somewhere else, say so once — the flag works the same on every start:
 
-![The start screen](docs/images/start.png)
+```bash
+npm start -- --sprites ../lpc/spritesheets
+```
+
+The first start scans the spritesheet folder — about a minute for 300 000 files
+— and caches the catalogue in `.cache/`. Later starts take a few seconds. If
+you ever swap the sprite folder for another snapshot, start once with
+`npm start -- --rebuild`.
+
+### 5. Open it
+
+<http://127.0.0.1:4600>
+
+The terminal keeps the server running; `Ctrl+C` stops it. Characters you save
+land in `characters/`, exports in `exports/`.
 
 <details>
 <summary>Flags and environment variables</summary>
@@ -108,13 +144,84 @@ docker compose up --build
 
 </details>
 
-## Exports
+<details>
+<summary>It does not start</summary>
+
+- **`EADDRINUSE ... 4600`** — something else already holds the port, most likely
+  a PixyGoat you forgot to stop. Close it, or start with `--port 4601`.
+- **`Sprites directory not found: ...`** — the path is wrong. `--sprites` wants
+  the `spritesheets/` folder itself, not its parent, and it is printed in full
+  so you can compare it with where the folder really is.
+- **Parts are missing or the catalogue looks wrong** — you are probably on
+  another snapshot than `e7fa0aee616`. Check out that commit and start once with
+  `--rebuild`.
+
+</details>
+
+## Using it
+
+### 1. Pick a character
+
+The start screen scrolls down to your work: a new character from a plain body,
+the unsaved draft you left behind, and everything in `characters/`. A
+`.character.json` dropped anywhere on the window opens too.
+
+![Recently edited characters on the start screen](docs/images/characters.png)
+
+### 2. Build it in the editor
+
+![The editor: layer stack, catalogue and live preview](docs/images/editor.png)
+
+Three columns, and you work from left to right:
+
+- **Layers, left.** One row per slot — body, head, hair, torso, legs, and the
+  rest behind *more slots*, 106 of them in all. Click a row to browse that
+  slot; the eye hides a layer without removing it, and a row says so when its
+  part is missing from some animations.
+- **Catalogue, middle.** Every part for the selected slot, previewed on your
+  character. Search by name, tag or colour, narrow it with the tag chips, and
+  switch *Matching* to *All* to see parts your body type cannot wear. The row
+  at the bottom recolours the selected part; `15/15` on a tile means it is
+  drawn for all fifteen animations.
+- **Preview, right.** The character animating. Pick the facing, the animation
+  and the zoom, play or step through the frame strip, and use the buttons above
+  for background, all four directions at once, and an exploded layer view.
+- **Top bar.** Name and body type, undo and redo, *Random* for a whole
+  character at once, and New / Load / Save / Export.
+
+### 3. Check what you may do with it
+
+![The licence panel](docs/images/licenses.png)
+
+*Licenses* reads the character back to you: the strictest licence on it, what
+that obliges you to do, and which licence every single part contributes. The
+filter at the bottom of the panel greys out everything in the catalogue whose
+terms you do not accept — set it once and build without watching the seals.
+
+### 4. Export
+
+![The export dialog](docs/images/export.png)
 
 | Target | What you get |
 |---|---|
 | **Unity · paper-doll parts** | One PNG per slot and animation, plus `manifest.json` with the grid, frame cycle, frame time and draw order of every page. An importer builds pages, parts, clips and a prefab from it without knowing what LPC is. |
 | **Flat spritesheets** | Every layer composited. One sheet per animation, one universal sheet, or single frames — for prototypes, Tiled, Godot, or any engine without a paper doll. |
 | **Character file** | The selection, no pixels. For loading, sharing and versioning. |
+
+Pick the animations you want, then write the files into a folder or download
+them as a ZIP. Both sheet exports carry `character.json`, `CREDITS.txt` and
+`CREDITS.csv` along with the pixels — the credits are written every time, not
+on request.
+
+### Keyboard
+
+| Key | In the editor |
+|---|---|
+| `Space` | play / pause |
+| `←` `→` `↑` `↓` | facing |
+| `1`–`8` | zoom |
+| `Ctrl+Z` / `Ctrl+Y` | undo / redo |
+| `Ctrl+S` / `Ctrl+O` / `Ctrl+E` | save / load / export |
 
 ## Development
 
