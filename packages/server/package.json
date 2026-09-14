@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@fastify/compress": "^8.0.0",
-    "@fastify/static": "^8.0.0",
+    "@fastify/static": "^10.1.3",
     "@pixygoat/core": "*",
     "fastify": "^5.2.0",
     "pngjs": "^7.0.0"
