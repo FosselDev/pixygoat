@@ -8,6 +8,7 @@ import { loadOrBuildCatalog, type BuildProgress } from "./catalog/build.ts";
 import { registerCharacterRoutes } from "./routes/characters.ts";
 import { registerExportRoutes } from "./routes/export.ts";
 import { registerSetupRoutes } from "./routes/setup.ts";
+import { writeSettings } from "./settings.ts";
 
 /** What the app still has to ask for before a catalog can be built. */
 type Missing = "sprites" | "definitions";
@@ -16,7 +17,7 @@ type CatalogStatus =
   | { state: "unconfigured"; missing: Missing[] }
   | { state: "building"; message?: string; progress?: BuildProgress }
   | { state: "ready" }
-  | { state: "error"; message: string };
+  | { state: "error"; code?: "empty"; message: string };
 
 /**
  * One server for one sprite folder. Everything the catalog depends on is built
@@ -53,6 +54,17 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
       },
     })
       .then((catalog) => {
+        // A folder can pass the setup's check - two subfolders with names the
+        // definitions know - and still hold no sprite at all. Calling that
+        // ready would open an app with an empty catalogue and no way back, so
+        // it is refused, and a folder that came from the settings file is
+        // forgotten: the next start asks again instead of repeating this.
+        if (!catalog.items.some((item) => item.available)) {
+          if (cfg.spritesSource === "settings") writeSettings({ spritesRoot: undefined });
+          catalogStatus = { state: "error", code: "empty", message: cfg.spritesRoot };
+          app.log.error(`[catalog] no sprites found in ${cfg.spritesRoot}`);
+          return;
+        }
         catalogJsonGz = gzipSync(Buffer.from(JSON.stringify(catalog)), { level: 6 });
         catalogEtag = `"${catalog.meta.fingerprint}"`;
         catalogStatus = { state: "ready" };

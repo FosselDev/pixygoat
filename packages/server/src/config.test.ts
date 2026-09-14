@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import {
   definitionCandidates,
   holdsDefinitions,
+  holdsSprites,
   pickPath,
   spriteCandidates,
   type Candidate,
@@ -73,6 +74,25 @@ describe("spriteCandidates", () => {
     const c = spriteCandidates({ repoRoot: B, env: C });
     expect(c.map((x) => x.source)).toEqual(["env", "default"]);
     expect(c[1]).toMatchObject({ path: join(B, "spritesheets"), explicit: false });
+  });
+});
+
+describe("holdsSprites", () => {
+  it("does not take an empty folder for a sprite directory", () => {
+    const dir = mkdtempSync(join(tmpdir(), "pixygoat-"));
+    const empty = join(dir, "empty");
+    const one = join(dir, "one");
+    const many = join(dir, "many");
+    for (const d of [empty, one, many]) mkdirSync(d);
+    mkdirSync(join(one, "body"));
+    mkdirSync(join(many, "body"));
+    mkdirSync(join(many, "hair"));
+    writeFileSync(join(empty, "readme.txt"), "");
+    expect(holdsSprites(many)).toBe(true);
+    // One folder is a download that stopped, not a sprite tree.
+    expect(holdsSprites(one)).toBe(false);
+    expect(holdsSprites(empty)).toBe(false);
+    expect(holdsSprites(join(dir, "gone"))).toBe(false);
   });
 });
 

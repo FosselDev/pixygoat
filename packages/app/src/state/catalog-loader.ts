@@ -12,8 +12,15 @@ export async function loadCatalog(): Promise<void> {
       const res = await fetch("/api/catalog");
       if (res.status === 503) {
         failures = 0;
-        const body = (await res.json()) as { status?: { state?: string; message?: string; progress?: CatalogProgress } };
-        const state = body.status?.state === "unconfigured" ? "unconfigured" : "building";
+        const body = (await res.json()) as {
+          status?: { state?: string; code?: string; message?: string; progress?: CatalogProgress };
+        };
+        const reported = body.status?.state;
+        if (reported === "error") {
+          catalogStatus.value = { state: "error", code: body.status?.code, message: body.status?.message };
+          return;
+        }
+        const state = reported === "unconfigured" ? "unconfigured" : "building";
         catalogStatus.value = { state, message: body.status?.message, progress: body.status?.progress };
         await new Promise((r) => setTimeout(r, state === "unconfigured" ? 3000 : 1500));
         continue;

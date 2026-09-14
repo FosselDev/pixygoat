@@ -1,8 +1,8 @@
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, opendirSync, readdirSync } from "node:fs";
 import { UPSTREAM, type UpstreamSource } from "@pixygoat/core";
-import { readSettings } from "./settings.ts";
+import { readSettings, type Settings } from "./settings.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 /** repository root (packages/server/src -> ../../..) */
@@ -128,6 +128,37 @@ export function definitionCandidates(input: {
 }
 
 /**
+ * A folder that exists is not yet a folder of sprites. An empty one - made by
+ * hand, or left behind by a download that never finished - would otherwise
+ * count as configured, and PixyGoat would build an empty catalogue out of it
+ * with no way back to the setup. Two subdirectories are the cheapest signal
+ * that something arrived; whether they are the right ones is a question for
+ * `inspectSpritesDir`, which needs the definitions and cannot run this early.
+ *
+ * Read entry by entry and bounded, because the answer is usually in the first
+ * two and the wrong folder may hold hundreds of thousands.
+ */
+export function holdsSprites(path: string): boolean {
+  let dir;
+  try {
+    dir = opendirSync(path);
+  } catch {
+    return false;
+  }
+  try {
+    let dirs = 0;
+    for (let seen = 0; seen < 200; seen++) {
+      const entry = dir.readSync();
+      if (!entry) break;
+      if (entry.isDirectory() && ++dirs >= 2) return true;
+    }
+    return false;
+  } finally {
+    dir.closeSync();
+  }
+}
+
+/**
  * Cheap enough to run on every candidate: a folder of definitions is a folder
  * with JSON in it. Whether the JSON means anything is a question for
  * `inspectDefinitionsDir`, which the setup asks before writing a path down.
@@ -156,11 +187,11 @@ function defaultUnityDir(): string {
  * a newer commit. The catalogue was built against the pinned one; another may
  * describe parts this version has never heard of.
  */
-function resolveUpstream(): UpstreamSource {
+function resolveUpstream(settings: Settings): UpstreamSource {
   return {
     ...UPSTREAM,
-    repo: process.env.PIXYGOAT_UPSTREAM_REPO ?? UPSTREAM.repo,
-    ref: process.env.PIXYGOAT_UPSTREAM_REF ?? UPSTREAM.ref,
+    repo: process.env.PIXYGOAT_UPSTREAM_REPO ?? settings.upstreamRepo ?? UPSTREAM.repo,
+    ref: process.env.PIXYGOAT_UPSTREAM_REF ?? settings.upstreamRef ?? UPSTREAM.ref,
   };
 }
 
@@ -178,10 +209,10 @@ export function loadConfig(): ServerConfig {
       settings: settings.spritesRoot,
       repoRoot: REPO_ROOT,
     }),
-    existsSync,
+    holdsSprites,
   );
   const cacheDir = resolve(arg("cache") ?? process.env.PIXYGOAT_CACHE ?? resolve(REPO_ROOT, ".cache"));
-  const upstream = resolveUpstream();
+  const upstream = resolveUpstream(settings);
   const upstreamDir = join(cacheDir, "upstream");
   const definitions = pickPath(
     definitionCandidates({
