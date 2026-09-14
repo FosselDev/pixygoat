@@ -12,6 +12,11 @@ function Svg({ size = 16, children, ...rest }: P) {
 }
 
 export const Icon = {
+  Folder: (p: P) => (
+    <Svg {...p}>
+      <path d="M1.5 4a1 1 0 0 1 1-1h3.2l1.4 1.6h6.4a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z" />
+    </Svg>
+  ),
   Eye: (p: P) => (
     <Svg {...p}>
       <path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" />

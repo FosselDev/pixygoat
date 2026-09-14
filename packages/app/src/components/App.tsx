@@ -3,6 +3,7 @@ import { catalog, catalogStatus, ui, undo, redo } from "../state/store.ts";
 import { readDroppedFile } from "../state/persistence.ts";
 import { t } from "../i18n/i18n.ts";
 import { StartScreen } from "./StartScreen.tsx";
+import { SetupScreen } from "./SetupScreen.tsx";
 import { AboutPage } from "./AboutPage.tsx";
 import { TopBar } from "./TopBar.tsx";
 import { SlotStack } from "./SlotStack.tsx";
@@ -101,6 +102,7 @@ export function App() {
 
   if (!catalog.value) {
     const st = catalogStatus.value;
+    if (st.state === "unconfigured") return <SetupScreen />;
     return (
       <div class="loading">
         <div class="goat"><Icon.Goat size={112} /></div>

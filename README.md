@@ -97,9 +97,14 @@ npm install
 npm start
 ```
 
-`npm start` builds the app and runs the local server. If the sprites live
-somewhere else, point PixyGoat at them with an environment variable — set it
-once, it applies to every start:
+`npm start` builds the app and runs the local server. If the sprites are not
+sitting next to this README, PixyGoat does not know where they are and asks:
+the first page offers a folder picker, marks the folders that hold what it
+needs, and writes the answer to `pixygoat.settings.json` — from then on it
+starts straight into the app.
+
+To skip that and say it up front, use the environment variable — set once, it
+applies to every start and wins over the picker:
 
 ```bash
 # macOS/Linux
@@ -126,6 +131,10 @@ land in `characters/`, exports in `exports/`.
 
 <details>
 <summary>Flags and environment variables</summary>
+
+The flag beats the environment variable beats `pixygoat.settings.json` (what
+the setup page writes) beats `./spritesheets` — but only among the folders that
+actually exist, so a stale variable cannot outvote the folder you just picked.
 
 Prefer the environment variable over the flag: on Windows, `npm start --
 --sprites <dir>` can fail with `Unknown cli flag: --sprites` because npm
@@ -164,9 +173,9 @@ docker compose up --build
 
 - **`EADDRINUSE ... 4600`** — something else already holds the port, most likely
   a PixyGoat you forgot to stop. Close it, or start with `PIXYGOAT_PORT=4601`.
-- **`Sprites directory not found: ...`** — the path is wrong. `PIXYGOAT_SPRITES`
-  wants the `spritesheets/` folder itself, not its parent, and it is printed in
-  full so you can compare it with where the folder really is.
+- **It asks for the sprite folder although one is set** — the path is wrong.
+  `PIXYGOAT_SPRITES` wants the `spritesheets/` folder itself, not its parent;
+  the setup page prints what it tried and what it will use instead.
 - **Parts are missing or the catalogue looks wrong** — you are probably on
   another snapshot than `e7fa0aee616`. Check out that commit and start once with
   `PIXYGOAT_REBUILD=1`.

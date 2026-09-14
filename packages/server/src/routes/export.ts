@@ -1,8 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve, dirname } from "node:path";
-import type { Catalog } from "@pixygoat/core";
-import type { ServerConfig } from "../config.ts";
 
 export interface ExportFile {
   /** path relative to the target directory, forward slashes */
@@ -22,11 +20,7 @@ export interface WriteFilesRequest {
  * here to be written to a folder on disk, e.g. straight into the Unity
  * project. Rendering stays in one place; the server only writes.
  */
-export async function registerExportRoutes(
-  app: FastifyInstance,
-  _cfg: ServerConfig,
-  _catalog: Promise<Catalog>,
-) {
+export async function registerExportRoutes(app: FastifyInstance) {
   app.post<{ Body: WriteFilesRequest }>("/api/export/write", async (req, reply) => {
     const { targetDir, files } = req.body ?? ({} as WriteFilesRequest);
     if (typeof targetDir !== "string" || !Array.isArray(files) || files.length === 0) {

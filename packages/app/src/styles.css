@@ -289,6 +289,38 @@ a { color: var(--accent); }
 kbd { font-family: var(--font-mono); font-size: 10px; padding: 1px 5px; border: 1px solid var(--line-3); border-radius: 3px; color: var(--muted); }
 .drop-hint { position: fixed; inset: 0; border: 3px dashed var(--accent); background: rgba(232,163,60,0.08); z-index: 70; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--accent-soft); pointer-events: none; }
 
+/* first start: pick the spritesheet folder */
+.setup { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 20px; background: radial-gradient(1100px 560px at 50% 20%, #1c1a16 0%, var(--bg) 68%); }
+.setup-card { position: relative; width: min(760px, 100%); display: flex; flex-direction: column; gap: 12px; padding: 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.setup-card header { display: flex; align-items: flex-start; gap: 14px; }
+.setup-card header .goat { color: var(--accent); flex-shrink: 0; }
+.setup-card h1 { font-family: var(--font-display); font-size: 26px; margin: 0; letter-spacing: -0.01em; }
+.setup-card header p { margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 52ch; text-wrap: pretty; }
+.setup-card .note { padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--bg); font-size: 11px; color: var(--muted); }
+.setup-card .warnbox { margin: 0; }
+.setup .places { display: flex; flex-wrap: wrap; gap: 5px; }
+.setup .places .chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.setup .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+.setup .crumbs .linkish { padding: 2px 5px; border-radius: 4px; color: inherit; }
+.setup .crumbs .linkish:hover { background: var(--line); color: var(--text); }
+.setup .crumbs .btn { margin-right: 4px; }
+.setup .dirlist { height: 268px; overflow-y: auto; border: 1px solid var(--line-2); border-radius: 6px; background: var(--bg); }
+.setup .dirrow { display: flex; align-items: center; gap: 9px; width: 100%; padding: 7px 11px; font-size: 12px; color: #c4c4cc; border-bottom: 1px solid var(--line); text-align: left; }
+.setup .dirrow:last-child { border-bottom: none; }
+.setup .dirrow:hover { background: var(--panel-2); color: var(--text); }
+.setup .dirrow svg { color: var(--dim); flex-shrink: 0; }
+.setup .dirrow .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.setup .dirrow.hit { color: var(--accent-soft); }
+.setup .dirrow.hit svg { color: var(--accent); }
+.setup .dirrow .badge { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 3px; background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-line); }
+.setup .dirlist .empty { padding: 14px; font-size: 12px; }
+.setup .manual input { flex: 1; font-family: var(--font-mono); font-size: 11px; }
+.setup .manual label { color: var(--muted); }
+.setup-card footer { display: flex; align-items: center; gap: 10px; padding-top: 4px; border-top: 1px solid var(--line); margin-top: 2px; }
+.setup-card footer .left { flex: 1; font-size: 11px; }
+.setup-help { font-size: 12px; color: var(--dim); text-align: center; margin: 0; }
+.setup-help a { text-decoration: none; }
+
 /* about: what this is built on, and who owns what */
 .about { height: 100vh; overflow-y: auto; background: var(--bg); }
 .about-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
