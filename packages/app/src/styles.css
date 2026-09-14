@@ -198,8 +198,6 @@ a { color: var(--accent); }
 .filmstrip .frames { display: flex; overflow-x: auto; }
 .filmstrip .frames canvas { flex-shrink: 0; cursor: pointer; }
 .filmstrip .frames canvas.on { outline: 2px solid var(--accent); outline-offset: -2px; }
-.filmstrip .bar { height: 3px; background: var(--line); position: relative; }
-.filmstrip .bar span { position: absolute; top: 0; height: 3px; background: var(--accent); }
 .warnbox { margin: 10px 14px 14px; padding: 10px 12px; border-radius: 6px; background: var(--warn-bg); border: 1px solid var(--warn-line); display: flex; gap: 10px; align-items: flex-start; font-size: 12px; }
 .warnbox .t { color: var(--accent-soft); font-weight: 500; }
 .warnbox .d { color: #a89c80; }

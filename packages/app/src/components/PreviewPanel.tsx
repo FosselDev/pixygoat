@@ -301,12 +301,6 @@ function Filmstrip({ sheet, row, column, onPick }: { sheet: ComposedSheet | null
           <canvas key={i} width={size} height={size} class={`px ${i === column ? "on" : ""}`} style={`width:${size}px;height:${size}px`} onClick={() => onPick(i)} />
         ))}
       </div>
-      <div class="bar">
-        {/* Same frame the box highlights: a cycle can skip or repeat columns
-            (walk skips the rest frame, sit holds each pose), so its own
-            length does not match the strip's column count. */}
-        {cols > 0 && <span style={`left:${(column / cols) * 100}%;width:${(1 / cols) * 100}%`} />}
-      </div>
     </div>
   );
 }
