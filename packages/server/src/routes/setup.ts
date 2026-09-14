@@ -53,7 +53,14 @@ export function registerSetupRoutes(app: FastifyInstance, cfg: ServerConfig, onS
   };
 
   app.get("/api/setup/state", async () => ({
-    configured: cfg.spritesConfigured,
+    configured: cfg.spritesConfigured && cfg.definitionsConfigured,
+    spritesConfigured: cfg.spritesConfigured,
+    definitions: {
+      configured: cfg.definitionsConfigured,
+      path: cfg.definitionsDir,
+      source: cfg.definitionsSource,
+      ignored: cfg.definitionsIgnored,
+    },
     spritesRoot: cfg.spritesRoot,
     source: cfg.spritesSource,
     ignored: cfg.spritesIgnored,
@@ -98,6 +105,13 @@ export function registerSetupRoutes(app: FastifyInstance, cfg: ServerConfig, onS
     if (!raw) {
       reply.code(400);
       return { error: "path is required" };
+    }
+    // The definitions say what a sprite folder is supposed to contain, so a
+    // folder cannot be judged - let alone written down - before they are
+    // there. The wizard asks for them first; this is the guard behind it.
+    if (!cfg.definitionsConfigured) {
+      reply.code(409);
+      return { error: "definitions-required" };
     }
     const path = resolve(raw);
     const report = await inspectSpritesDir(path, cfg.definitionsDir);

@@ -1,11 +1,17 @@
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { readSettings } from "./settings.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 /** repository root (packages/server/src -> ../../..) */
 export const REPO_ROOT = resolve(here, "..", "..", "..");
+
+/** What the upstream generator repository calls its definitions folder. */
+export const UPSTREAM_DEFINITIONS_DIR = "sheet_definitions";
+
+export type SpritesSource = "flag" | "env" | "settings" | "default";
+export type DefinitionsSource = "flag" | "env" | "settings" | "sprites" | "cache" | "bundled";
 
 export interface ServerConfig {
   port: number;
@@ -14,16 +20,120 @@ export interface ServerConfig {
   /** false when the sprite folder is missing - the app then offers the setup */
   spritesConfigured: boolean;
   /** where spritesRoot came from, so the setup can explain what it found */
-  spritesSource: "flag" | "env" | "settings" | "default";
-  /** higher-priority sources that were skipped because the folder is gone */
+  spritesSource: SpritesSource;
+  /** sources the user named that were skipped because the folder is gone */
   spritesIgnored: { source: string; path: string }[];
   definitionsDir: string;
+  /** false when no folder holds sheet definitions - same deal as the sprites */
+  definitionsConfigured: boolean;
+  definitionsSource: DefinitionsSource;
+  definitionsIgnored: { source: string; path: string }[];
   cacheDir: string;
   charactersDir: string;
   appDist: string;
   dev: boolean;
   forceRebuild: boolean;
   exportDefaults: { unityDir: string; flatDir: string };
+}
+
+/**
+ * One place a resource could be. `explicit` marks the ones a user named on
+ * purpose - only those are worth reporting when they turn out to be empty; a
+ * derived location that happens not to exist is not something anybody ignored.
+ */
+export interface Candidate<S extends string> {
+  source: S;
+  path: string;
+  explicit: boolean;
+}
+
+export interface Resolution<S extends string> {
+  path: string;
+  configured: boolean;
+  source: S;
+  ignored: { source: string; path: string }[];
+}
+
+/**
+ * The first candidate that is actually there wins, which is what keeps a stale
+ * variable from outvoting the folder somebody just picked: it would otherwise
+ * stay in front forever and the setup would ask again and again. When nothing
+ * is there the last candidate stands in, so there is still a path to name in
+ * the message.
+ */
+export function pickPath<S extends string>(
+  candidates: Candidate<S>[],
+  ok: (path: string) => boolean,
+): Resolution<S> {
+  const hit = candidates.findIndex((c) => ok(c.path));
+  const index = hit >= 0 ? hit : candidates.length - 1;
+  const used = candidates[index]!;
+  return {
+    path: used.path,
+    configured: hit >= 0,
+    source: used.source,
+    ignored: candidates
+      .slice(0, index)
+      .filter((c) => c.explicit)
+      .map(({ source, path }) => ({ source, path })),
+  };
+}
+
+function candidate<S extends string>(source: S, path: string | undefined, explicit: boolean): Candidate<S>[] {
+  return path ? [{ source, path: resolve(path), explicit }] : [];
+}
+
+export function spriteCandidates(input: {
+  flag?: string;
+  env?: string;
+  settings?: string;
+  repoRoot: string;
+}): Candidate<SpritesSource>[] {
+  return [
+    ...candidate("flag", input.flag, true),
+    ...candidate("env", input.env, true),
+    ...candidate("settings", input.settings, true),
+    ...candidate("default", join(input.repoRoot, "spritesheets"), false),
+  ];
+}
+
+/**
+ * Where the sheet definitions may sit. They are not part of this repository:
+ * they belong to the generator the sprites come from and are fetched or
+ * checked out along with them. The folder next to the sprites comes before
+ * anything fetched separately - definitions that travelled with a sprite
+ * checkout describe exactly those sprites, whatever snapshot they are from.
+ */
+export function definitionCandidates(input: {
+  flag?: string;
+  env?: string;
+  settings?: string;
+  spritesRoot: string;
+  cacheDir: string;
+  repoRoot: string;
+}): Candidate<DefinitionsSource>[] {
+  return [
+    ...candidate("flag", input.flag, true),
+    ...candidate("env", input.env, true),
+    ...candidate("settings", input.settings, true),
+    ...candidate("sprites", join(dirname(input.spritesRoot), UPSTREAM_DEFINITIONS_DIR), false),
+    ...candidate("cache", join(input.cacheDir, "upstream", UPSTREAM_DEFINITIONS_DIR), false),
+    // A copy somebody put into the repository by hand. PixyGoat ships none.
+    ...candidate("bundled", join(input.repoRoot, "data", "definitions"), false),
+  ];
+}
+
+/**
+ * Cheap enough to run on every candidate: a folder of definitions is a folder
+ * with JSON in it. Whether the JSON means anything is a question for
+ * `inspectDefinitionsDir`, which the setup asks before writing a path down.
+ */
+export function holdsDefinitions(path: string): boolean {
+  try {
+    return readdirSync(path).some((f) => f.endsWith(".json"));
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -42,41 +152,41 @@ function arg(name: string): string | undefined {
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
 
-/**
- * A missing sprite folder is not an error any more: the server starts anyway
- * and the app offers the setup, which picks a folder and writes it to the
- * settings file. The flag still beats the environment beats the settings, but
- * only among the ones that actually exist - a stale variable pointing at a
- * folder that is gone would otherwise outvote the folder just picked, and the
- * setup would ask again forever. What was skipped is reported, not hidden.
- */
-function resolveSprites(): Pick<ServerConfig, "spritesRoot" | "spritesConfigured" | "spritesSource" | "spritesIgnored"> {
-  const candidates = [
-    ["flag", arg("sprites")],
-    ["env", process.env.PIXYGOAT_SPRITES],
-    ["settings", readSettings().spritesRoot],
-    ["default", resolve(REPO_ROOT, "spritesheets")],
-  ] as const;
-  const given = candidates
-    .filter(([, path]) => !!path)
-    .map(([source, path]) => ({ source, path: resolve(path!) }));
-  const used = given.find((c) => existsSync(c.path)) ?? given[given.length - 1]!;
-  return {
-    spritesRoot: used.path,
-    spritesConfigured: existsSync(used.path),
-    spritesSource: used.source,
-    spritesIgnored: given.filter((c) => c !== used && !existsSync(c.path)),
-  };
-}
-
 export function loadConfig(): ServerConfig {
-  const sprites = resolveSprites();
+  const settings = readSettings();
+  const sprites = pickPath(
+    spriteCandidates({
+      flag: arg("sprites"),
+      env: process.env.PIXYGOAT_SPRITES,
+      settings: settings.spritesRoot,
+      repoRoot: REPO_ROOT,
+    }),
+    existsSync,
+  );
+  const cacheDir = resolve(arg("cache") ?? process.env.PIXYGOAT_CACHE ?? resolve(REPO_ROOT, ".cache"));
+  const definitions = pickPath(
+    definitionCandidates({
+      flag: arg("definitions"),
+      env: process.env.PIXYGOAT_DEFINITIONS,
+      settings: settings.definitionsRoot,
+      spritesRoot: sprites.path,
+      cacheDir,
+      repoRoot: REPO_ROOT,
+    }),
+    holdsDefinitions,
+  );
   return {
-    ...sprites,
+    spritesRoot: sprites.path,
+    spritesConfigured: sprites.configured,
+    spritesSource: sprites.source,
+    spritesIgnored: sprites.ignored,
+    definitionsDir: definitions.path,
+    definitionsConfigured: definitions.configured,
+    definitionsSource: definitions.source,
+    definitionsIgnored: definitions.ignored,
     port: Number(arg("port") ?? process.env.PIXYGOAT_PORT ?? 4600),
     host: arg("host") ?? process.env.PIXYGOAT_HOST ?? "127.0.0.1",
-    definitionsDir: resolve(REPO_ROOT, "data", "definitions"),
-    cacheDir: resolve(arg("cache") ?? process.env.PIXYGOAT_CACHE ?? resolve(REPO_ROOT, ".cache")),
+    cacheDir,
     charactersDir: resolve(arg("characters") ?? process.env.PIXYGOAT_CHARACTERS ?? resolve(REPO_ROOT, "characters")),
     appDist: resolve(REPO_ROOT, "packages", "app", "dist"),
     dev: process.argv.includes("--dev"),

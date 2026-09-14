@@ -10,6 +10,8 @@ import { fileURLToPath } from "node:url";
  */
 export interface Settings {
   spritesRoot?: string;
+  /** a folder of sheet definitions, if the setup had to go looking for one */
+  definitionsRoot?: string;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));

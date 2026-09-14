@@ -7,6 +7,12 @@ if (!cfg.spritesConfigured) {
   console.error("Set PIXYGOAT_SPRITES, or start the app once and pick the folder there.");
   process.exit(1);
 }
+if (!cfg.definitionsConfigured) {
+  console.error(`No sheet definitions found: ${cfg.definitionsDir}`);
+  console.error("They belong to the LPC generator the sprites come from, not to PixyGoat.");
+  console.error("Point PIXYGOAT_DEFINITIONS at its `sheet_definitions` folder, or start the app once.");
+  process.exit(1);
+}
 const catalog = await loadOrBuildCatalog({
   spritesRoot: cfg.spritesRoot,
   definitionsDir: cfg.definitionsDir,
