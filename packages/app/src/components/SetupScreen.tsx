@@ -1,16 +1,15 @@
 import { useEffect, useState } from "preact/hooks";
-import { catalogStatus } from "../state/store.ts";
 import { LANGUAGES, language, setLanguage, t } from "../i18n/i18n.ts";
 import { Icon } from "./icons.tsx";
 import { GoatProgress } from "./GoatProgress.tsx";
+import { SpritesStep } from "./SetupSprites.tsx";
 
-interface Entry {
-  name: string;
+export interface Ignored {
+  source: string;
   path: string;
-  matched: number;
 }
 
-interface Report {
+export interface SpritesReport {
   path: string;
   exists: boolean;
   matched: string[];
@@ -18,199 +17,274 @@ interface Report {
   usable: boolean;
 }
 
-interface Listing {
+export interface DefinitionsReport {
   path: string;
-  parent: string | null;
-  entries: Entry[];
-  report: Report;
+  exists: boolean;
+  count: number;
+  nested: number;
+  usable: boolean;
 }
 
-interface SetupState {
-  spritesRoot: string;
-  source: string;
-  ignored: { source: string; path: string }[];
+export type FetchJob =
+  | { state: "running"; phase: string; message: string }
+  | { state: "done"; path: string; count: number; commit: string }
+  | { state: "error"; code: string; message: string; detail?: string };
+
+export interface SetupState {
+  done: boolean;
   settingsFile: string;
-  places: string[];
+  platform: string;
+  definitions: { configured: boolean; path: string; source: string; count: number; ignored: Ignored[] };
+  sprites: {
+    configured: boolean;
+    path: string;
+    source: string;
+    ignored: Ignored[];
+    places: string[];
+    suggestions: { path: string; matched: number }[];
+  };
+  upstream: { repo: string; web: string; ref: string; definitionsPath: string; zipUrl: string; fetchTarget: string };
+  fetch: FetchJob | null;
 }
 
-/** "E:\\00_dev\\01_tools" becomes clickable pieces back up to the drive. */
-function crumbs(path: string): { label: string; path: string }[] {
-  const sep = path.includes("\\") ? "\\" : "/";
-  const parts = path.split(sep).filter((p, i) => p !== "" || i === 0);
-  return parts.map((part, i) => ({
-    label: part || sep,
-    path: i === 0 ? (part || sep) + (sep === "\\" ? sep : "") : parts.slice(0, i + 1).join(sep),
-  }));
+export async function readSetupState(): Promise<SetupState | null> {
+  try {
+    const res = await fetch("/api/setup/state");
+    return res.ok ? ((await res.json()) as SetupState) : null;
+  } catch {
+    // Committing a step restarts the server, so a failed poll is normal.
+    return null;
+  }
+}
+
+/** Server error codes become sentences; anything unknown keeps its own words. */
+export function errorText(code: string | undefined, fallback: string): string {
+  if (!code) return fallback;
+  const text = t(`setup.err.${code}`);
+  return text === `setup.err.${code}` ? fallback : text;
+}
+
+export function Warn({ text, detail }: { text: string; detail?: string }) {
+  return (
+    <div class="warnbox">
+      <Icon.Warn size={16} />
+      <div>
+        <div class="t">{text}</div>
+        {detail && <div class="d mono">{detail}</div>}
+      </div>
+    </div>
+  );
 }
 
 /**
- * First start without a sprite folder. A browser file picker never yields a
- * real path, so the server lists the directory tree and this walks through it;
- * folders that hold what the catalog needs are marked, so the right one can be
- * recognised without knowing what an LPC checkout looks like.
+ * First start. Two things are missing and they are asked for in this order:
+ * the sheet definitions, then the sprites they describe - the definitions are
+ * what says which folders a sprite directory should contain, so the folder
+ * browser cannot judge anything before they are here.
+ *
+ * Every step ends with a server restart, because the configuration is read
+ * once at start. That is why the state is polled rather than trusted: the
+ * answer during those few hundred milliseconds is no answer at all.
  */
 export function SetupScreen() {
   const [state, setState] = useState<SetupState | null>(null);
-  const [listing, setListing] = useState<Listing | null>(null);
-  const [manual, setManual] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [reading, setReading] = useState(false);
 
-  const browse = async (path?: string) => {
-    setError(null);
-    setReading(true);
-    try {
-      const res = await fetch(`/api/setup/browse?path=${encodeURIComponent(path ?? "")}`);
-      const body = (await res.json()) as Listing & { error?: string };
-      if (!res.ok || body.error) {
-        setError(t("setup.cannotOpen", { dir: path ?? "", error: body.error ?? `HTTP ${res.status}` }));
-        return;
-      }
-      setListing(body);
-      setManual(body.path);
-    } finally {
-      setReading(false);
-    }
+  const refresh = async () => {
+    const next = await readSetupState();
+    if (!next) return;
+    setState(next);
+    // A failed fetch has to end the waiting too, or the progress bar sits
+    // there forever and the message explaining why never gets drawn.
+    if (next.definitions.configured || next.done || next.fetch?.state === "error") setBusy(false);
   };
 
   useEffect(() => {
-    void (async () => {
-      const res = await fetch("/api/setup/state");
-      const body = (await res.json()) as SetupState;
-      setState(body);
-      await browse(body.places[0]);
-    })();
+    void refresh();
   }, []);
 
-  const choose = async (path: string) => {
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/setup/sprites", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path }),
-      });
-      const body = (await res.json()) as { ok?: boolean; error?: string; report?: Report };
-      if (!res.ok || !body.ok) {
-        setError(
-          body.error === "not-a-sprites-dir"
-            ? t("setup.notSprites", { dir: path })
-            : body.error === "not-found"
-              ? t("setup.notFound", { dir: path })
-              : (body.error ?? `HTTP ${res.status}`),
-        );
-        return;
-      }
-      // The server restarts onto the new folder; the catalog poll picks it up.
-      catalogStatus.value = { state: "building", message: t("setup.starting") };
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const running = busy || state?.fetch?.state === "running";
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => void refresh(), 1000);
+    return () => clearInterval(id);
+  }, [running]);
 
-  const report = listing?.report;
+  const step = state && state.definitions.configured ? 2 : 1;
 
   return (
     <div class="setup">
       <div class="setup-card">
         <header>
-          <div class="goat"><Icon.Goat size={64} /></div>
+          <div class="goat">
+            <Icon.Goat size={64} />
+          </div>
           <div>
-            <h1>{t("setup.title")}</h1>
-            <p>{t("setup.lead")}</p>
+            <h1>{step === 1 ? t("setup.def.title") : t("setup.sprites.title")}</h1>
+            <p>{step === 1 ? t("setup.def.lead") : t("setup.sprites.lead")}</p>
           </div>
           <label class="lang" title={t("start.language")}>
             <Icon.Globe size={13} />
             <select value={language.value} onChange={(e) => setLanguage((e.target as HTMLSelectElement).value)}>
-              {LANGUAGES.map((l) => <option value={l.id} key={l.id}>{l.label}</option>)}
+              {LANGUAGES.map((l) => (
+                <option value={l.id} key={l.id}>
+                  {l.label}
+                </option>
+              ))}
             </select>
           </label>
         </header>
 
-        {state && state.source !== "default" && (
-          <div class="note mono">{t(`setup.from.${state.source}`, { dir: state.spritesRoot })}</div>
-        )}
-        {state?.ignored.map((i) => (
-          <div class="warnbox" key={i.path}>
-            <Icon.Warn size={16} />
-            <div><div class="t">{t("setup.ignored", { source: i.source, dir: i.path })}</div></div>
-          </div>
-        ))}
+        <ol class="steps">
+          <li class={step === 1 ? "on" : "done"}>
+            {step === 1 ? <span class="n">1</span> : <Icon.Check size={13} />}
+            {t("setup.steps.definitions")}
+            {state?.definitions.configured && (
+              <span class="dim"> · {t("setup.def.ready", { n: state.definitions.count })}</span>
+            )}
+          </li>
+          <li class={step === 2 ? "on" : ""}>
+            <span class="n">2</span>
+            {t("setup.steps.sprites")}
+          </li>
+        </ol>
 
-        <div class="places">
-          {state?.places.map((p) => (
-            <button class="chip" key={p} onClick={() => void browse(p)}>{p}</button>
-          ))}
-        </div>
+        {!state && <GoatProgress label={t("setup.loading")} />}
 
-        <div class="crumbs mono">
-          <button class="btn sm" disabled={!listing?.parent} onClick={() => void browse(listing!.parent!)}>
-            <Icon.Up size={13} />
-          </button>
-          {listing && crumbs(listing.path).map((c) => (
-            <button class="linkish" key={c.path} onClick={() => void browse(c.path)}>{c.label}</button>
-          ))}
-        </div>
-
-        <div class={`dirlist ${reading ? "reading" : ""}`}>
-          {reading && (
-            <div class="dirlist-wait">
-              <GoatProgress label={t("setup.reading")} detail={manual} />
-            </div>
-          )}
-          {listing?.entries.length === 0 && <div class="empty dim">{t("setup.noFolders")}</div>}
-          {listing?.entries.map((e) => (
-            <button class={`dirrow ${e.matched >= 2 ? "hit" : ""}`} key={e.path} onClick={() => void browse(e.path)}>
-              <Icon.Folder size={14} />
-              <span class="name">{e.name}</span>
-              {e.matched >= 2 && <span class="badge">{t("setup.looksRight", { n: e.matched })}</span>}
-              <Icon.Right size={13} />
-            </button>
-          ))}
-        </div>
-
-        <div class="row manual">
-          <label>{t("setup.path")}</label>
-          <input
-            type="text"
-            value={manual}
-            spellcheck={false}
-            onInput={(e) => setManual((e.target as HTMLInputElement).value)}
-            onKeyDown={(e) => e.key === "Enter" && void browse(manual)}
-          />
-          <button class="btn sm" onClick={() => void browse(manual)}>{t("setup.go")}</button>
-        </div>
-
-        {error && (
-          <div class="warnbox">
-            <Icon.Warn size={16} />
-            <div><div class="t">{error}</div></div>
-          </div>
-        )}
-
-        <footer>
-          <span class="mono dim left">
-            {report?.usable
-              ? t("setup.found", { n: report.matched.length, names: report.matched.slice(0, 6).join(", ") })
-              : t("setup.hint")}
-          </span>
-          <button class="btn primary" disabled={busy || !report?.usable} onClick={() => void choose(listing!.path)}>
-            <Icon.Check size={14} />
-            {busy ? t("setup.saving") : t("setup.use")}
-          </button>
-        </footer>
+        {state && step === 1 && <DefinitionsStep state={state} busy={busy} setBusy={setBusy} refresh={refresh} />}
+        {state && step === 2 && <SpritesStep state={state} busy={busy} setBusy={setBusy} refresh={refresh} />}
       </div>
 
       <p class="setup-help">
         {t("setup.where")}{" "}
-        <a href="https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator" target="_blank" rel="noreferrer">
+        <a href={state?.upstream.web ?? "https://lpc.opengameart.org/"} target="_blank" rel="noreferrer">
           Universal-LPC-Spritesheet-Character-Generator <Icon.Link size={11} />
         </a>
       </p>
     </div>
+  );
+}
+
+interface StepProps {
+  state: SetupState;
+  busy: boolean;
+  setBusy: (busy: boolean) => void;
+  refresh: () => Promise<void>;
+}
+
+/**
+ * Three megabytes from the generator repository, or a folder somebody already
+ * has. The source is editable because a fork, a mirror or a newer commit are
+ * all legitimate - and because the one prefilled here is the snapshot this
+ * version was built against.
+ */
+function DefinitionsStep({ state, busy, setBusy, refresh }: StepProps) {
+  const [repo, setRepo] = useState(state.upstream.repo);
+  const [ref, setRef] = useState(state.upstream.ref);
+  const [open, setOpen] = useState(false);
+  const [path, setPath] = useState("");
+  const [error, setError] = useState<{ text: string; detail?: string } | null>(null);
+
+  const job = state.fetch;
+
+  const start = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      await fetch("/api/setup/definitions/fetch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo, ref }),
+      });
+      await refresh();
+    } catch (err) {
+      setBusy(false);
+      setError({ text: (err as Error).message });
+    }
+  };
+
+  const useFolder = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/setup/definitions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path }),
+      });
+      const body = (await res.json()) as { ok?: boolean; error?: string; report?: DefinitionsReport };
+      if (!res.ok || !body.ok) {
+        setBusy(false);
+        setError({
+          text: errorText(body.error, body.error ?? `HTTP ${res.status}`),
+          detail: body.report ? `${body.report.count} JSON, ${body.report.nested} in subfolders` : undefined,
+        });
+        return;
+      }
+      await refresh();
+    } catch (err) {
+      setBusy(false);
+      setError({ text: (err as Error).message });
+    }
+  };
+
+  if (job?.state === "running" || (busy && !error)) {
+    return (
+      <div class="waitbox">
+        <GoatProgress label={t("setup.def.fetching")} detail={job?.state === "running" ? job.message : repo} />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {job?.state === "error" && <Warn text={errorText(job.code, job.message)} detail={job.detail} />}
+      {error && <Warn text={error.text} detail={error.detail} />}
+
+      <div class="row wrap">
+        <button class="btn primary" onClick={() => void start()} disabled={busy}>
+          <Icon.Load size={14} />
+          {t("setup.def.fetch")}
+        </button>
+        <span class="dim src">
+          {t("setup.def.source", { repo: repo.replace(/^https:\/\/(www\.)?/, "").replace(/\.git$/, "") })}{" "}
+          <span class="mono">{t("setup.def.atRef", { ref: ref.length === 40 ? ref.slice(0, 11) : ref })}</span>
+        </span>
+        <button class="linkish sm" onClick={() => setOpen(!open)}>
+          {t("setup.def.change")}
+          <Icon.ChevronDown size={12} />
+        </button>
+      </div>
+
+      {open && (
+        <div class="fields">
+          <label>
+            {t("setup.def.repo")}
+            <input type="text" value={repo} spellcheck={false} onInput={(e) => setRepo((e.target as HTMLInputElement).value)} />
+          </label>
+          <label>
+            {t("setup.def.ref")}
+            <input type="text" value={ref} spellcheck={false} onInput={(e) => setRef((e.target as HTMLInputElement).value)} />
+          </label>
+        </div>
+      )}
+
+      <div class="sep">{t("setup.def.or")}</div>
+
+      <div class="row manual">
+        <label>{t("setup.def.have")}</label>
+        <input
+          type="text"
+          value={path}
+          spellcheck={false}
+          placeholder={`…${state.upstream.definitionsPath}`}
+          onInput={(e) => setPath((e.target as HTMLInputElement).value)}
+          onKeyDown={(e) => e.key === "Enter" && path && void useFolder()}
+        />
+        <button class="btn sm" disabled={!path || busy} onClick={() => void useFolder()}>
+          {t("setup.def.check")}
+        </button>
+      </div>
+    </>
   );
 }

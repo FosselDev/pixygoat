@@ -8,12 +8,16 @@ import { loadOrBuildCatalog, type BuildProgress } from "./catalog/build.ts";
 import { registerCharacterRoutes } from "./routes/characters.ts";
 import { registerExportRoutes } from "./routes/export.ts";
 import { registerSetupRoutes } from "./routes/setup.ts";
+import { writeSettings } from "./settings.ts";
+
+/** What the app still has to ask for before a catalog can be built. */
+type Missing = "sprites" | "definitions";
 
 type CatalogStatus =
-  | { state: "unconfigured" }
+  | { state: "unconfigured"; missing: Missing[] }
   | { state: "building"; message?: string; progress?: BuildProgress }
   | { state: "ready" }
-  | { state: "error"; message: string };
+  | { state: "error"; code?: "empty"; message: string };
 
 /**
  * One server for one sprite folder. Everything the catalog depends on is built
@@ -27,11 +31,18 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
   const started = Date.now();
   let catalogJsonGz: Buffer | null = null;
   let catalogEtag = "";
-  let catalogStatus: CatalogStatus = cfg.spritesConfigured ? { state: "building" } : { state: "unconfigured" };
+  // Two halves, both from the same upstream checkout and both optional at
+  // start: the sprites and the sheet definitions that describe them. Neither
+  // is an error when it is missing - the app asks for it.
+  const missing: Missing[] = [
+    ...(cfg.spritesConfigured ? [] : (["sprites"] as const)),
+    ...(cfg.definitionsConfigured ? [] : (["definitions"] as const)),
+  ];
+  let catalogStatus: CatalogStatus = missing.length === 0 ? { state: "building" } : { state: "unconfigured", missing };
 
   // The catalog build runs in the background so the app can show progress
   // instead of a blank page on first start.
-  if (cfg.spritesConfigured) {
+  if (missing.length === 0) {
     void loadOrBuildCatalog({
       spritesRoot: cfg.spritesRoot,
       definitionsDir: cfg.definitionsDir,
@@ -43,6 +54,17 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
       },
     })
       .then((catalog) => {
+        // A folder can pass the setup's check - two subfolders with names the
+        // definitions know - and still hold no sprite at all. Calling that
+        // ready would open an app with an empty catalogue and no way back, so
+        // it is refused, and a folder that came from the settings file is
+        // forgotten: the next start asks again instead of repeating this.
+        if (!catalog.items.some((item) => item.available)) {
+          if (cfg.spritesSource === "settings") writeSettings({ spritesRoot: undefined });
+          catalogStatus = { state: "error", code: "empty", message: cfg.spritesRoot };
+          app.log.error(`[catalog] no sprites found in ${cfg.spritesRoot}`);
+          return;
+        }
         catalogJsonGz = gzipSync(Buffer.from(JSON.stringify(catalog)), { level: 6 });
         catalogEtag = `"${catalog.meta.fingerprint}"`;
         catalogStatus = { state: "ready" };
@@ -61,6 +83,9 @@ async function buildApp(cfg: ServerConfig, restart: () => void): Promise<Fastify
     uptimeMs: Date.now() - started,
     spritesRoot: cfg.spritesRoot,
     spritesConfigured: cfg.spritesConfigured,
+    definitionsDir: cfg.definitionsDir,
+    definitionsConfigured: cfg.definitionsConfigured,
+    definitionsSource: cfg.definitionsSource,
     charactersDir: cfg.charactersDir,
     exportDefaults: cfg.exportDefaults,
     catalog: catalogStatus,
@@ -141,9 +166,11 @@ async function start(): Promise<void> {
   const cfg = loadConfig();
   app = await buildApp(cfg, () => void restart());
   await app.listen({ port: cfg.port, host: cfg.host });
-  const where = cfg.spritesConfigured ? `sprites: ${cfg.spritesRoot}` : "no sprites yet - the app will ask for the folder";
-  console.log(`PixyGoat server listening on http://${cfg.host}:${cfg.port}  (${where})`);
-  for (const i of cfg.spritesIgnored) console.warn(`  ignoring ${i.source}: ${i.path} does not exist`);
+  console.log(`PixyGoat server listening on http://${cfg.host}:${cfg.port}`);
+  console.log(`  sprites:     ${cfg.spritesConfigured ? cfg.spritesRoot : "not set yet - the app will ask for the folder"}`);
+  console.log(`  definitions: ${cfg.definitionsConfigured ? cfg.definitionsDir : "not set yet - the app will ask for them"}`);
+  for (const i of [...cfg.spritesIgnored, ...cfg.definitionsIgnored])
+    console.warn(`  ignoring ${i.source}: ${i.path} does not exist`);
 }
 
 /** Setup picked a folder: same port, same process, a server that knows it. */

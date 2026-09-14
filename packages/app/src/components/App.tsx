@@ -110,8 +110,15 @@ export function App() {
         <div class="goat"><Icon.Goat size={112} /></div>
         <h1>{t("app.name")}</h1>
         <div class="msg">
-          {st.state === "error" ? t("app.error") : st.state === "building" ? t("app.building") : t("app.loading")}
+          {st.state === "error"
+            ? st.code === "empty"
+              ? t("app.empty", { dir: st.message ?? "" })
+              : t("app.error")
+            : st.state === "building"
+              ? t("app.building")
+              : t("app.loading")}
         </div>
+        {st.state === "error" && st.code !== "empty" && st.message && <div class="msg mono dim">{st.message}</div>}
         {st.state === "building" && (
           <GoatProgress
             value={p?.total ? (p.done ?? 0) / p.total : undefined}

@@ -10,6 +10,11 @@ import { fileURLToPath } from "node:url";
  */
 export interface Settings {
   spritesRoot?: string;
+  /** a folder of sheet definitions, if the setup had to go looking for one */
+  definitionsRoot?: string;
+  /** a source other than the pinned one, if somebody fetched from elsewhere */
+  upstreamRepo?: string;
+  upstreamRef?: string;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));

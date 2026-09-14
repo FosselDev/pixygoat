@@ -14,6 +14,10 @@ RUN npm run build --workspace @pixygoat/app
 
 FROM node:22-alpine
 WORKDIR /app
+# The sheet definitions are not in the image - they belong to the LPC
+# generator and are fetched into the cache volume on first start, which needs
+# a git that alpine does not ship.
+RUN apk add --no-cache git
 ENV NODE_ENV=production \
     PIXYGOAT_HOST=0.0.0.0 \
     PIXYGOAT_PORT=4600 \

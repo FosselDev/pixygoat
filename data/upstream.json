@@ -1,0 +1,8 @@
+{
+  "$comment": "Where the LPC sheet definitions come from. PixyGoat ships none of them: they belong to the generator the sprites come from and carry the artists' licences. `ref` is the snapshot the catalogue was built against - a newer one may hold parts it does not know. Override with PIXYGOAT_UPSTREAM_REPO and PIXYGOAT_UPSTREAM_REF.",
+  "repo": "https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator.git",
+  "web": "https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator",
+  "ref": "e7fa0aee616f21d31b0f56b5dad96d761719b984",
+  "definitionsPath": "sheet_definitions",
+  "alsoFetch": ["LICENSE"]
+}

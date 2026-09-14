@@ -33,6 +33,8 @@ export interface CatalogProgress {
 
 export const catalogStatus = signal<{
   state: "loading" | "unconfigured" | "building" | "ready" | "error";
+  /** "empty" means the sprite folder held nothing the catalogue could use */
+  code?: string;
   message?: string;
   progress?: CatalogProgress;
 }>({ state: "loading" });
