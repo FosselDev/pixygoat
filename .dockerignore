@@ -1,9 +1,13 @@
-node_modules
+# node_modules matches only the top level in a .dockerignore, and npm nests an
+# install under packages/app for the platform-specific esbuild. Copying that
+# into the image puts Windows binaries and Windows shims on the PATH in front
+# of the image's own, which is how `vite build` became "command not found".
+**/node_modules
+**/dist
 spritesheets
 content_tree.txt
 .cache
 characters
 exports
-packages/app/dist
 .git
 docs
