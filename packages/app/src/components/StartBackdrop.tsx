@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "preact/hooks";
 import type { CharacterDocument } from "@pixygoat/core";
-import { layersForDocument, randomCharacter } from "../state/store.ts";
+import { dressedForDisplay, layersForDocument, randomCharacter } from "../state/store.ts";
 import { composeSheet, type ComposedSheet } from "../render/renderer.ts";
 
 /** Columns of an LPC walk row; column 0 is the standing frame and is skipped. */
@@ -79,8 +79,10 @@ export function StartBackdrop({ documents }: { documents: CharacterDocument[] })
     resize();
     window.addEventListener("resize", resize);
 
-    // Own characters first, then strangers to fill the street.
-    const cast: CharacterDocument[] = [...documents.slice(0, 5)];
+    // Own characters first, then strangers to fill the street. Nobody walks
+    // the title screen bare-chested, so a saved character without a top gets
+    // one for the walk - on the copy, never on the saved file.
+    const cast: CharacterDocument[] = documents.slice(0, 5).map(dressedForDisplay);
     while (cast.length < 7) cast.push(randomCharacter());
 
     void (async () => {

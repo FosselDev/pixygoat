@@ -451,11 +451,9 @@ export function randomCharacter(bodyType?: BodyType): CharacterDocument {
   return d;
 }
 
-function dressAtRandom(d: CharacterDocument) {
-  const cat = catalog.value;
-  if (!cat) return;
-  const rnd = <T>(arr: T[]): T | undefined => arr[Math.floor(Math.random() * arr.length)];
-  const ctx: ResolveContext = {
+/** What the replacement rules need to know: the names picked in the other slots. */
+function contextOf(d: CharacterDocument): ResolveContext {
+  return {
     get selectedNames() {
       const names: Record<string, string> = {};
       for (const [type, sel] of Object.entries(d.slots)) {
@@ -465,9 +463,16 @@ function dressAtRandom(d: CharacterDocument) {
       return names;
     },
   };
+}
+
+function dressAtRandom(d: CharacterDocument) {
+  const cat = catalog.value;
+  if (!cat) return;
+  const rnd = <T>(arr: T[]): T | undefined => arr[Math.floor(Math.random() * arr.length)];
+  const ctx = contextOf(d);
   const bodyType = d.bodyType;
   const chance: Record<string, number> = {
-    body: 1, head: 1, eye_color: 1, hair: 0.9, clothes: 0.95, legs: 0.95, shoes: 0.9,
+    body: 1, head: 1, eye_color: 1, hair: 0.9, clothes: 1, legs: 0.95, shoes: 0.9,
     hat: 0.3, beard: bodyType === "male" || bodyType === "muscular" ? 0.35 : 0.05, facial_eyes: 0.15,
     neck: 0.2, cape: 0.15, backpack: 0.1, weapon: 0.35, shield: 0.15, armour: 0.2, shoulders: 0.1, belt: 0.3, gloves: 0.2,
   };
@@ -493,6 +498,50 @@ function dressAtRandom(d: CharacterDocument) {
     d.slots[type] = sel;
   }
   if (d.slots.body) d.slots.body.variant = rnd(["light", "amber", "olive", "taupe", "bronze", "brown", "black"]) ?? "light";
+  dressTorso(d);
+}
+
+/**
+ * Slots that put something over the chest. `clothes` is the ordinary one; the
+ * rest are what a character can be wearing instead of a shirt.
+ */
+const TORSO_SLOTS = ["clothes", "dress", "armour", "chainmail", "overalls", "jacket", "vest"];
+
+/**
+ * Puts something on a bare chest. The LPC bodies are drawn naked under the
+ * clothes - the female, pregnant and teen sheets included - so a character
+ * that lost the roll for every torso slot would walk around topless. Whatever
+ * the catalogue has that fits the body type will do; a dress or a breastplate
+ * covers as well as a shirt.
+ */
+function dressTorso(d: CharacterDocument) {
+  const cat = catalog.value;
+  if (!cat || TORSO_SLOTS.some((type) => d.slots[type])) return;
+  const ctx = contextOf(d);
+  for (const type of TORSO_SLOTS) {
+    const candidates = (itemsByType.value.get(type) ?? [])
+      .filter((it) => it.available && availableVariants(cat, it, d.bodyType, ctx).length > 0);
+    const item = candidates[Math.floor(Math.random() * candidates.length)];
+    if (!item) continue;
+    const vs = availableVariants(cat, item, d.bodyType, ctx);
+    const sel: SlotSelection = { item: item.id, variant: vs[Math.floor(Math.random() * vs.length)] ?? "" };
+    const follow = defaultFollowFor(type, item);
+    if (follow) sel.follow = follow;
+    d.slots[type] = sel;
+    return;
+  }
+}
+
+/**
+ * The same character with a shirt on if it had none. Used for the crowd on the
+ * start screen, where saved characters walk along with the strangers and the
+ * saved ones must not be changed on disk.
+ */
+export function dressedForDisplay(d: CharacterDocument): CharacterDocument {
+  if (TORSO_SLOTS.some((type) => d.slots[type])) return d;
+  const copy: CharacterDocument = { ...d, slots: structuredClone(d.slots) };
+  dressTorso(copy);
+  return copy;
 }
 
 export const bodyTypes = BODY_TYPES;
