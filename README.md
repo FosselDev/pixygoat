@@ -175,7 +175,13 @@ docker compose up --build
 ```
 
 `compose.yaml` mounts `./spritesheets`, `./characters` and `./exports`. Set
-`PIXYGOAT_SPRITES_HOST` to use a spritesheet folder elsewhere.
+`PIXYGOAT_SPRITES_HOST` to use a spritesheet folder elsewhere — do set it
+rather than reaching for the setup's folder picker, which browses the
+container's filesystem and not yours.
+
+The sheet definitions are not in the image either. The container fetches them
+on first start into the `pixygoat-cache` volume, so it needs the network once;
+they survive every later start and every rebuild of the image.
 
 </details>
 
